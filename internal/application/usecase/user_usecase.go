@@ -43,6 +43,12 @@ func (usecase UserUseCase) UniqueEmail(email string) error {
 	err := usecase.Repo.UniqueEmail(email)
 	return err
 }
+
 func (usecase UserUseCase) GetUserByEmail(email string) (*entity.User, error) {
 	return usecase.Repo.FindByEmail(email)
+}
+
+func (usecase UserUseCase) VerifiedOtpToken(email string, token string) error {
+	err := usecase.Repo.VerifiedOtpToken(email, token)
+	return err
 }
