@@ -100,3 +100,31 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, map[string]string{"token": t})
 	}
 }
+
+func (handler AuthHandler) VerifyOTP() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		email := c.FormValue("email")
+		token := c.FormValue("token")
+
+		// Cek apakah OTP token valid
+		var otpToken models.OTPToken
+		result := h.db.Where("email = ? AND token = ?", email, token).First(&otpToken)
+		if result.Error != nil {
+			// Handle error saat mengambil data OTP token dari database
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid OTP token")
+		}
+
+		// Periksa apakah OTP token sudah diverifikasi sebelumnya
+		if otpToken.Verified {
+			return echo.NewHTTPError(http.StatusBadRequest, "OTP token has already been verified")
+		}
+
+		// Verifikasi OTP token
+		otpToken.Verified = true
+		h.db.Save(&otpToken)
+
+		return c.JSON(http.StatusOK, map[string]string{
+			"message": "OTP token has been verified",
+		})
+	}
+}
