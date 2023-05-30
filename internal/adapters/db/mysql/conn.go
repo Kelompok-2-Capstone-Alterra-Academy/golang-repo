@@ -47,6 +47,7 @@ func InitDB() {
 func AutoMigrate() {
 	err := DbMysql.AutoMigrate(
 		&entity.User{},
+		&entity.EducationNews{},
 	)
 	if err != nil {
 		log.Fatalf("Error migrating database: %s", err.Error())

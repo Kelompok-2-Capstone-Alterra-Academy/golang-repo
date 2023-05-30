@@ -18,6 +18,10 @@ var (
 	userUsecase usecase.UserUseCase
 	// auth
 	AuthHandler handler.AuthHandler
+	// educatoin news
+	education_newsRepo    repository.EducationNewsRepository
+	education_newsHandler handler.EducationNewsHandler
+	education_newsUsecase usecase.EducationNewsUseCase
 )
 
 func declare() {
@@ -26,6 +30,10 @@ func declare() {
 	userHandler = handler.UserHandler{UserUsecase: userUsecase}
 	// auth
 	AuthHandler = handler.AuthHandler{Usecase: userUsecase}
+	// education news
+	education_newsRepo = repository.EducationNewsRepository{DB: db.DbMysql}
+	education_newsUsecase = usecase.EducationNewsUseCase{Repo: education_newsRepo}
+	education_newsHandler = handler.EducationNewsHandler{EducationNewsUsecase: education_newsUsecase}
 
 }
 
@@ -47,6 +55,12 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/users/:id", userHandler.GetUser())
 	mentors.POST("/users", userHandler.CreateUser())
 	mentors.DELETE("/users/:id", userHandler.DeleteUser())
+
+	e.GET("/education_newses", education_newsHandler.GetAllEducationNewses())
+	e.GET("/education_newses/:id", education_newsHandler.GetEducationNews())
+	e.POST("/education_newses", education_newsHandler.CreateEducationNews())
+	e.PUT("/education_newses/:id", education_newsHandler.UpdateEducationNews())
+	e.DELETE("/education_newses/:id", education_newsHandler.DeleteEducationNews())
 
 	// montor group
 	students := e.Group("/students")
