@@ -36,4 +36,8 @@ func (repo CategoryRepository) DeleteCategory(id int) error {
 	result := repo.DB.Delete(&entity.Category{}, id)
 	return result.Error
 }
+func (repo CategoryRepository) FindCategory(id int) error {
+	result := repo.DB.First(&entity.Category{}, id)
+	return result.Error
+}
 

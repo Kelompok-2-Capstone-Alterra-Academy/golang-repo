@@ -33,4 +33,7 @@ func (usecase CourseUseCase) DeleteCourse(id int) error {
 	err := usecase.Repo.DeleteCourse(id)
 	return err
 }
-
+func (usecase CourseUseCase) FindCourse(id int) error {
+	err := usecase.Repo.FindCourse(id)
+	return err
+}

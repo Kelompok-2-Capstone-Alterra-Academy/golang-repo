@@ -90,6 +90,49 @@ func (handler ClassHandler) CreateClass() echo.HandlerFunc {
 	}
 }
 
+func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
+	var class entity.Class
+
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.ClassUsecase.FindClass(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&class); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.ClassUsecase.UpdateClass(id, class)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update category",
+				"data":class,
+
+			})
+	}
+}
 func (handler ClassHandler) DeleteClass() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))

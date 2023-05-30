@@ -7,5 +7,5 @@ import (
 type Class struct {
 	*gorm.Model
 
-	ClassName        string `json:"class_name" form:"class_name" validate:"required"`
+	ClassName        string `json:"class_name" form:"class_name"`
 }

@@ -37,3 +37,7 @@ func (repo MajorRepository) DeleteMajor(id int) error {
 	return result.Error
 }
 
+func (repo MajorRepository) FindMajor(id int) error {
+	result := repo.DB.First(&entity.Major{}, id)
+	return result.Error
+}

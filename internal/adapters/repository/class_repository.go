@@ -36,4 +36,7 @@ func (repo ClassRepository) DeleteClass(id int) error {
 	result := repo.DB.Delete(&entity.Class{}, id)
 	return result.Error
 }
-
+func (repo ClassRepository) FindClass(id int) error {
+	result := repo.DB.First(&entity.Class{}, id)
+	return result.Error
+}

@@ -89,7 +89,49 @@ func (handler CategoryHandler) CreateCategory() echo.HandlerFunc {
 		})
 	}
 }
+func (handler CategoryHandler) UpdateCategory() echo.HandlerFunc {
+	var category entity.Category
 
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.CategoryUsecase.FindCategory(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&category); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.CategoryUsecase.UpdateCategory(id, category)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update category",
+				"data":category,
+
+			})
+	}
+}
 func (handler CategoryHandler) DeleteCategory() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))

@@ -89,6 +89,49 @@ func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 		})
 	}
 }
+func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
+	var major entity.Major
+
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.MajorUsecase.FindMajor(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&major); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.MajorUsecase.UpdateMajor(id, major)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update category",
+				"data":major,
+
+			})
+	}
+}
 
 func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 	return func(e echo.Context) error {

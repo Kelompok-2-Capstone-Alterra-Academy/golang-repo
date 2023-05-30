@@ -33,4 +33,7 @@ func (usecase CategoryUseCase) DeleteCategory(id int) error {
 	err := usecase.Repo.DeleteCategory(id)
 	return err
 }
-
+func (usecase CategoryUseCase) FindCategory(id int) error {
+	err := usecase.Repo.FindCategory(id)
+	return err
+}

@@ -34,3 +34,7 @@ func (usecase MajorUseCase) DeleteMajor(id int) error {
 	return err
 }
 
+func (usecase MajorUseCase) FindMajor(id int) error {
+	err := usecase.Repo.FindMajor(id)
+	return err
+}
