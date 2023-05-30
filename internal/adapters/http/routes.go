@@ -36,6 +36,7 @@ func InitRoutes() *echo.Echo {
 	e := echo.New()
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
+	e.POST("/verify-otp", AuthHandler.VerifyOTP())
 
 	// montor group
 	mentors := e.Group("/mentors")
