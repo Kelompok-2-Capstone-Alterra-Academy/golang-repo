@@ -24,6 +24,11 @@ func (usecase UserUseCase) CreateUser(user entity.User) error {
 	return err
 }
 
+func (usecase UserUseCase) SaveOTP(otp entity.OTPToken) error {
+	err := usecase.Repo.SaveOTP(otp)
+	return err
+}
+
 func (usecase UserUseCase) UpdateUser(id int, user entity.User) error {
 	err := usecase.Repo.UpdateUser(id, user)
 	return err

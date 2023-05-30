@@ -54,3 +54,8 @@ func (repo UserRepository) UniqueEmail(email string) error {
 	}
 	return nil
 }
+
+func (repo UserRepository) SaveOTP(otp entity.OTPToken) error {
+	result := repo.DB.Create(&otp)
+	return result.Error
+}

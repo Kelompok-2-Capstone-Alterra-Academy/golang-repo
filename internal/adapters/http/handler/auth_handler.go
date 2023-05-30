@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"capston-lms/internal/adapters/http/middleware"
 	"capston-lms/internal/application/service"
@@ -41,7 +42,27 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
 		}
 		user.Password = string(hashedPassword)
-		user.Role = "customer"
+		user.Role = "students"
+
+		// sending otp
+		otp := service.GenerateOTP()
+		// Simpan token ke database
+		expiredAt := time.Now().Add(time.Minute * 5) // Token berlaku selama 5 menit
+		otpToken := entity.OTPToken{
+			Token:     otp,
+			Email:     user.Email,
+			ExpiredAt: expiredAt,
+		}
+		err = handler.Usecase.SaveOTP(otpToken)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to save otp token"})
+		}
+
+		body := "OTP Kamu adalah sebagai berikut ini : " + otp
+		err = service.SendEmail(user.Email, "lakukan verifikasi akun anda sebelum 10 menit", body)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to send OTP email")
+		}
 
 		err = handler.Usecase.CreateUser(user)
 		if err != nil {
