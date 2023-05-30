@@ -24,7 +24,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		var user entity.User
 		if err := e.Bind(&user); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
+				"status_code": http.StatusBadRequest,
 				"message":     "Invalid request body",
 			})
 		}
@@ -33,7 +33,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		validate := validator.New()
 		if err := validate.Struct(user); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
+				"status_code": http.StatusBadRequest,
 				"message":     "Validation errors",
 				"errors":      err.Error(),
 			})
@@ -42,7 +42,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		// Validasi email unik
 		if err := handler.Usecase.UniqueEmail(user.Email); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
+				"status_code": http.StatusBadRequest,
 				"message":     "Validation errors",
 				"errors":      err.Error(),
 			})
@@ -74,7 +74,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		err = service.SendEmail(user.Email, "lakukan verifikasi akun anda sebelum 10 menit", body)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
+				"status_code": http.StatusInternalServerError,
 				"message":     "Failed to send OTP email",
 				"errors":      err.Error(),
 			})
@@ -88,7 +88,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		data := make(map[string]interface{})
 		data["users"] = user
 		return e.JSON(http.StatusCreated, map[string]interface{}{
-			"status code": http.StatusCreated,
+			"status_code": http.StatusCreated,
 			"message":     "user created successfully",
 			"data":        data,
 		})
@@ -101,7 +101,7 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 		var user entity.User
 		if err := c.Bind(&user); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
+				"status_code": http.StatusBadRequest,
 				"message":     "Invalid request body",
 			})
 		}
@@ -110,7 +110,7 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 		dbUser, err := handler.Usecase.GetUserByEmail(user.Email)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"status code": http.StatusUnauthorized,
+				"status_code": http.StatusUnauthorized,
 				"message":     "Invalid email or password",
 			})
 		}
@@ -119,7 +119,7 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 		if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
 
 			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"status code": http.StatusUnauthorized,
+				"status_code": http.StatusUnauthorized,
 				"message":     "Invalid email or password",
 			})
 		}
@@ -127,7 +127,7 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 		t, err := middleware.CreateToken(int(dbUser.ID), dbUser.Email, dbUser.Role)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
+				"status_code": http.StatusInternalServerError,
 				"message":     "Failed to create token",
 			})
 		}
@@ -141,20 +141,26 @@ func (handler AuthHandler) VerifyOTP() echo.HandlerFunc {
 		email := c.FormValue("email")
 		token := c.FormValue("token")
 
-		// Cek apakah OTP token valid
-
 		result := handler.Usecase.VerifiedOtpToken(email, token)
 		if result != nil {
 
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
+				"status_code": http.StatusBadRequest,
 				"message":     "Invalid OTP token",
 			})
 		}
-
+		dbUser, err := handler.Usecase.GetUserByEmail(email)
+		if err != nil {
+			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"status_code": http.StatusUnauthorized,
+				"message":     "Invalid email or password",
+			})
+		}
+		t, err := middleware.CreateToken(int(dbUser.ID), dbUser.Email, dbUser.Role)
 		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status code": http.StatusOK,
+			"status_code": http.StatusOK,
 			"message":     "OTP token has been verified",
+			"token":       t,
 		})
 	}
 }
