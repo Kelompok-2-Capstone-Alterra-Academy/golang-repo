@@ -17,7 +17,5 @@ jobs:
           export PATH=$PATH:/usr/local/go/bin
           cd dev/golang-repo
           git pull
-          docker build -t go-staging .
-          docker stop go-staging
-          docker rm go-staging
-          docker run --name go-staging -dp 8081:8080 go-staging
+          go build .
+          sudo systemctl restart go-staging.service 
