@@ -4,26 +4,24 @@ import (
 	"capston-lms/internal/adapters/http"
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 )
 
 func main() {
 	e := http.InitRoutes()
 	e.Debug = true
+	e.Pre(middleware.HTTPSRedirect())
 
-	secretJWT := viper.GetString("EXSPOSE_PORT")
-	if secretJWT == "" {
-		log.Fatal("EXSPOSE_PORT is not set")
-	}
-
-	address := fmt.Sprintf(":%s", os.Getenv("PORT"))
+	address := fmt.Sprintf(":%s", viper.GetString("EXSPOSE_PORT"))
 	if address == ":" {
 		address = ":8080" // Port default 8080 jika PORT tidak diset
 	}
-
-	err := e.Start(address)
+	// Load certificate and key from file
+	certFile := "cert.pem"
+	keyFile := "key.pem"
+	err := e.StartTLS(address, certFile, keyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
