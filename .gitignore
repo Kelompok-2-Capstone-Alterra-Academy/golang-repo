@@ -1,2 +1,5 @@
 .env
 vendor
+capstone-lms
+cert.pem
+key.pem

@@ -11,7 +11,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy application code
-COPY . . 
+COPY . .
 
 # Build the application
 RUN go build -o main ./cmd/app
@@ -21,5 +21,3 @@ EXPOSE 9091
 
 # Command to run the application
 CMD ["./main"]
-
-         

@@ -17,8 +17,5 @@ jobs:
           export PATH=$PATH:/usr/local/go/bin
           cd master/golang-repo
           git pull
-          docker build -t go-master .
-          docker stop go-master
-          docker rm go-master
-          docker run --name go-master -dp 9091:9090 go-master
- 
+          go build .
+          sudo systemctl restart go-master.service 
