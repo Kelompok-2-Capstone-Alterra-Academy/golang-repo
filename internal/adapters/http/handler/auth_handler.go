@@ -132,7 +132,13 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 			})
 		}
 
-		return c.JSON(http.StatusOK, map[string]string{"token": t})
+		data := make(map[string]interface{})
+		data["token"] = t
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status_code": http.StatusOK,
+			"message":     "congratulations successful login",
+			"data":        data,
+		})
 	}
 }
 
@@ -157,10 +163,12 @@ func (handler AuthHandler) VerifyOTP() echo.HandlerFunc {
 			})
 		}
 		t, err := middleware.CreateToken(int(dbUser.ID), dbUser.Email, dbUser.Role)
+		data := make(map[string]interface{})
+		data["token"] = t
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status_code": http.StatusOK,
 			"message":     "OTP token has been verified",
-			"token":       t,
+			"data":        data,
 		})
 	}
 }
