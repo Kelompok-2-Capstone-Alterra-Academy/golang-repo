@@ -3,3 +3,6 @@ vendor
 capston-lms
 cert.pem
 key.pem
+.github
+Dockerfile
+docker-compose.yml
