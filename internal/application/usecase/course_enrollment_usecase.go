@@ -9,7 +9,7 @@ type CourseEnrollmentUseCase struct {
 	CourseEnrollmentRepo repository.CourseEnrollmentRepository
 }
 
-func (usecase CourseEnrollmentUseCase) GetStudents(id int) ([]entity.CourseEnrollment, error) {
+func (usecase CourseEnrollmentUseCase) GetStudents(id int) ([]entity.User, error) {
 	courses, err := usecase.CourseEnrollmentRepo.GetAllStudents(id)
 	return courses, err
 }

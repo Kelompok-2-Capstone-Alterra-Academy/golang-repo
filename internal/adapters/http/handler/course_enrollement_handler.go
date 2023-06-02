@@ -17,7 +17,7 @@ type CourseEnrollmentHandler struct {
 
 func (handler CourseEnrollmentHandler) GetAllStudents() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var students []entity.CourseEnrollment
+		var students []entity.User
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
