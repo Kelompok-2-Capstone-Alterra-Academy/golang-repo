@@ -46,14 +46,14 @@ func (handler CourseEnrollmentHandler) GetAllStudents() echo.HandlerFunc {
 func (handler CourseEnrollmentHandler) GetAllCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var courses []entity.Course
-		sellerID, err := service.GetUserIDFromToken(e)
+		MentorId, err := service.GetUserIDFromToken(e)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     err.Error(),
 			})
 		}
-		courses, err = handler.CourseEnrollmentUseCase.GetCourse(sellerID) // Menggunakan parameter 'id' yang diterima dari URL
+		courses, err = handler.CourseEnrollmentUseCase.GetCourse(MentorId) // Menggunakan parameter 'id' yang diterima dari URL
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,

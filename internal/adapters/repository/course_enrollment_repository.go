@@ -18,7 +18,6 @@ func (repo CourseEnrollmentRepository) GetAllStudents(course_id int) ([]entity.U
 		Joins("JOIN users ON course_enrollments.user_id = users.ID").
 		Where("course_enrollments.course_id = ?", course_id).
 		Find(&users)
-
 	return users, result.Error
 }
 
