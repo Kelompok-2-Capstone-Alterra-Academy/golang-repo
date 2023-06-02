@@ -4,3 +4,5 @@ capston-lms
 cert.pem
 key.pem
 .github/workflows/
+docker-compose.yml
+Dockerfile
