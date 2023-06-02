@@ -10,11 +10,16 @@ type CourseEnrollmentRepository struct {
 	DB *gorm.DB
 }
 
-func (repo CourseEnrollmentRepository) GetAllStudents(course_id int) ([]entity.CourseEnrollment, error) {
-	var courses []entity.CourseEnrollment
-	result := repo.DB.Preload("User").Where("course_enrollments.course_id = ?", course_id).Find(&courses)
+func (repo CourseEnrollmentRepository) GetAllStudents(course_id int) ([]entity.User, error) {
 
-	return courses, result.Error
+	var users []entity.User
+	result := repo.DB.Model(&entity.CourseEnrollment{}).
+		Select("users.*").
+		Joins("JOIN users ON course_enrollments.user_id = users.ID").
+		Where("course_enrollments.course_id = ?", course_id).
+		Find(&users)
+
+	return users, result.Error
 }
 
 func (repo CourseEnrollmentRepository) GetCourse(userID int) ([]entity.Course, error) {
