@@ -8,7 +8,7 @@ import (
 
 type OTPToken struct {
 	gorm.Model
-	Token     string
-	Email     string
+	Otp       string `json:"otp" form:"otp"`
+	Email     string `json:"email" form:"email"`
 	ExpiredAt time.Time
 }
