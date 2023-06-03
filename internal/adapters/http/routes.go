@@ -18,23 +18,49 @@ var (
 	userUsecase usecase.UserUseCase
 	// auth
 	AuthHandler handler.AuthHandler
-	// educatoin news
-	education_newsRepo    repository.EducationNewsRepository
-	education_newsHandler handler.EducationNewsHandler
-	education_newsUsecase usecase.EducationNewsUseCase
+
+	// class
+	classRepo    repository.ClassRepository
+	classHandler handler.ClassHandler
+	classUsecase usecase.ClassUseCase
+	// Category
+	categoryRepo    repository.CategoryRepository
+	categoryHandler handler.CategoryHandler
+	categoryUsecase usecase.CategoryUseCase
+	// Major
+	majorRepo    repository.MajorRepository
+	majorHandler handler.MajorHandler
+	majorUsecase usecase.MajorUseCase
+	// Course
+	courseRepo    repository.CourseRepository
+	courseHandler handler.CourseHandler
+	courseUsecase usecase.CourseUseCase
 )
 
 func declare() {
+	// user
 	userRepo = repository.UserRepository{DB: db.DbMysql}
 	userUsecase = usecase.UserUseCase{Repo: userRepo}
 	userHandler = handler.UserHandler{UserUsecase: userUsecase}
 	// auth
 	AuthHandler = handler.AuthHandler{Usecase: userUsecase}
-	// education news
-	education_newsRepo = repository.EducationNewsRepository{DB: db.DbMysql}
-	education_newsUsecase = usecase.EducationNewsUseCase{Repo: education_newsRepo}
-	education_newsHandler = handler.EducationNewsHandler{EducationNewsUsecase: education_newsUsecase}
 
+	// class
+	classRepo = repository.ClassRepository{DB: db.DbMysql}
+	classUsecase = usecase.ClassUseCase{Repo: classRepo}
+	classHandler = handler.ClassHandler{ClassUsecase: classUsecase}
+	// category
+	categoryRepo = repository.CategoryRepository{DB: db.DbMysql}
+	categoryUsecase = usecase.CategoryUseCase{Repo: categoryRepo}
+	categoryHandler = handler.CategoryHandler{CategoryUsecase: categoryUsecase}
+	// Major
+	majorRepo = repository.MajorRepository{DB: db.DbMysql}
+	majorUsecase = usecase.MajorUseCase{Repo: majorRepo}
+	majorHandler = handler.MajorHandler{MajorUsecase: majorUsecase}
+	// Major
+	courseRepo = repository.CourseRepository{DB: db.DbMysql}
+	courseUsecase = usecase.CourseUseCase{Repo: courseRepo}
+	courseHandler = handler.CourseHandler{CourseUsecase: courseUsecase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -54,15 +80,29 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/users", userHandler.GetAllUsers())
 	mentors.GET("/users/:id", userHandler.GetUser())
 	mentors.POST("/users", userHandler.CreateUser())
-	mentors.DELETE("/users/:id", userHandler.DeleteUser())
+	e.DELETE("/users/:id", userHandler.DeleteUser())
 
-	e.GET("/education_newses", education_newsHandler.GetAllEducationNewses())
-	e.GET("/education_newses/:id", education_newsHandler.GetEducationNews())
-	e.POST("/education_newses", education_newsHandler.CreateEducationNews())
-	e.PUT("/education_newses/:id", education_newsHandler.UpdateEducationNews())
-	e.DELETE("/education_newses/:id", education_newsHandler.DeleteEducationNews())
+	e.GET("/classes", classHandler.GetAllClasses())
+	e.GET("/classes/:id", classHandler.GetClass())
+	e.POST("/classes", classHandler.CreateClass())
+	e.DELETE("/classes/:id", classHandler.DeleteClass())
 
-	// montor group
+	e.GET("/categories", categoryHandler.GetAllCategories())
+	e.GET("/categories/:id", categoryHandler.GetCategory())
+	e.POST("/categories", categoryHandler.CreateCategory())
+	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
+
+	e.GET("/majors", majorHandler.GetAllMajors())
+	e.GET("/majors/:id", majorHandler.CreateMajor())
+	e.POST("/majors", majorHandler.CreateMajor())
+	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
+
+	e.GET("/courses", courseHandler.GetAllCourses())
+	e.GET("/courses/:id", courseHandler.CreateCourse())
+	e.POST("/courses", courseHandler.CreateCourse())
+	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
+	// students group
 	students := e.Group("/students")
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
