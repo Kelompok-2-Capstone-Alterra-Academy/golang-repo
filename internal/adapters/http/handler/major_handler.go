@@ -81,6 +81,13 @@ func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 			})
 		}
 
+		err := handler.MajorUsecase.CreateMajor(major)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": "failed to created major",
+			})
+		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,

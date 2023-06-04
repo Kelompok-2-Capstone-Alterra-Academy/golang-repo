@@ -80,7 +80,13 @@ func (handler ClassHandler) CreateClass() echo.HandlerFunc {
 				"message": err.Error(),
 			})
 		}
-
+		err := handler.ClassUsecase.CreateClass(class)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": "failed to created class",
+			})
+		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
