@@ -41,6 +41,11 @@ var (
 	courseRepo    repository.CourseRepository
 	courseHandler handler.CourseHandler
 	courseUsecase usecase.CourseUseCase
+
+	// attachment
+	attachmentRepo    repository.AttachmentRepository
+	attachmentHandler handler.AttachmentHandler
+	attachmentUsecase usecase.AttachmentUseCase
 )
 
 func declare() {
@@ -72,6 +77,11 @@ func declare() {
 	courseEnrollmentRepo = repository.CourseEnrollmentRepository{DB: db.DbMysql}
 	courseEnrollmentUseCase = usecase.CourseEnrollmentUseCase{CourseEnrollmentRepo: courseEnrollmentRepo}
 	courseEnrollmentHandler = handler.CourseEnrollmentHandler{CourseEnrollmentUseCase: courseEnrollmentUseCase}
+
+	// attachment
+	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
+	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
+	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -124,6 +134,11 @@ func InitRoutes() *echo.Echo {
 	e.GET("/courses/:id", courseHandler.CreateCourse())
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
+	e.GET("/courses/:courseID/users/:userID", courseHandler.GetCourseByIDAndUserID())
+	e.GET("/courses/:courseID", courseHandler.GetCourseByID())
+
+	e.GET("/attachments/:courseSectionID/:attachmentID", attachmentHandler.GetAttachmentByCourseSectionIDAndAttachmentID())
 
 	// students group
 	students := e.Group("/students")

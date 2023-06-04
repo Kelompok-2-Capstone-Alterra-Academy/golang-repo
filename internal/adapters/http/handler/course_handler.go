@@ -121,3 +121,44 @@ func (handler CourseHandler) DeleteCourse() echo.HandlerFunc {
 		})
 	}
 }
+
+func (handler CourseHandler) GetCourseByIDAndUserID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		courseID := c.Param("courseID")
+		userID := c.Param("userID")
+
+		course, err := handler.CourseUsecase.GetCourseByIDAndUserID(courseID, userID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by ID and user ID",
+			"data":        course,
+		})
+	}
+}
+
+func (handler CourseHandler) GetCourseByID() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		courseID := c.Param("courseID")
+
+		course, err := handler.CourseUsecase.GetCourseByID(courseID)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by ID",
+			"data":        course,
+		})
+	}
+}

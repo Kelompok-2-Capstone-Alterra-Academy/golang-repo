@@ -37,3 +37,21 @@ func (usecase CourseUseCase) FindCourse(id int) error {
 	err := usecase.Repo.FindCourse(id)
 	return err
 }
+
+func (usecase CourseUseCase) GetCourseByIDAndUserID(courseID string, userID string) (*entity.Course, error) {
+	course, err := usecase.Repo.GetCourseByIDAndUserID(courseID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return course, nil
+}
+
+func (usecase CourseUseCase) GetCourseByID(courseID string) (*entity.Course, error) {
+	course, err := usecase.Repo.GetCourseByID(courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	return course, nil
+}
