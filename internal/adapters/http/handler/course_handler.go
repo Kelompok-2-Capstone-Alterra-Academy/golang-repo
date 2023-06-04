@@ -9,18 +9,17 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type UserHandler struct {
-	UserUsecase usecase.UserUseCase
+type CourseHandler struct {
+	CourseUsecase usecase.CourseUseCase
 }
 
-func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
+func (handler CourseHandler) GetAllCourses() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var users []entity.User
+		var courses []entity.Course
 
-		users, err := handler.UserUsecase.GetAllUsers()
+		courses, err := handler.CourseUsecase.GetAllCourses()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -30,15 +29,15 @@ func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get all user",
-			"data":   users,
+			"message": "success get all course",
+			"data":   courses,
 		})
 	}
 }
 
-func (handler UserHandler) GetUser() echo.HandlerFunc {
+func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var user entity.User
+		var course entity.Course
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -47,7 +46,7 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 			})
 		}
 
-		user, err = handler.UserUsecase.GetUser(id)
+		course, err = handler.CourseUsecase.GetCourse(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -57,16 +56,16 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get user by id",
-			"data":   user,
+			"message": "success get course by id",
+			"data":   course,
 		})
 	}
 }
 
-func (handler UserHandler) CreateUser() echo.HandlerFunc {
+func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var user entity.User
-		if err := e.Bind(&user); err != nil {
+		var course entity.Course
+		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
@@ -75,69 +74,43 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 
 		// Validasi input menggunakan package validator
 		validate := validator.New()
-		if err := validate.Struct(user); err != nil {
+		if err := validate.Struct(course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
 			})
 		}
 
-		// Validasi email unik
-		if err := handler.UserUsecase.UniqueEmail(user.Email); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message": err.Error(),
-			})
-		}
-
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
-			})
-		}
-		user.Password = string(hashedPassword)
-		// Set Role default cutomer
-		user.Role = "customer"
-
-		err = handler.UserUsecase.CreateUser(user)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
-			})
-		}
-
-		return e.JSON(http.StatusCreated, map[string]interface{}{
+		return e.JSON(
+			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
-			"message": "success create new user",
-			"data":   user,
+			"message": "success create new course",
+			"data":   course,
 		})
 	}
 }
 
-func (handler UserHandler) DeleteUser() echo.HandlerFunc {
+func (handler CourseHandler) DeleteCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": "input is not a number",
+				"message": "input id is not number",
 			})
 		}
 
-		err = handler.UserUsecase.DeleteUser(id)
+		err = handler.CourseUsecase.DeleteCourse(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success delete data",
+			"message": "Success Delete Course`",
 		})
 	}
 }

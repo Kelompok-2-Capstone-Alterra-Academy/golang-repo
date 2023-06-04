@@ -9,18 +9,17 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type UserHandler struct {
-	UserUsecase usecase.UserUseCase
+type ClassHandler struct {
+	ClassUsecase usecase.ClassUseCase
 }
 
-func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
+func (handler ClassHandler) GetAllClasses() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var users []entity.User
+		var classes []entity.Class
 
-		users, err := handler.UserUsecase.GetAllUsers()
+		classes, err := handler.ClassUsecase.GetAllClasses()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -30,15 +29,15 @@ func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get all user",
-			"data":   users,
+			"message": "success get all class",
+			"data":   classes,
 		})
 	}
 }
 
-func (handler UserHandler) GetUser() echo.HandlerFunc {
+func (handler ClassHandler) GetClass() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var user entity.User
+		var class entity.Class
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -47,7 +46,7 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 			})
 		}
 
-		user, err = handler.UserUsecase.GetUser(id)
+		class, err = handler.ClassUsecase.GetClass(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -57,16 +56,16 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get user by id",
-			"data":   user,
+			"message": "success get class by id",
+			"data":   class,
 		})
 	}
 }
 
-func (handler UserHandler) CreateUser() echo.HandlerFunc {
+func (handler ClassHandler) CreateClass() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var user entity.User
-		if err := e.Bind(&user); err != nil {
+		var class entity.Class
+		if err := e.Bind(&class); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
@@ -75,69 +74,86 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 
 		// Validasi input menggunakan package validator
 		validate := validator.New()
-		if err := validate.Struct(user); err != nil {
+		if err := validate.Struct(class); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
 			})
 		}
 
-		// Validasi email unik
-		if err := handler.UserUsecase.UniqueEmail(user.Email); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message": err.Error(),
-			})
-		}
-
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
-			})
-		}
-		user.Password = string(hashedPassword)
-		// Set Role default cutomer
-		user.Role = "customer"
-
-		err = handler.UserUsecase.CreateUser(user)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
-			})
-		}
-
-		return e.JSON(http.StatusCreated, map[string]interface{}{
+		return e.JSON(
+			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
-			"message": "success create new user",
-			"data":   user,
+			"message": "success create new class",
+			"data":   class,
 		})
 	}
 }
 
-func (handler UserHandler) DeleteUser() echo.HandlerFunc {
+func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
+	var class entity.Class
+
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": "input is not a number",
+				"message": err.Error(),
 			})
 		}
 
-		err = handler.UserUsecase.DeleteUser(id)
+		err = handler.ClassUsecase.FindClass(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&class); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.ClassUsecase.UpdateClass(id, class)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update category",
+				"data":class,
+
+			})
+	}
+}
+func (handler ClassHandler) DeleteClass() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": "input id is not number",
+			})
+		}
+
+		err = handler.ClassUsecase.DeleteClass(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success delete data",
+			"message": "Success Delete Class`",
 		})
 	}
 }
