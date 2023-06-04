@@ -62,7 +62,12 @@ func (repo UserRepository) SaveOTP(otp entity.OTPToken) error {
 
 func (repo UserRepository) VerifiedOtpToken(email string, token string) error {
 	var otpToken entity.OTPToken
-	err := repo.DB.Where("email = ? AND token = ?", email, token).First(&otpToken).Error
+	err := repo.DB.Where("email = ? AND otp = ? AND status = ? ", email, token, "not-used").First(&otpToken).Error
+	if err != nil {
+		return err
+	}
+
+	err = repo.DB.Model(&otpToken).Update("status", "used").Error
 	if err != nil {
 		return err
 	}
