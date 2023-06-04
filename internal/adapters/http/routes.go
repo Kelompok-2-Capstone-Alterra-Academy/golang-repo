@@ -39,6 +39,16 @@ var (
 	courseRepo    repository.CourseRepository
 	courseHandler handler.CourseHandler
 	courseUsecase usecase.CourseUseCase
+
+	// folder
+	folderRepo    repository.FolderRepository
+	folderHandler handler.FolderHandler
+	folderUsecase usecase.FolderUseCase
+
+	// attachment
+	attachmentRepo    repository.AttachmentRepository
+	attachmentHandler handler.AttachmentHandler
+	attachmentUsecase usecase.AttachmentUseCase
 )
 
 func declare() {
@@ -68,6 +78,15 @@ func declare() {
 	courseEnrollmentRepo = repository.CourseEnrollmentRepository{DB: db.DbMysql}
 	courseEnrollmentUseCase = usecase.CourseEnrollmentUseCase{CourseEnrollmentRepo: courseEnrollmentRepo}
 	courseEnrollmentHandler = handler.CourseEnrollmentHandler{CourseEnrollmentUseCase: courseEnrollmentUseCase}
+	// folder
+	folderRepo = repository.FolderRepository{DB: db.DbMysql}
+	folderUsecase = usecase.FolderUseCase{Repo: folderRepo}
+	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase}
+
+	// folder
+	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
+	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
+	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -92,6 +111,17 @@ func InitRoutes() *echo.Echo {
 
 	mentors.GET("/chat/students/:id", courseEnrollmentHandler.GetAllStudents())
 	mentors.GET("/chat/courses", courseEnrollmentHandler.GetAllCourse())
+	// route folders
+	mentors.GET("/folders", folderHandler.GetAllFolders())
+	mentors.GET("/folders/:id", folderHandler.GetFolder())
+	mentors.POST("/folders", folderHandler.CreateFolder())
+	mentors.DELETE("/folders/:id", folderHandler.DeleteFolder())
+
+	// route attachment
+	mentors.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
+	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
+	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
+	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
