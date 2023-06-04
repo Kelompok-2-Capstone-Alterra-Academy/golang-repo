@@ -6,6 +6,7 @@ import (
 	middlewares "capston-lms/internal/adapters/http/middleware"
 	repository "capston-lms/internal/adapters/repository"
 	usecase "capston-lms/internal/application/usecase"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -74,10 +75,18 @@ func InitRoutes() *echo.Echo {
 	db.Init()
 	declare()
 
+	// Middleware untuk mengizinkan header "Content-Type: application/json"
+	jsonMiddleware := func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			return next(c)
+		}
+	}
+
 	e := echo.New()
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
-	e.POST("/verify-otp", AuthHandler.VerifyOTP())
+	e.POST("/verify-otp", AuthHandler.VerifyOTP(), jsonMiddleware)
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -120,4 +129,20 @@ func InitRoutes() *echo.Echo {
 	students.Use(middlewares.RequireRole("students"))
 
 	return e
+}
+
+// Middleware untuk mengizinkan header Content-Type: application/json
+func allowJSONContentType(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		c.Response().Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+
+		contentType := c.Request().Header.Get("Content-Type")
+		if contentType != "application/json" {
+			return echo.NewHTTPError(http.StatusUnsupportedMediaType, "Only application/json content type is allowed")
+		}
+
+		return next(c)
+	}
 }
