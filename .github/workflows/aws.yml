@@ -1,7 +1,7 @@
 name: Deploy
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "staging" ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,10 +15,7 @@ jobs:
         port: 22
         script: |
           export PATH=$PATH:/usr/local/go/bin
-          cd master/golang-repo
+          cd dev/golang-repo
           git pull
-          docker build -t go-master .
-          docker stop go-master
-          docker rm go-master
-          docker run --name go-master -dp 9091:9090 go-master
- 
+          go build .
+          sudo systemctl restart go-staging.service 

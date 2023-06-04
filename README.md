@@ -5,12 +5,6 @@
 .
 ├── LICENSE
 ├── README.md
-├── build                                     # Packaging and Continuous Integration
-│   ├── Dockerfile
-│   └── init.sql
-├── cmd                                       # Main Application
-│   └── app
-│       └── main.go
 ├── internal                                  # Private Codes
 │   └── app
 │       ├── adapter

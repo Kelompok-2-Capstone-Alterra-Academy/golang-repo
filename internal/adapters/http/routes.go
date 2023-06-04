@@ -32,6 +32,11 @@ var (
 	majorHandler handler.MajorHandler
 	majorUsecase usecase.MajorUseCase
 	// Course
+	courseEnrollmentRepo    repository.CourseEnrollmentRepository
+	courseEnrollmentHandler handler.CourseEnrollmentHandler
+	courseEnrollmentUseCase usecase.CourseEnrollmentUseCase
+
+	// course enrollment
 	courseRepo    repository.CourseRepository
 	courseHandler handler.CourseHandler
 	courseUsecase usecase.CourseUseCase
@@ -61,6 +66,11 @@ func declare() {
 	courseRepo = repository.CourseRepository{DB: db.DbMysql}
 	courseUsecase = usecase.CourseUseCase{Repo: courseRepo}
 	courseHandler = handler.CourseHandler{CourseUsecase: courseUsecase}
+
+	// course enrrolment
+	courseEnrollmentRepo = repository.CourseEnrollmentRepository{DB: db.DbMysql}
+	courseEnrollmentUseCase = usecase.CourseEnrollmentUseCase{CourseEnrollmentRepo: courseEnrollmentRepo}
+	courseEnrollmentHandler = handler.CourseEnrollmentHandler{CourseEnrollmentUseCase: courseEnrollmentUseCase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -70,6 +80,7 @@ func InitRoutes() *echo.Echo {
 	e := echo.New()
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
+	e.POST("/verify-otp", AuthHandler.VerifyOTP())
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -80,7 +91,10 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/users", userHandler.GetAllUsers())
 	mentors.GET("/users/:id", userHandler.GetUser())
 	mentors.POST("/users", userHandler.CreateUser())
-	e.DELETE("/users/:id", userHandler.DeleteUser())
+	mentors.DELETE("/users/:id", userHandler.DeleteUser())
+
+	mentors.GET("/chat/students/:id", courseEnrollmentHandler.GetAllStudents())
+	mentors.GET("/chat/courses", courseEnrollmentHandler.GetAllCourse())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())

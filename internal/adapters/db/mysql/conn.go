@@ -51,8 +51,8 @@ func AutoMigrate() {
 		&entity.Category{},
 		&entity.Major{},
 		&entity.Course{},
-		&entity.Modules{},
-		&entity.CourseSection{},
+		&entity.CourseEnrollment{},
+		&entity.OTPToken{},
 	)
 	if err != nil {
 		log.Fatalf("Error migrating database: %s", err.Error())

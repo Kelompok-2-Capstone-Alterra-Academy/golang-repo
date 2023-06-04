@@ -7,5 +7,5 @@ import (
 type Major struct {
 	*gorm.Model
 
-	MajorName        string `json:"major_name" form:"major_name"`
+	MajorName string `json:"major_name" form:"major_name"`
 }
