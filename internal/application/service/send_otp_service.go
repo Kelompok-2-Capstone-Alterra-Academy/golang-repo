@@ -27,6 +27,6 @@ func SendEmail(to, subject, body string) error {
 
 func GenerateOTP() string {
 	rand.Seed(time.Now().UnixNano())
-	otp := rand.Intn(999999)
-	return fmt.Sprintf("%06d", otp)
+	otp := rand.Intn(9999)
+	return fmt.Sprintf("%04d", otp)
 }

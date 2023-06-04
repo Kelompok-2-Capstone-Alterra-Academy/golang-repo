@@ -61,7 +61,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		// Simpan token ke database
 		expiredAt := time.Now().Add(time.Minute * 5) // Token berlaku selama 5 menit
 		otpToken := entity.OTPToken{
-			Token:     otp,
+			Otp:       otp,
 			Email:     user.Email,
 			ExpiredAt: expiredAt,
 		}
@@ -145,9 +145,9 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 func (handler AuthHandler) VerifyOTP() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		email := c.FormValue("email")
-		token := c.FormValue("token")
+		otp := c.FormValue("otp")
 
-		result := handler.Usecase.VerifiedOtpToken(email, token)
+		result := handler.Usecase.VerifiedOtpToken(email, otp)
 		if result != nil {
 
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
