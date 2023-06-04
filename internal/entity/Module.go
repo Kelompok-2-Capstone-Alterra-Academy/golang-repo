@@ -5,9 +5,8 @@ import "gorm.io/gorm"
 type Module struct {
 	*gorm.Model
 
-	Name        string `json:"name" form:"name" validate:"required"`
-	Email       string `json:"email" form:"email" validate:"required,email" `
-	Password    string `json:"password" form:"password" validate:"required"`
-	Role        string `gorm:"default:students"`
-	PhoneNumber string `json:"phone_number" form:"phone_number" validate:"required"`
+	SectionId    string     `json:"section_id" form:"section_id"`
+	Section      Section    `json:"section" gorm:"foreignKey:SectionId"`
+	AttachmentId string     `json:"attachment_id" form:"attachment_id"`
+	Attachment   Attachment `json:"attachment" gorm:"foreignKey:AttachmentId"`
 }
