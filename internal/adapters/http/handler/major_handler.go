@@ -133,7 +133,7 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 				"status code": http.StatusOK,
-				"message": "success update category",
+				"message": "success update major",
 				"data":major,
 
 			})

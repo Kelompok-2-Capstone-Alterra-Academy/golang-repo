@@ -133,7 +133,7 @@ func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 				"status code": http.StatusOK,
-				"message": "success update category",
+				"message": "success update class",
 				"data":class,
 
 			})
