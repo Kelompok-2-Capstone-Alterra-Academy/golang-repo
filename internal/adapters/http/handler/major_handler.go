@@ -62,6 +62,24 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 	}
 }
 
+func (handler MajorHandler) FilterMajors() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var majors []entity.Major
+		selectedMajors := c.QueryParams()["major"]
+		filteredMajors := make([]entity.Major, 0)
+
+		for _, major := range majors {
+			for _, selectedMajor := range selectedMajors {
+				if major.MajorName == selectedMajor {
+					filteredMajors = append(filteredMajors, major)
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, filteredMajors)
+	}
+}
+
 func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var major entity.Major

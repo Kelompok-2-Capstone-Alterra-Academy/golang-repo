@@ -157,6 +157,7 @@ func InitRoutes() *echo.Echo {
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
+	e.GET("/class/filter", classHandler.FilterClasses())
 	e.PUT("/classes/:id", classHandler.UpdateClass())
 	e.POST("/classes", classHandler.CreateClass())
 	e.DELETE("/classes/:id", classHandler.DeleteClass())
@@ -169,11 +170,11 @@ func InitRoutes() *echo.Echo {
 
 	e.GET("/majors", majorHandler.GetAllMajors())
 	e.GET("/majors/:id", majorHandler.GetMajor())
+	e.GET("/majors/filter", majorHandler.FilterMajors())
 	e.PUT("/majors/:id", majorHandler.UpdateMajor())
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
-	
 	e.GET("/courses", courseHandler.GetAllCourses())
 	e.GET("/courses/:id", courseHandler.GetCourse())
 	e.PUT("/courses/:id", courseHandler.UpdateCourse())
@@ -202,6 +203,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/courses/:id", courseHandler.GetCourse())
 	students.GET("/promos", promoHandler.GetAllPromo())
 	students.GET("/promos/:id", promoHandler.GetPromo())
+	students.GET("/class/filter", classHandler.FilterClasses())
+	students.GET("/majors/filter", majorHandler.FilterMajors())
 
 	return e
 }

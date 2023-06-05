@@ -62,6 +62,24 @@ func (handler ClassHandler) GetClass() echo.HandlerFunc {
 	}
 }
 
+func (handler ClassHandler) FilterClasses() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var classes []entity.Class
+		selectedClass := c.QueryParams()["class"]
+		filteredClass := make([]entity.Class, 0)
+
+		for _, class := range classes {
+			for _, selectedClass := range selectedClass {
+				if class.ClassName == selectedClass {
+					filteredClass = append(filteredClass, class)
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, filteredClass)
+	}
+}
+
 func (handler ClassHandler) CreateClass() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var class entity.Class
