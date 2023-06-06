@@ -41,19 +41,14 @@ func (repo CourseRepository) FindCourse(id int) error {
 	return result.Error
 }
 
-func (repo CourseRepository) GetCourseByIDAndUserID(courseID string, userID string) (*entity.Course, error) {
-	course := &entity.Course{}
-	result := repo.DB.Preload("Category").
-		Preload("Class").
-		Preload("Mentor").
-		Preload("Major").
-		Where("id = ? AND mentor_id = ?", courseID, userID).
-		First(course)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return course, nil
+func (repo CourseRepository) GetCourseByUserID(courseID int, userID int) ([]entity.Course, error) {
+	var courses []entity.Course
+	result := repo.DB.Model(&entity.CourseEnrollment{}).
+		Select("courses.*").
+		Joins("JOIN courses ON course_enrollments.course_id = courses.id").
+		Where("course_enrollments.course_id = ? AND course_enrollments.user_id = ?", courseID, userID).
+		Find(&courses)
+	return courses, result.Error
 }
 
 func (repo CourseRepository) GetCourseByID(courseID string) (*entity.Course, error) {

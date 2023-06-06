@@ -135,16 +135,14 @@ func InitRoutes() *echo.Echo {
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
 
-	e.GET("/courses/:courseID/users/:userID", courseHandler.GetCourseByIDAndUserID())
-	e.GET("/courses/:courseID", courseHandler.GetCourseByID())
-
-	e.GET("/attachments/:courseSectionID/:attachmentID", attachmentHandler.GetAttachmentByCourseSectionIDAndAttachmentID())
-
 	// students group
 	students := e.Group("/students")
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
+	students.GET("/courses/:courseID/users/:userID", courseHandler.GetCourseByUserID())
+	students.GET("/courses/:courseID", courseHandler.GetCourseByID())
+	students.GET("/attachments/:courseSectionID/:attachmentID", attachmentHandler.GetAttachmentByCourseSectionIDAndAttachmentID())
 
 	return e
 }

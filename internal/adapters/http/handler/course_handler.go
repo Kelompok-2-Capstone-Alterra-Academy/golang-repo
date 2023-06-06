@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
@@ -122,12 +123,19 @@ func (handler CourseHandler) DeleteCourse() echo.HandlerFunc {
 	}
 }
 
-func (handler CourseHandler) GetCourseByIDAndUserID() echo.HandlerFunc {
+func (handler CourseHandler) GetCourseByUserID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		courseID := c.Param("courseID")
-		userID := c.Param("userID")
+		userID, err := service.GetUserIDFromToken(c)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
 
-		course, err := handler.CourseUsecase.GetCourseByIDAndUserID(courseID, userID)
+		courseID := c.Param("courseID")
+
+		courses, err := handler.CourseUsecase.GetCourseByUserID(courseID, userID)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -138,7 +146,7 @@ func (handler CourseHandler) GetCourseByIDAndUserID() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "success get course by ID and user ID",
-			"data":        course,
+			"data":        courses,
 		})
 	}
 }
