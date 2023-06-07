@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -150,17 +151,30 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 
 func (handler AuthHandler) VerifyOTP() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		email := c.FormValue("email")
-		otp := c.FormValue("otp")
+		// Read the request body
+		body := c.Request().Body
 
+		// Create an instance of OTPToken struct
+		var otpToken entity.OTPToken
+
+		// Decode the JSON request body into otpToken struct
+		if err := json.NewDecoder(body).Decode(&otpToken); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		email := otpToken.Email
+		otp := otpToken.Otp
 		result := handler.Usecase.VerifiedOtpToken(email, otp)
 		if result != nil {
-
 			return c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status_code": http.StatusBadRequest,
 				"message":     "Invalid OTP token",
 			})
 		}
+
 		dbUser, err := handler.Usecase.GetUserByEmail(email)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
@@ -168,9 +182,18 @@ func (handler AuthHandler) VerifyOTP() echo.HandlerFunc {
 				"message":     "Invalid email or password",
 			})
 		}
+
 		t, err := middleware.CreateToken(int(dbUser.ID), dbUser.Email, dbUser.Role)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status_code": http.StatusInternalServerError,
+				"message":     "Failed to generate token",
+			})
+		}
+
 		data := make(map[string]interface{})
 		data["token"] = t
+
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status_code": http.StatusOK,
 			"message":     "OTP token has been verified",
