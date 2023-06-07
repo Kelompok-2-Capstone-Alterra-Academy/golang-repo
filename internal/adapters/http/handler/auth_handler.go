@@ -124,7 +124,13 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 				"message":     "Invalid email or password",
 			})
 		}
-
+		// Check if user status is "not-verified"
+		if dbUser.Status == "not-verified" {
+			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"status_code": http.StatusUnauthorized,
+				"message":     "User is not verified",
+			})
+		}
 		t, err := middleware.CreateToken(int(dbUser.ID), dbUser.Email, dbUser.Role)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
