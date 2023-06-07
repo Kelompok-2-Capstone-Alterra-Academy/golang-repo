@@ -21,6 +21,11 @@ func (repo CourseRepository) GetCourse(id int) (entity.Course, error) {
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").First(&courses, id)
 	return courses, result.Error
 }
+func (repo CourseRepository) GetCourseByMentorId(id int) (entity.Course, error) {
+	var courses entity.Course
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Find(&courses,"mentor_id = ?", id)
+	return courses, result.Error
+}
 
 func (repo CourseRepository) CreateCourse(course entity.Course) error {
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Create(&course)

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
@@ -64,20 +65,48 @@ func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 	}
 }
 
+func (handler CourseHandler) GetCourseByMentorId() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var course entity.Course
+		mentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		course, err = handler.CourseUsecase.GetCourseByMentorId(mentorId)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message": "success get course by mentor id",
+			"data":   course,
+		})
+	}
+}
 func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var course entity.Course
-		
+		mentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		course.MentorId=mentorId
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
 			})
 		}
-		// user := e.Get("user").(*jwt.Token)
-		// claims := user.Claims.(*jwt.MapClaims)
-		// mentorID := int((*claims)["id"].(int))
-		// course.MentorId = int(mentorID)
 		// Validasi input menggunakan package validator
 		validate := validator.New()
 		if err := validate.Struct(course); err != nil {
@@ -86,8 +115,7 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 				"message": err.Error(),
 			})
 		}
-		err := handler.CourseUsecase.CreateCourse(course)
-		if err != nil {
+		if err := handler.CourseUsecase.CreateCourse(course); err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message": "failed to created course",

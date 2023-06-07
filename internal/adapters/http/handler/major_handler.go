@@ -80,7 +80,6 @@ func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 				"message": err.Error(),
 			})
 		}
-
 		err := handler.MajorUsecase.CreateMajor(major)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{

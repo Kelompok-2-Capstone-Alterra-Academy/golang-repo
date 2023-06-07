@@ -22,3 +22,4 @@ type Course struct {
 	Description     string   `json:"description" form:"description"`
 	Thumbnail       string   `json:"thumbnail" form:"thumbnail"`
 	LiveSessionWeek string   `json:"live_session_week" form:"live_session_week"`
+}

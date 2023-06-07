@@ -18,6 +18,10 @@ func (usecase CourseUseCase) GetCourse(id int) (entity.Course, error) {
 	course, err := usecase.Repo.GetCourse(id)
 	return course, err
 }
+func (usecase CourseUseCase) GetCourseByMentorId(id int) (entity.Course, error) {
+	course, err := usecase.Repo.GetCourseByMentorId(id)
+	return course, err
+}
 
 func (usecase CourseUseCase) CreateCourse(course entity.Course) error {
 	err := usecase.Repo.CreateCourse(course)
@@ -36,3 +40,4 @@ func (usecase CourseUseCase) DeleteCourse(id int) error {
 func (usecase CourseUseCase) FindCourse(id int) error {
 	err := usecase.Repo.FindCourse(id)
 	return err
+}
