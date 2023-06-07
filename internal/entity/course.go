@@ -7,13 +7,13 @@ import (
 type Course struct {
 	*gorm.Model
 
-	CategoryId      string   `json:"category_id" form:"category_id"`
+	CategoryId      int   `json:"category_id" form:"category_id"`
 	Category        Category `gorm:"foreignKey:CategoryId"`
-	ClassId         string   `json:"class_id" form:"class_id"`
+	ClassId         int   `json:"class_id" form:"class_id"`
 	Class           Class    `gorm:"foreignKey:ClassId"`
-	MentorId        string   `json:"mentor_id" form:"mentor_id"`
+	MentorId        int   `json:"mentor_id" form:"mentor_id"`
 	Mentor          User     `gorm:"foreignKey:MentorId"`
-	MajorId         string   `json:"major_id" form:"major_id"`
+	MajorId         int   `json:"major_id" form:"major_id"`
 	Major           Major    `gorm:"foreignKey:MajorId"`
 	CourseName      string   `json:"course_name" form:"course_name"`
 	Price           string   `json:"price" form:"price"`
@@ -22,4 +22,3 @@ type Course struct {
 	Description     string   `json:"description" form:"description"`
 	Thumbnail       string   `json:"thumbnail" form:"thumbnail"`
 	LiveSessionWeek string   `json:"live_session_week" form:"live_session_week"`
-}

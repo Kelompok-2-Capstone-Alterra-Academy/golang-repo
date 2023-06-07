@@ -125,21 +125,25 @@ func InitRoutes() *echo.Echo {
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
+	e.PUT("/classes/:id", classHandler.UpdateClass())
 	e.POST("/classes", classHandler.CreateClass())
 	e.DELETE("/classes/:id", classHandler.DeleteClass())
 
 	e.GET("/categories", categoryHandler.GetAllCategories())
 	e.GET("/categories/:id", categoryHandler.GetCategory())
+	e.PUT("/cateories/:id", categoryHandler.UpdateCategory())
 	e.POST("/categories", categoryHandler.CreateCategory())
 	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
 
 	e.GET("/majors", majorHandler.GetAllMajors())
 	e.GET("/majors/:id", majorHandler.CreateMajor())
+	e.PUT("/majors/:id", majorHandler.UpdateMajor())
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
 	e.GET("/courses", courseHandler.GetAllCourses())
 	e.GET("/courses/:id", courseHandler.CreateCourse())
+	e.PUT("/courses/:id", courseHandler.UpdateCourse())
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
 

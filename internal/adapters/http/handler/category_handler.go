@@ -80,7 +80,13 @@ func (handler CategoryHandler) CreateCategory() echo.HandlerFunc {
 				"message": err.Error(),
 			})
 		}
-
+		err := handler.CategoryUsecase.CreateCategory(category)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": "failed to created category",
+			})
+		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
