@@ -140,9 +140,13 @@ func InitRoutes() *echo.Echo {
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
-	students.GET("/courses/:courseID/users/:userID", courseHandler.GetCourseByUserID())
-	students.GET("/courses/:courseID", courseHandler.GetCourseByID())
-	students.GET("/attachments/:courseSectionID/:attachmentID", attachmentHandler.GetAttachmentByCourseSectionIDAndAttachmentID())
+	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
+
+	// route attachment
+	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
+	students.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
+	students.POST("/attachment", attachmentHandler.CreateAttachment())
+	students.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
 
 	return e
 }
