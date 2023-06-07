@@ -123,50 +123,28 @@ func (handler CourseHandler) DeleteCourse() echo.HandlerFunc {
 	}
 }
 
-func (handler CourseHandler) GetCourseByUserID() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		userID, err := service.GetUserIDFromToken(c)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
-		}
-
-		courseID := c.Param("courseID")
-
-		courses, err := handler.CourseUsecase.GetCourseByUserID(courseID, userID)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
-		}
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status code": http.StatusOK,
-			"message":     "success get course by ID and user ID",
-			"data":        courses,
+func (handler CourseHandler) GetCoursesByUserID(c echo.Context) error {
+	userID, err := service.GetUserIDFromToken(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
 		})
 	}
-}
 
-func (handler CourseHandler) GetCourseByID() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		courseID := c.Param("courseID")
-
-		course, err := handler.CourseUsecase.GetCourseByID(courseID)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
-		}
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"status code": http.StatusOK,
-			"message":     "success get course by ID",
-			"data":        course,
+	courses, err := handler.CourseUsecase.GetCoursesByUserID(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
 		})
 	}
+
+	response := map[string]interface{}{
+		"status code": http.StatusOK,
+		"message":     "Success get course by user ID and course ID",
+		"data":        courses,
+	}
+
+	return c.JSON(http.StatusOK, response)
 }

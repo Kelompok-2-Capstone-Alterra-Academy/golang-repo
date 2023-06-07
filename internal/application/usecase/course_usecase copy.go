@@ -3,11 +3,11 @@ package usecase
 import (
 	"capston-lms/internal/adapters/repository"
 	"capston-lms/internal/entity"
-	"strconv"
 )
 
 type CourseUseCase struct {
-	Repo repository.CourseRepository
+	Repo                 repository.CourseRepository
+	CourseEnrollmentRepo repository.CourseEnrollmentRepository
 }
 
 func (usecase CourseUseCase) GetAllCourses() ([]entity.Course, error) {
@@ -39,25 +39,11 @@ func (usecase CourseUseCase) FindCourse(id int) error {
 	return err
 }
 
-func (usecase CourseUseCase) GetCourseByUserID(courseID string, userID int) ([]entity.Course, error) {
-	courseIDInt, err := strconv.Atoi(courseID)
-	if err != nil {
-		return nil, err
-	}
-
-	courses, err := usecase.Repo.GetCourseByUserID(courseIDInt, userID)
+func (usecase CourseUseCase) GetCoursesByUserID(userID int) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetCoursesByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
 
 	return courses, nil
-}
-
-func (usecase CourseUseCase) GetCourseByID(courseID string) (*entity.Course, error) {
-	course, err := usecase.Repo.GetCourseByID(courseID)
-	if err != nil {
-		return nil, err
-	}
-
-	return course, nil
 }
