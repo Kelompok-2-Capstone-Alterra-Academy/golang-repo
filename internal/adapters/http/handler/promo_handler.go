@@ -11,15 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type MajorHandler struct {
-	MajorUsecase usecase.MajorUseCase
+type PromoHandler struct {
+	PromoUsecase usecase.PromoUseCase
 }
 
-func (handler MajorHandler) GetAllMajors() echo.HandlerFunc {
+func (handler PromoHandler) GetAllPromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var majors []entity.Major
+		var promos []entity.Promo
 
-		majors, err := handler.MajorUsecase.GetAllMajors()
+		promos, err := handler.PromoUsecase.GetAllPromo()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -29,15 +29,15 @@ func (handler MajorHandler) GetAllMajors() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get all major",
-			"data":   majors,
+			"message": "success get all promo",
+			"data":   promos,
 		})
 	}
 }
 
-func (handler MajorHandler) GetMajor() echo.HandlerFunc {
+func (handler PromoHandler) GetPromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var major entity.Major
+		var promo entity.Promo
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -46,7 +46,7 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 			})
 		}
 
-		major, err = handler.MajorUsecase.GetMajor(id)
+		promo, err = handler.PromoUsecase.GetPromo(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -56,34 +56,16 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get major by id",
-			"data":   major,
+			"message": "success get promo by id",
+			"data":   promo,
 		})
 	}
 }
 
-func (handler MajorHandler) FilterMajors() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var majors []entity.Major
-		selectedMajors := c.QueryParams()["major"]
-		filteredMajors := make([]entity.Major, 0)
-
-		for _, major := range majors {
-			for _, selectedMajor := range selectedMajors {
-				if major.MajorName == selectedMajor {
-					filteredMajors = append(filteredMajors, major)
-				}
-			}
-		}
-
-		return c.JSON(http.StatusOK, filteredMajors)
-	}
-}
-
-func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
+func (handler PromoHandler) CreatePromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var major entity.Major
-		if err := e.Bind(&major); err != nil {
+		var promo entity.Promo
+		if err := e.Bind(&promo); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
@@ -92,29 +74,30 @@ func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 
 		// Validasi input menggunakan package validator
 		validate := validator.New()
-		if err := validate.Struct(major); err != nil {
+		if err := validate.Struct(promo); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
 			})
 		}
-		err := handler.MajorUsecase.CreateMajor(major)
+		err := handler.PromoUsecase.CreatePromo(promo)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created major",
+				"message": "failed to create promo",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
-			"message": "success create new major",
-			"data":   major,
+			"message": "success create new promo",
+			"data":   promo,
 		})
 	}
 }
-func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
-	var major entity.Major
+
+func (handler PromoHandler) UpdatePromo() echo.HandlerFunc {
+	var promo entity.Promo
 
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
@@ -125,7 +108,7 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.MajorUsecase.FindMajor(id)
+		err = handler.PromoUsecase.FindPromo(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -133,14 +116,14 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 			})
 		}
 
-		if err := e.Bind(&major); err != nil {
+		if err := e.Bind(&promo); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
 				"message": err.Error(),
 			})
 		}
 
-		err = handler.MajorUsecase.UpdateMajor(id, major)
+		err = handler.PromoUsecase.UpdatePromo(id, promo)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -150,14 +133,14 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 				"status code": http.StatusOK,
-				"message": "success update major",
-				"data":major,
+				"message": "success update promo",
+				"data":promo,
 
 			})
 	}
 }
 
-func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
+func (handler PromoHandler) DeletePromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -167,7 +150,7 @@ func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.MajorUsecase.DeleteMajor(id)
+		err = handler.PromoUsecase.DeletePromo(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -177,7 +160,7 @@ func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "Success Delete Major`",
+			"message": "Success Delete Promo`",
 		})
 	}
 }

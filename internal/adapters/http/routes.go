@@ -49,6 +49,10 @@ var (
 	attachmentRepo    repository.AttachmentRepository
 	attachmentHandler handler.AttachmentHandler
 	attachmentUsecase usecase.AttachmentUseCase
+	//Promo
+	promoRepo    repository.PromoRepository
+	promoHandler handler.PromoHandler
+	promoUsecase usecase.PromoUseCase
 )
 
 func declare() {
@@ -87,6 +91,10 @@ func declare() {
 	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
 	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
 	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
+	// Promo
+	promoRepo = repository.PromoRepository{DB: db.DbMysql}
+	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
+	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -147,12 +155,56 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	e.GET("/classes", classHandler.GetAllClasses())
+	e.GET("/classes/:id", classHandler.GetClass())
+	e.GET("/class/filter", classHandler.FilterClasses())
+	e.PUT("/classes/:id", classHandler.UpdateClass())
+	e.POST("/classes", classHandler.CreateClass())
+	e.DELETE("/classes/:id", classHandler.DeleteClass())
+	
+	e.GET("/categories", categoryHandler.GetAllCategories())
+	e.GET("/categories/:id", categoryHandler.GetCategory())
+	e.PUT("/categories/:id", categoryHandler.UpdateCategory())
+	e.POST("/categories", categoryHandler.CreateCategory())
+	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
+
+	e.GET("/majors", majorHandler.GetAllMajors())
+	e.GET("/majors/:id", majorHandler.GetMajor())
+	e.GET("/majors/filter", majorHandler.FilterMajors())
+	e.PUT("/majors/:id", majorHandler.UpdateMajor())
+	e.POST("/majors", majorHandler.CreateMajor())
+	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
+
+	e.GET("/courses", courseHandler.GetAllCourses())
+	e.GET("/courses/:id", courseHandler.GetCourse())
+	e.PUT("/courses/:id", courseHandler.UpdateCourse())
+	e.POST("/courses", courseHandler.CreateCourse())
+	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
+	e.GET("/promos", promoHandler.GetAllPromo())
+	e.GET("/promos/:id", promoHandler.GetPromo())
+	e.PUT("/promos/:id", promoHandler.UpdatePromo())
+	e.POST("/promos", promoHandler.CreatePromo())
+	e.DELETE("/promos/:id", promoHandler.DeletePromo())
 
 	// students group
 	students := e.Group("/students")
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
+
+	students.GET("/classes", classHandler.GetAllClasses())
+	students.GET("/classes/:id", classHandler.GetClass())
+	students.GET("/categories", categoryHandler.GetAllCategories())
+	students.GET("/categories/:id", categoryHandler.GetCategory())
+	students.GET("/majors", majorHandler.GetAllMajors())
+	students.GET("/majors/:id", majorHandler.GetMajor())
+	students.GET("/courses", courseHandler.GetAllCourses())
+	students.GET("/courses/:id", courseHandler.GetCourse())
+	students.GET("/promos", promoHandler.GetAllPromo())
+	students.GET("/promos/:id", promoHandler.GetPromo())
+	students.GET("/class/filter", classHandler.FilterClasses())
+	students.GET("/majors/filter", majorHandler.FilterMajors())
 
 	return e
 }
