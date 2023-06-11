@@ -39,16 +39,18 @@ var (
 	courseRepo    repository.CourseRepository
 	courseHandler handler.CourseHandler
 	courseUsecase usecase.CourseUseCase
-
 	// folder
 	folderRepo    repository.FolderRepository
 	folderHandler handler.FolderHandler
 	folderUsecase usecase.FolderUseCase
-
 	// attachment
 	attachmentRepo    repository.AttachmentRepository
 	attachmentHandler handler.AttachmentHandler
 	attachmentUsecase usecase.AttachmentUseCase
+	// module
+	moduleRepo    repository.ModuleRepository
+	moduleHandler handler.ModuleHandler
+	moduleUsecase usecase.ModuleUseCase
 )
 
 func declare() {
@@ -82,11 +84,14 @@ func declare() {
 	folderRepo = repository.FolderRepository{DB: db.DbMysql}
 	folderUsecase = usecase.FolderUseCase{Repo: folderRepo}
 	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase}
-
-	// folder
+	// attachments
 	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
 	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
 	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
+	// attachments
+	moduleRepo = repository.ModuleRepository{DB: db.DbMysql}
+	moduleUsecase = usecase.ModuleUseCase{Repo: moduleRepo}
+	moduleHandler = handler.ModuleHandler{ModuleUseCase: moduleUsecase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -122,6 +127,13 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
 	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
 	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
+
+	// route modules
+	mentors.GET("/module", moduleHandler.GetAllModules())
+	mentors.GET("/module/:id", moduleHandler.GetModule())
+	mentors.PUT("/module/:id", moduleHandler.GetModule())
+	mentors.POST("/module", moduleHandler.CreateModule())
+	mentors.DELETE("/module/:id", moduleHandler.DeleteModule())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
