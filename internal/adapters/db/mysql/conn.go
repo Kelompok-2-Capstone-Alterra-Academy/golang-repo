@@ -48,6 +48,14 @@ func AutoMigrate() {
 	err := DbMysql.AutoMigrate(
 		&entity.User{},
 		&entity.EducationNews{},
+		&entity.Class{},
+		&entity.Category{},
+		&entity.Major{},
+		&entity.Course{},
+		&entity.CourseEnrollment{},
+		&entity.OTPToken{},
+		&entity.Folder{},
+		&entity.Attachment{},
 	)
 	if err != nil {
 		log.Fatalf("Error migrating database: %s", err.Error())

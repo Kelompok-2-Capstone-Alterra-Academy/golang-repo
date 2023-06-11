@@ -5,12 +5,6 @@
 .
 ├── LICENSE
 ├── README.md
-├── build                                     # Packaging and Continuous Integration
-│   ├── Dockerfile
-│   └── init.sql
-├── cmd                                       # Main Application
-│   └── app
-│       └── main.go
 ├── internal                                  # Private Codes
 │   └── app
 │       ├── adapter
@@ -63,7 +57,8 @@
 ```
 
 ### how to install
-go mod download
+go mod download 
+test
 ### run in local
 go run /cmd/app/main.go
 
