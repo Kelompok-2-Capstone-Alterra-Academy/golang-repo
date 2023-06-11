@@ -131,7 +131,7 @@ func InitRoutes() *echo.Echo {
 	// route modules
 	mentors.GET("/module", moduleHandler.GetAllModules())
 	mentors.GET("/module/:id", moduleHandler.GetModule())
-	mentors.PUT("/module/:id", moduleHandler.GetModule())
+	mentors.PUT("/module/:id", moduleHandler.UpdateModule())
 	mentors.POST("/module", moduleHandler.CreateModule())
 	mentors.DELETE("/module/:id", moduleHandler.DeleteModule())
 
