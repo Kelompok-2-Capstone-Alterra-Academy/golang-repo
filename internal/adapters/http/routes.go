@@ -32,6 +32,10 @@ var (
 	majorRepo    repository.MajorRepository
 	majorHandler handler.MajorHandler
 	majorUsecase usecase.MajorUseCase
+	// Section
+	sectionRepo    repository.SectionRepository
+	sectionHandler handler.SectionHandler
+	sectionUsecase usecase.SectionUseCase
 	// Course
 	courseEnrollmentRepo    repository.CourseEnrollmentRepository
 	courseEnrollmentHandler handler.CourseEnrollmentHandler
@@ -68,7 +72,11 @@ func declare() {
 	majorRepo = repository.MajorRepository{DB: db.DbMysql}
 	majorUsecase = usecase.MajorUseCase{Repo: majorRepo}
 	majorHandler = handler.MajorHandler{MajorUsecase: majorUsecase}
-	// Major
+	// Section
+	sectionRepo = repository.SectionRepository{DB: db.DbMysql}
+	sectionUsecase = usecase.SectionUseCase{Repo: sectionRepo}
+	sectionHandler = handler.SectionHandler{SectionUsecase: sectionUsecase}
+	// Course
 	courseRepo = repository.CourseRepository{DB: db.DbMysql}
 	courseUsecase = usecase.CourseUseCase{Repo: courseRepo}
 	courseHandler = handler.CourseHandler{CourseUsecase: courseUsecase}
@@ -117,23 +125,33 @@ func InitRoutes() *echo.Echo {
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
+	e.PUT("/classes/:id", classHandler.UpdateClass())
 	e.POST("/classes", classHandler.CreateClass())
 	e.DELETE("/classes/:id", classHandler.DeleteClass())
 
 	e.GET("/categories", categoryHandler.GetAllCategories())
 	e.GET("/categories/:id", categoryHandler.GetCategory())
+	e.PUT("/cateories/:id", categoryHandler.UpdateCategory())
 	e.POST("/categories", categoryHandler.CreateCategory())
 	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
 
 	e.GET("/majors", majorHandler.GetAllMajors())
 	e.GET("/majors/:id", majorHandler.CreateMajor())
+	e.PUT("/majors/:id", majorHandler.UpdateMajor())
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
 	e.GET("/courses", courseHandler.GetAllCourses())
 	e.GET("/courses/:id", courseHandler.CreateCourse())
+	e.PUT("/courses/:id", courseHandler.UpdateCourse())
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
+	e.GET("/section", sectionHandler.GetAllSections())
+	e.GET("/section/:id", sectionHandler.CreateSection())
+	e.PUT("/section/:id", sectionHandler.UpdateSection())
+	e.POST("/section", sectionHandler.CreateSection())
+	e.DELETE("/section/:id", sectionHandler.DeleteSection())
 
 	// students group
 	students := e.Group("/students")
@@ -141,6 +159,7 @@ func InitRoutes() *echo.Echo {
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
 	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
+	students.GET("/courses/status", courseHandler.GetCoursesStatus)
 
 	// route attachment
 	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
