@@ -8,6 +8,8 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
+	// "github.com/golang-jwt/jwt"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -65,6 +67,7 @@ func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var course entity.Course
+
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
@@ -85,10 +88,9 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created user",
+				"message":     "failed to created course",
 			})
 		}
-
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 				"status code": http.StatusCreated,
@@ -98,6 +100,48 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	}
 }
 
+func (handler CourseHandler) UpdateCourse() echo.HandlerFunc {
+	var course entity.Course
+
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
+			})
+		}
+
+		err = handler.CourseUsecase.FindCourse(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		if err := e.Bind(&course); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message":     err.Error(),
+			})
+		}
+
+		err = handler.CourseUsecase.UpdateCourse(id, course)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success update course",
+			"data":        course,
+		})
+	}
+}
 func (handler CourseHandler) DeleteCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
@@ -147,4 +191,52 @@ func (handler CourseHandler) GetCoursesByUserID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+func (handler CourseHandler) CourseInProgress(c echo.Context) error {
+	userID, err := service.GetUserIDFromToken(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
+		})
+	}
+
+	courses, err := handler.CourseUsecase.GetCoursesByUserID(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
+		})
+	}
+
+	response := map[string]interface{}{
+		"status code": http.StatusOK,
+		"message":     "Success get course by user ID and course ID",
+		"data":        courses,
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
+func (handler CourseHandler) GetCoursesStatus(c echo.Context) error {
+	userID, err := service.GetUserIDFromToken(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
+		})
+	}
+	coursesStatus, err := handler.CourseUsecase.GetCoursesStatus(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"status code": http.StatusOK,
+		"data":        coursesStatus,
+	})
 }
