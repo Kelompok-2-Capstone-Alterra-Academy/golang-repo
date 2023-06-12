@@ -11,15 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ClassHandler struct {
-	ClassUsecase usecase.ClassUseCase
+type PromoHandler struct {
+	PromoUsecase usecase.PromoUseCase
 }
 
-func (handler ClassHandler) GetAllClasses() echo.HandlerFunc {
+func (handler PromoHandler) GetAllPromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var classes []entity.Class
+		var promos []entity.Promo
 
-		classes, err := handler.ClassUsecase.GetAllClasses()
+		promos, err := handler.PromoUsecase.GetAllPromo()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -29,15 +29,15 @@ func (handler ClassHandler) GetAllClasses() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get all class",
-			"data":   classes,
+			"message": "success get all promo",
+			"data":   promos,
 		})
 	}
 }
 
-func (handler ClassHandler) GetClass() echo.HandlerFunc {
+func (handler PromoHandler) GetPromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var class entity.Class
+		var promo entity.Promo
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -46,7 +46,7 @@ func (handler ClassHandler) GetClass() echo.HandlerFunc {
 			})
 		}
 
-		class, err = handler.ClassUsecase.GetClass(id)
+		promo, err = handler.PromoUsecase.GetPromo(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -56,34 +56,16 @@ func (handler ClassHandler) GetClass() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get class by id",
-			"data":   class,
+			"message": "success get promo by id",
+			"data":   promo,
 		})
 	}
 }
 
-func (handler ClassHandler) FilterClasses() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var classes []entity.Class
-		selectedClass := c.QueryParams()["class"]
-		filteredClass := make([]entity.Class, 0)
-
-		for _, class := range classes {
-			for _, selectedClass := range selectedClass {
-				if class.ClassName == selectedClass {
-					filteredClass = append(filteredClass, class)
-				}
-			}
-		}
-
-		return c.JSON(http.StatusOK, filteredClass)
-	}
-}
-
-func (handler ClassHandler) CreateClass() echo.HandlerFunc {
+func (handler PromoHandler) CreatePromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var class entity.Class
-		if err := e.Bind(&class); err != nil {
+		var promo entity.Promo
+		if err := e.Bind(&promo); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
@@ -92,30 +74,30 @@ func (handler ClassHandler) CreateClass() echo.HandlerFunc {
 
 		// Validasi input menggunakan package validator
 		validate := validator.New()
-		if err := validate.Struct(class); err != nil {
+		if err := validate.Struct(promo); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message": err.Error(),
 			})
 		}
-		err := handler.ClassUsecase.CreateClass(class)
+		err := handler.PromoUsecase.CreatePromo(promo)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created class",
+				"message": "failed to create promo",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
-			"message": "success create new class",
-			"data":   class,
+			"message": "success create new promo",
+			"data":   promo,
 		})
 	}
 }
 
-func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
-	var class entity.Class
+func (handler PromoHandler) UpdatePromo() echo.HandlerFunc {
+	var promo entity.Promo
 
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
@@ -126,7 +108,7 @@ func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ClassUsecase.FindClass(id)
+		err = handler.PromoUsecase.FindPromo(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -134,14 +116,14 @@ func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
 			})
 		}
 
-		if err := e.Bind(&class); err != nil {
+		if err := e.Bind(&promo); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
 				"message": err.Error(),
 			})
 		}
 
-		err = handler.ClassUsecase.UpdateClass(id, class)
+		err = handler.PromoUsecase.UpdatePromo(id, promo)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -151,13 +133,14 @@ func (handler ClassHandler) UpdateClass() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 				"status code": http.StatusOK,
-				"message": "success update class",
-				"data":class,
+				"message": "success update promo",
+				"data":promo,
 
 			})
 	}
 }
-func (handler ClassHandler) DeleteClass() echo.HandlerFunc {
+
+func (handler PromoHandler) DeletePromo() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -167,7 +150,7 @@ func (handler ClassHandler) DeleteClass() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ClassUsecase.DeleteClass(id)
+		err = handler.PromoUsecase.DeletePromo(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -177,7 +160,7 @@ func (handler ClassHandler) DeleteClass() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "Success Delete Class`",
+			"message": "Success Delete Promo`",
 		})
 	}
 }

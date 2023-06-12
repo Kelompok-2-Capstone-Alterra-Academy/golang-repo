@@ -18,6 +18,7 @@ var (
 	userUsecase usecase.UserUseCase
 	// auth
 	AuthHandler handler.AuthHandler
+
 	// class
 	classRepo    repository.ClassRepository
 	classHandler handler.ClassHandler
@@ -30,6 +31,10 @@ var (
 	majorRepo    repository.MajorRepository
 	majorHandler handler.MajorHandler
 	majorUsecase usecase.MajorUseCase
+	// Section
+	sectionRepo    repository.SectionRepository
+	sectionHandler handler.SectionHandler
+	sectionUsecase usecase.SectionUseCase
 	// Course
 	courseEnrollmentRepo    repository.CourseEnrollmentRepository
 	courseEnrollmentHandler handler.CourseEnrollmentHandler
@@ -46,7 +51,7 @@ var (
 	// attachment
 	attachmentRepo    repository.AttachmentRepository
 	attachmentHandler handler.AttachmentHandler
-	attachmentUsecase usecase.AttachmentUseCase
+	attachmentUsecase usecase.AttachmentUseCase 
 	// module
 	moduleRepo    repository.ModuleRepository
 	moduleHandler handler.ModuleHandler
@@ -58,7 +63,11 @@ var (
 	// submission
 	submissionRepo    repository.SubmissionRepository
 	submissionHandler handler.SubmissionHandler
-	submissionUsecase usecase.SubmissionUseCase
+	submissionUsecase usecase.SubmissionUseCase 
+	//Promo
+	promoRepo    repository.PromoRepository
+	promoHandler handler.PromoHandler
+	promoUsecase usecase.PromoUseCase 
 )
 
 func declare() {
@@ -68,6 +77,7 @@ func declare() {
 	userHandler = handler.UserHandler{UserUsecase: userUsecase}
 	// auth
 	AuthHandler = handler.AuthHandler{Usecase: userUsecase}
+
 	// class
 	classRepo = repository.ClassRepository{DB: db.DbMysql}
 	classUsecase = usecase.ClassUseCase{Repo: classRepo}
@@ -80,18 +90,24 @@ func declare() {
 	majorRepo = repository.MajorRepository{DB: db.DbMysql}
 	majorUsecase = usecase.MajorUseCase{Repo: majorRepo}
 	majorHandler = handler.MajorHandler{MajorUsecase: majorUsecase}
-	// Major
+	// Section
+	sectionRepo = repository.SectionRepository{DB: db.DbMysql}
+	sectionUsecase = usecase.SectionUseCase{Repo: sectionRepo}
+	sectionHandler = handler.SectionHandler{SectionUsecase: sectionUsecase}
+	// Course
 	courseRepo = repository.CourseRepository{DB: db.DbMysql}
 	courseUsecase = usecase.CourseUseCase{Repo: courseRepo}
 	courseHandler = handler.CourseHandler{CourseUsecase: courseUsecase}
+
 	// course enrrolment
 	courseEnrollmentRepo = repository.CourseEnrollmentRepository{DB: db.DbMysql}
 	courseEnrollmentUseCase = usecase.CourseEnrollmentUseCase{CourseEnrollmentRepo: courseEnrollmentRepo}
 	courseEnrollmentHandler = handler.CourseEnrollmentHandler{CourseEnrollmentUseCase: courseEnrollmentUseCase}
+
 	// folder
 	folderRepo = repository.FolderRepository{DB: db.DbMysql}
 	folderUsecase = usecase.FolderUseCase{Repo: folderRepo}
-	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase}
+	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase} 
 	// attachments
 	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
 	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
@@ -107,7 +123,16 @@ func declare() {
 	// task
 	submissionRepo = repository.SubmissionRepository{DB: db.DbMysql}
 	submissionUsecase = usecase.SubmissionUseCase{Repo: submissionRepo}
-	submissionHandler = handler.SubmissionHandler{SubmissionUseCase: submissionUsecase}
+	submissionHandler = handler.SubmissionHandler{SubmissionUseCase: submissionUsecase} 
+	// attachment
+	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
+	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
+	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
+	// Promo
+	promoRepo = repository.PromoRepository{DB: db.DbMysql}
+	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
+	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
+ 
 }
 
 func InitRoutes() *echo.Echo {
@@ -143,7 +168,7 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
 	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
 	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
-
+ 
 	// route modules
 	mentors.GET("/module", moduleHandler.GetAllModules())
 	mentors.GET("/module/:id", moduleHandler.GetModule())
@@ -151,7 +176,7 @@ func InitRoutes() *echo.Echo {
 	mentors.POST("/module", moduleHandler.CreateModule())
 	mentors.DELETE("/module/:id", moduleHandler.DeleteModule())
 
-	// route modules
+	// route tas
 	mentors.GET("/task", taskHandler.GetAllTasks())
 	mentors.GET("/task/:id", taskHandler.GetTask())
 	mentors.PUT("/task/:id", taskHandler.UpdateTask())
@@ -163,32 +188,97 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/submission/:id", submissionHandler.UpdateSubmission())
 	mentors.POST("/submission", submissionHandler.CreateSubmission())
 	mentors.DELETE("/submission/:id", submissionHandler.DeleteSubmission())
+ 
+	mentors.GET("/classes", classHandler.GetAllClasses())
+	mentors.GET("/classes/:id", classHandler.GetClass())
+	mentors.PUT("/classes/:id", classHandler.UpdateClass())
+	mentors.POST("/classes", classHandler.CreateClass())
+	mentors.DELETE("/classes/:id", classHandler.DeleteClass())
 
+	mentors.GET("/categories", categoryHandler.GetAllCategories())
+	mentors.GET("/categories/:id", categoryHandler.GetCategory())
+	mentors.PUT("/cateories/:id", categoryHandler.UpdateCategory())
+	mentors.POST("/categories", categoryHandler.CreateCategory())
+	mentors.DELETE("/categories/:id", categoryHandler.DeleteCategory())
+
+	mentors.GET("/majors", majorHandler.GetAllMajors())
+	mentors.GET("/majors/:id", majorHandler.CreateMajor())
+	mentors.PUT("/majors/:id", majorHandler.UpdateMajor())
+	mentors.POST("/majors", majorHandler.CreateMajor())
+	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
+
+	mentors.GET("/courses", courseHandler.GetAllCourses())
+	mentors.GET("/courses/:id", courseHandler.CreateCourse())
+	// mentors.GET("/courses/:id", courseHandler.CreateCourse())
+	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
+	mentors.POST("/courses", courseHandler.CreateCourse())
+	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+ 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
+	e.GET("/class/filter", classHandler.FilterClasses())
+	e.PUT("/classes/:id", classHandler.UpdateClass())
 	e.POST("/classes", classHandler.CreateClass())
 	e.DELETE("/classes/:id", classHandler.DeleteClass())
 
 	e.GET("/categories", categoryHandler.GetAllCategories())
 	e.GET("/categories/:id", categoryHandler.GetCategory())
+	e.PUT("/cateories/:id", categoryHandler.UpdateCategory())
 	e.POST("/categories", categoryHandler.CreateCategory())
 	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
 
 	e.GET("/majors", majorHandler.GetAllMajors())
 	e.GET("/majors/:id", majorHandler.CreateMajor())
+	e.GET("/majors/:id", majorHandler.GetMajor())
+	e.GET("/majors/filter", majorHandler.FilterMajors())
+	e.PUT("/majors/:id", majorHandler.UpdateMajor())
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
 	e.GET("/courses", courseHandler.GetAllCourses())
 	e.GET("/courses/:id", courseHandler.CreateCourse())
+	e.GET("/courses/:id", courseHandler.GetCourse())
+	e.PUT("/courses/:id", courseHandler.UpdateCourse())
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
+	e.GET("/section", sectionHandler.GetAllSections())
+	e.GET("/section/:id", sectionHandler.CreateSection())
+	e.PUT("/section/:id", sectionHandler.UpdateSection())
+	e.POST("/section", sectionHandler.CreateSection())
+	e.DELETE("/section/:id", sectionHandler.DeleteSection())
+	e.GET("/promos", promoHandler.GetAllPromo())
+	e.GET("/promos/:id", promoHandler.GetPromo())
+	e.PUT("/promos/:id", promoHandler.UpdatePromo())
+	e.POST("/promos", promoHandler.CreatePromo())
+	e.DELETE("/promos/:id", promoHandler.DeletePromo())
 
 	// students group
 	students := e.Group("/students")
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
+	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
+	students.GET("/courses/status", courseHandler.GetCoursesStatus)
+ 
+	// route attachment
+	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
+	students.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
+	students.POST("/attachment", attachmentHandler.CreateAttachment())
+	students.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
 
+	students.GET("/classes", classHandler.GetAllClasses())
+	students.GET("/classes/:id", classHandler.GetClass())
+	students.GET("/categories", categoryHandler.GetAllCategories())
+	students.GET("/categories/:id", categoryHandler.GetCategory())
+	students.GET("/majors", majorHandler.GetAllMajors())
+	students.GET("/majors/:id", majorHandler.GetMajor())
+	students.GET("/courses", courseHandler.GetAllCourses())
+	students.GET("/courses/:id", courseHandler.GetCourse())
+	students.GET("/promos", promoHandler.GetAllPromo())
+	students.GET("/promos/:id", promoHandler.GetPromo())
+	students.GET("/class/filter", classHandler.FilterClasses())
+	students.GET("/majors/filter", majorHandler.FilterMajors())
+ 
 	return e
 }

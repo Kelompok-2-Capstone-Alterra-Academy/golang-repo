@@ -57,7 +57,8 @@
 ```
 
 ### how to install
-go mod download
+go mod download 
+test
 ### run in local
 go run /cmd/app/main.go
 
