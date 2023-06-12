@@ -10,15 +10,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ModuleHandler struct {
-	ModuleUseCase usecase.ModuleUseCase
+type TaskHandler struct {
+	TaskUseCase usecase.TaskUseCase
 }
 
-func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
+func (handler TaskHandler) GetAllTasks() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var modules []entity.Module
+		var Tasks []entity.Task
 
-		modules, err := handler.ModuleUseCase.GetAllModules()
+		Tasks, err := handler.TaskUseCase.GetAllTasks()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -28,15 +28,15 @@ func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all modules",
-			"data":        modules,
+			"message":     "success get all Tasks",
+			"data":        Tasks,
 		})
 	}
 }
 
-func (handler ModuleHandler) GetModule() echo.HandlerFunc {
+func (handler TaskHandler) GetTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var module entity.Module
+		var Task entity.Task
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -45,7 +45,7 @@ func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 			})
 		}
 
-		module, err = handler.ModuleUseCase.GetModule(id)
+		Task, err = handler.TaskUseCase.GetTask(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -55,39 +55,40 @@ func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get module by id",
-			"data":        module,
+			"message":     "success get Task by id",
+			"data":        Task,
 		})
 	}
 }
 
-func (handler ModuleHandler) CreateModule() echo.HandlerFunc {
+func (handler TaskHandler) CreateTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var module entity.Module
-		if err := e.Bind(&module); err != nil {
+		var Task entity.Task
+		if err := e.Bind(&Task); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		err := handler.ModuleUseCase.CreateModule(module)
+		err := handler.TaskUseCase.CreateTask(Task)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created module",
+				"message":     "failed to created Task",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 				"status code": http.StatusCreated,
-				"message":     "success create new module",
-				"data":        module,
+				"message":     "success create new Task",
+				"data":        Task,
 			})
 	}
 }
-func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
-	var module entity.Module
+func (handler TaskHandler) UpdateTask() echo.HandlerFunc {
+	var Task entity.Task
+
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -97,7 +98,7 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ModuleUseCase.FindModule(id)
+		err = handler.TaskUseCase.FindTask(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -105,14 +106,14 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 			})
 		}
 
-		if err := e.Bind(&module); err != nil {
+		if err := e.Bind(&Task); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
 				"message":     err.Error(),
 			})
 		}
 
-		err = handler.ModuleUseCase.UpdateModule(id, module)
+		err = handler.TaskUseCase.UpdateTask(id, Task)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -122,13 +123,13 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success update module",
-			"data":        module,
+			"message":     "success update Task",
+			"data":        Task,
 		})
 	}
 }
 
-func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
+func (handler TaskHandler) DeleteTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -138,7 +139,7 @@ func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ModuleUseCase.DeleteModule(id)
+		err = handler.TaskUseCase.DeleteTask(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -148,7 +149,7 @@ func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete module`",
+			"message":     "Success Delete Task`",
 		})
 	}
 }

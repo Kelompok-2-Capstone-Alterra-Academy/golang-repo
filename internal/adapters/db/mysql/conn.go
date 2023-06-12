@@ -57,6 +57,7 @@ func AutoMigrate() {
 		&entity.Attachment{},
 		&entity.Module{},
 		&entity.Task{},
+		&entity.Submission{},
 	)
 	if err != nil {
 		log.Fatalf("Error migrating database: %s", err.Error())

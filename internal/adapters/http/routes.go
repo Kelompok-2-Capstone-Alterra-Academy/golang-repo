@@ -51,6 +51,14 @@ var (
 	moduleRepo    repository.ModuleRepository
 	moduleHandler handler.ModuleHandler
 	moduleUsecase usecase.ModuleUseCase
+	// task
+	taskRepo    repository.TaskRepository
+	taskHandler handler.TaskHandler
+	taskUsecase usecase.TaskUseCase
+	// submission
+	submissionRepo    repository.SubmissionRepository
+	submissionHandler handler.SubmissionHandler
+	submissionUsecase usecase.SubmissionUseCase
 )
 
 func declare() {
@@ -92,6 +100,14 @@ func declare() {
 	moduleRepo = repository.ModuleRepository{DB: db.DbMysql}
 	moduleUsecase = usecase.ModuleUseCase{Repo: moduleRepo}
 	moduleHandler = handler.ModuleHandler{ModuleUseCase: moduleUsecase}
+	// task
+	taskRepo = repository.TaskRepository{DB: db.DbMysql}
+	taskUsecase = usecase.TaskUseCase{Repo: taskRepo}
+	taskHandler = handler.TaskHandler{TaskUseCase: taskUsecase}
+	// task
+	submissionRepo = repository.SubmissionRepository{DB: db.DbMysql}
+	submissionUsecase = usecase.SubmissionUseCase{Repo: submissionRepo}
+	submissionHandler = handler.SubmissionHandler{SubmissionUseCase: submissionUsecase}
 }
 
 func InitRoutes() *echo.Echo {
@@ -134,6 +150,19 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/module/:id", moduleHandler.UpdateModule())
 	mentors.POST("/module", moduleHandler.CreateModule())
 	mentors.DELETE("/module/:id", moduleHandler.DeleteModule())
+
+	// route modules
+	mentors.GET("/task", taskHandler.GetAllTasks())
+	mentors.GET("/task/:id", taskHandler.GetTask())
+	mentors.PUT("/task/:id", taskHandler.UpdateTask())
+	mentors.POST("/task", taskHandler.CreateTask())
+	mentors.DELETE("/task/:id", taskHandler.DeleteTask())
+	// route submissions
+	mentors.GET("/submission", submissionHandler.GetAllSubmissions())
+	mentors.GET("/submission/:id", submissionHandler.GetSubmission())
+	mentors.PUT("/submission/:id", submissionHandler.UpdateSubmission())
+	mentors.POST("/submission", submissionHandler.CreateSubmission())
+	mentors.DELETE("/submission/:id", submissionHandler.DeleteSubmission())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())

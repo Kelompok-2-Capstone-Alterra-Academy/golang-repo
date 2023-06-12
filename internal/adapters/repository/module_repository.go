@@ -17,9 +17,15 @@ func (repo ModuleRepository) GetAllModules() ([]entity.Module, error) {
 }
 
 func (repo ModuleRepository) GetModule(id int) (entity.Module, error) {
-	var modules entity.Module
-	result := repo.DB.First(&modules, id)
-	return modules, result.Error
+	var module entity.Module
+	result := repo.DB.Preload("Section").
+		Preload("Tasks").
+		Preload("Attachment").
+		Preload("Submission").
+		Preload("Submission.User").
+		Preload("Section.Course").
+		First(&module, id)
+	return module, result.Error
 }
 
 func (repo ModuleRepository) CreateModule(module entity.Module) error {
@@ -28,7 +34,8 @@ func (repo ModuleRepository) CreateModule(module entity.Module) error {
 }
 
 func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
-	result := repo.DB.Model(&module).Where("id = ?", id).Updates(&module)
+
+	result := repo.DB.Model(&module).Where("ids = ?", id).Updates(&module)
 	return result.Error
 }
 

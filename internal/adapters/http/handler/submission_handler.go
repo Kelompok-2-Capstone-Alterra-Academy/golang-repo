@@ -10,15 +10,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type ModuleHandler struct {
-	ModuleUseCase usecase.ModuleUseCase
+type SubmissionHandler struct {
+	SubmissionUseCase usecase.SubmissionUseCase
 }
 
-func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
+func (handler SubmissionHandler) GetAllSubmissions() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var modules []entity.Module
+		var Submissions []entity.Submission
 
-		modules, err := handler.ModuleUseCase.GetAllModules()
+		Submissions, err := handler.SubmissionUseCase.GetAllSubmissiones()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -28,15 +28,15 @@ func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all modules",
-			"data":        modules,
+			"message":     "success get all Submissions",
+			"data":        Submissions,
 		})
 	}
 }
 
-func (handler ModuleHandler) GetModule() echo.HandlerFunc {
+func (handler SubmissionHandler) GetSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var module entity.Module
+		var Submission entity.Submission
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -45,7 +45,7 @@ func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 			})
 		}
 
-		module, err = handler.ModuleUseCase.GetModule(id)
+		Submission, err = handler.SubmissionUseCase.GetSubmission(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -55,39 +55,39 @@ func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get module by id",
-			"data":        module,
+			"message":     "success get Submission by id",
+			"data":        Submission,
 		})
 	}
 }
 
-func (handler ModuleHandler) CreateModule() echo.HandlerFunc {
+func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var module entity.Module
-		if err := e.Bind(&module); err != nil {
+		var Submission entity.Submission
+		if err := e.Bind(&Submission); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		err := handler.ModuleUseCase.CreateModule(module)
+		err := handler.SubmissionUseCase.CreateSubmission(Submission)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created module",
+				"message":     "failed to created Submission",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 				"status code": http.StatusCreated,
-				"message":     "success create new module",
-				"data":        module,
+				"message":     "success create new Submission",
+				"data":        Submission,
 			})
 	}
 }
-func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
-	var module entity.Module
+func (handler SubmissionHandler) UpdateSubmission() echo.HandlerFunc {
+	var Submission entity.Submission
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -97,7 +97,7 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ModuleUseCase.FindModule(id)
+		err = handler.SubmissionUseCase.FindSubmission(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -105,14 +105,14 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 			})
 		}
 
-		if err := e.Bind(&module); err != nil {
+		if err := e.Bind(&Submission); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
 				"message":     err.Error(),
 			})
 		}
 
-		err = handler.ModuleUseCase.UpdateModule(id, module)
+		err = handler.SubmissionUseCase.UpdateSubmission(id, Submission)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -122,13 +122,13 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success update module",
-			"data":        module,
+			"message":     "success update Submission",
+			"data":        Submission,
 		})
 	}
 }
 
-func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
+func (handler SubmissionHandler) DeleteSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -138,7 +138,7 @@ func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ModuleUseCase.DeleteModule(id)
+		err = handler.SubmissionUseCase.DeleteSubmission(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -148,7 +148,7 @@ func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete module`",
+			"message":     "Success Delete Submission`",
 		})
 	}
 }
