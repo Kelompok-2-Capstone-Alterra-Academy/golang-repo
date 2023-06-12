@@ -8,8 +8,6 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
-	// "github.com/golang-jwt/jwt"
-
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
