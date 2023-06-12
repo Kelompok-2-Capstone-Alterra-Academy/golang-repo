@@ -28,4 +28,8 @@
     "section_id": 1,
     "attachment_id": 5
 }
-  
+// create section
+{ 
+  "section_name" : "ips metode penelitian" ,
+  "course_id" : 10
+}
