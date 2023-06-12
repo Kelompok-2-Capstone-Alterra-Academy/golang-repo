@@ -21,8 +21,15 @@ type CourseHandler struct {
 func (handler CourseHandler) GetAllCourses() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var courses []entity.Course
+		MentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
 
-		courses, err := handler.CourseUsecase.GetAllCourses()
+		courses, err = handler.CourseUsecase.GetAllCourses(MentorId)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -102,6 +109,7 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 		}
 
 		course.MentorId = MentorId
+		course.Status = "draft"
 
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -158,6 +166,15 @@ func (handler CourseHandler) UpdateCourse() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
+		MentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		course.MentorId = MentorId
 
 		err = handler.CourseUsecase.UpdateCourse(id, course)
 		if err != nil {

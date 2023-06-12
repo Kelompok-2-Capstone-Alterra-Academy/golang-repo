@@ -1,0 +1,31 @@
+// create course
+{  
+  "course_name" : "ips " ,
+  "live_session_week" : "senin selasa kami 12.00-15.00",
+  "thumbnail":"https://github.com/Kelompok-2-Capstone-Alterra-Academy/golang-repo/tree/staging"
+
+}
+// all key
+{
+    "class_id": 1,
+    "category_id": 1,
+    "major_id" :1,
+    "course_name" : "ips ",
+    "price" : "10000",
+    "duration" : "3 weeks",
+    "description" : "1 mont",
+    "live_session_week" : "1 mont"
+    "thumbnail":"https://github.com/Kelompok-2-Capstone-Alterra-Academy/golang-repo/tree/staging"
+}
+// create module
+{
+    "module_name": "tes module",
+    "section_id": 1
+}
+// add attachment in module
+{
+    "module_name": "tes module",
+    "section_id": 1,
+    "attachment_id": 5
+}
+  
