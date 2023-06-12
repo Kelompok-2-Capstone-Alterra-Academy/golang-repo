@@ -93,14 +93,16 @@ func (handler CourseHandler) GetCourseByMentorId() echo.HandlerFunc {
 func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var course entity.Course
-		mentorId, err := service.GetUserIDFromToken(e)
+		MentorId, err := service.GetUserIDFromToken(e)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     err.Error(),
 			})
 		}
-		course.MentorId = mentorId
+
+		course.MentorId = MentorId
+
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
@@ -108,7 +110,6 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 			})
 		}
 
-		// Validasi input menggunakan package validator
 		validate := validator.New()
 		if err := validate.Struct(course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
