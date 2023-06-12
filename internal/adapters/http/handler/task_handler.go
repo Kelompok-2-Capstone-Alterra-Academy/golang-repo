@@ -7,20 +7,18 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
-	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type UserHandler struct {
-	UserUsecase usecase.UserUseCase
+type TaskHandler struct {
+	TaskUseCase usecase.TaskUseCase
 }
 
-func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
+func (handler TaskHandler) GetAllTasks() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var users []entity.User
+		var Tasks []entity.Task
 
-		users, err := handler.UserUsecase.GetAllUsers()
+		Tasks, err := handler.TaskUseCase.GetAllTasks()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -30,15 +28,15 @@ func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all user",
-			"data":        users,
+			"message":     "success get all Tasks",
+			"data":        Tasks,
 		})
 	}
 }
 
-func (handler UserHandler) GetUser() echo.HandlerFunc {
+func (handler TaskHandler) GetTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var user entity.User
+		var Task entity.Task
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -47,7 +45,7 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 			})
 		}
 
-		user, err = handler.UserUsecase.GetUser(id)
+		Task, err = handler.TaskUseCase.GetTask(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -57,87 +55,101 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get user by id",
-			"data":        user,
+			"message":     "success get Task by id",
+			"data":        Task,
 		})
 	}
 }
 
-func (handler UserHandler) CreateUser() echo.HandlerFunc {
+func (handler TaskHandler) CreateTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var user entity.User
-		if err := e.Bind(&user); err != nil {
+		var Task entity.Task
+		if err := e.Bind(&Task); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		// Validasi input menggunakan package validator
-		validate := validator.New()
-		if err := validate.Struct(user); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
-			})
-		}
-
-		// Validasi email unik
-		if err := handler.UserUsecase.UniqueEmail(user.Email); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
-			})
-		}
-
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		err := handler.TaskUseCase.CreateTask(Task)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created user",
+				"message":     "failed to created Task",
 			})
 		}
-		user.Password = string(hashedPassword)
-		// Set Role default cutomer
-		user.Role = "customer"
-
-		err = handler.UserUsecase.CreateUser(user)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     "failed to created user",
+		return e.JSON(
+			http.StatusCreated, map[string]interface{}{
+				"status code": http.StatusCreated,
+				"message":     "success create new Task",
+				"data":        Task,
 			})
-		}
-
-		return e.JSON(http.StatusCreated, map[string]interface{}{
-			"status code": http.StatusCreated,
-			"message":     "success create new user",
-			"data":        user,
-		})
 	}
 }
+func (handler TaskHandler) UpdateTask() echo.HandlerFunc {
+	var Task entity.Task
 
-func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     "input is not a number",
+				"message":     err.Error(),
 			})
 		}
 
-		err = handler.UserUsecase.DeleteUser(id)
+		err = handler.TaskUseCase.FindTask(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created user",
+				"message":     err.Error(),
+			})
+		}
+
+		if err := e.Bind(&Task); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message":     err.Error(),
+			})
+		}
+
+		err = handler.TaskUseCase.UpdateTask(id, Task)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success delete data",
+			"message":     "success update Task",
+			"data":        Task,
+		})
+	}
+}
+
+func (handler TaskHandler) DeleteTask() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     "input id is not number",
+			})
+		}
+
+		err = handler.TaskUseCase.DeleteTask(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "Success Delete Task`",
 		})
 	}
 }
