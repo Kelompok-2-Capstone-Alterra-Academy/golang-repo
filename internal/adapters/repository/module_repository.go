@@ -23,7 +23,6 @@ func (repo ModuleRepository) GetModule(id int) (entity.Module, error) {
 		Preload("Attachment").
 		Preload("Submission").
 		Preload("Submission.User").
-		Preload("Section.Course").
 		First(&module, id)
 	return module, result.Error
 }
