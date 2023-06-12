@@ -23,14 +23,14 @@ func (handler MajorHandler) GetAllMajors() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all major",
-			"data":        majors,
+			"message": "success get all major",
+			"data":   majors,
 		})
 	}
 }
@@ -42,7 +42,7 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
@@ -50,14 +50,14 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get major by id",
-			"data":        major,
+			"message": "success get major by id",
+			"data":   major,
 		})
 	}
 }
@@ -86,7 +86,7 @@ func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 		if err := e.Bind(&major); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
@@ -95,22 +95,22 @@ func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
 		if err := validate.Struct(major); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 		err := handler.MajorUsecase.CreateMajor(major)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created major",
+				"message": "failed to created major",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
-				"status code": http.StatusCreated,
-				"message":     "success create new major",
-				"data":        major,
-			})
+			"status code": http.StatusCreated,
+			"message": "success create new major",
+			"data":   major,
+		})
 	}
 }
 func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
@@ -121,7 +121,7 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
@@ -129,14 +129,14 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		if err := e.Bind(&major); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
@@ -144,15 +144,16 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
-			"status code": http.StatusOK,
-			"message":     "success update major",
-			"data":        major,
-		})
+				"status code": http.StatusOK,
+				"message": "success update major",
+				"data":major,
+
+			})
 	}
 }
 
@@ -162,7 +163,7 @@ func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     "input id is not number",
+				"message": "input id is not number",
 			})
 		}
 
@@ -170,13 +171,13 @@ func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete Major`",
+			"message": "Success Delete Major`",
 		})
 	}
 }

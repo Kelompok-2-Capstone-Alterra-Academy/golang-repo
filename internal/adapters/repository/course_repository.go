@@ -23,7 +23,7 @@ func (repo CourseRepository) GetCourse(id int) (entity.Course, error) {
 }
 func (repo CourseRepository) GetCourseByMentorId(id int) (entity.Course, error) {
 	var courses entity.Course
-	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Find(&courses, "mentor_id = ?", id)
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Find(&courses,"mentor_id = ?", id)
 	return courses, result.Error
 }
 
@@ -44,36 +44,4 @@ func (repo CourseRepository) DeleteCourse(id int) error {
 func (repo CourseRepository) FindCourse(id int) error {
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").First(&entity.Course{}, id)
 	return result.Error
-}
-
-func (repo CourseRepository) GetCoursesByUserID(userID int) ([]entity.Course, error) {
-	var courses []entity.Course
-	result := repo.DB.Model(&entity.CourseEnrollment{}).
-		Select("courses.*").
-		Joins("JOIN courses ON course_enrollments.course_id = courses.ID").
-		Where("course_enrollments.user_id = ?", userID).
-		Find(&courses)
-	return courses, result.Error
-}
-
-func (repo CourseRepository) CoursesInProgress(userID int) ([]entity.Course, error) {
-	var courses []entity.Course
-	result := repo.DB.Model(&entity.CourseEnrollment{}).
-		Select("courses.*").
-		Joins("JOIN courses ON course_enrollments.course_id = courses.ID").
-		Where("course_enrollments.user_id = ?", userID).
-		Where("course_enrollments.status = ?", "in_progress").
-		Find(&courses)
-	return courses, result.Error
-}
-
-func (repo CourseRepository) CoursesDone(userID int) ([]entity.Course, error) {
-	var courses []entity.Course
-	result := repo.DB.Model(&entity.CourseEnrollment{}).
-		Select("courses.*").
-		Joins("JOIN courses ON course_enrollments.course_id = courses.ID").
-		Where("course_enrollments.user_id = ?", userID).
-		Where("course_enrollments.status = ?", "selesai").
-		Find(&courses)
-	return courses, result.Error
 }
