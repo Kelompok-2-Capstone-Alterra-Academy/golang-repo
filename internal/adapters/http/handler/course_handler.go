@@ -10,6 +10,7 @@ import (
 
 	// "github.com/golang-jwt/jwt"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
 
@@ -64,10 +65,42 @@ func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 	}
 }
 
+func (handler CourseHandler) GetCourseByMentorId() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var course entity.Course
+		mentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		course, err = handler.CourseUsecase.GetCourseByMentorId(mentorId)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by mentor id",
+			"data":        course,
+		})
+	}
+}
 func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var course entity.Course
-
+		mentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		course.MentorId = mentorId
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
@@ -75,17 +108,15 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 			})
 		}
 
-		// // Validasi input menggunakan package validator
-		// validate := validator.New()
-		// if err := validate.Struct(course); err != nil {
-		// 	return e.JSON(http.StatusBadRequest, map[string]interface{}{
-		// 		"status code": http.StatusBadRequest,
-		// 		"message": err.Error(),
-		// 	})
-		// }
-
-		err := handler.CourseUsecase.CreateCourse(course)
-		if err != nil {
+		// Validasi input menggunakan package validator
+		validate := validator.New()
+		if err := validate.Struct(course); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
+			})
+		}
+		if err := handler.CourseUsecase.CreateCourse(course); err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     "failed to created course",

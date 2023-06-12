@@ -6,7 +6,6 @@ import (
 	middlewares "capston-lms/internal/adapters/http/middleware"
 	repository "capston-lms/internal/adapters/repository"
 	usecase "capston-lms/internal/application/usecase"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -46,10 +45,20 @@ var (
 	courseHandler handler.CourseHandler
 	courseUsecase usecase.CourseUseCase
 
+	// folder
+	folderRepo    repository.FolderRepository
+	folderHandler handler.FolderHandler
+	folderUsecase usecase.FolderUseCase
+
 	// attachment
 	attachmentRepo    repository.AttachmentRepository
 	attachmentHandler handler.AttachmentHandler
 	attachmentUsecase usecase.AttachmentUseCase
+
+	//Promo
+	promoRepo    repository.PromoRepository
+	promoHandler handler.PromoHandler
+	promoUsecase usecase.PromoUseCase
 )
 
 func declare() {
@@ -86,28 +95,30 @@ func declare() {
 	courseEnrollmentUseCase = usecase.CourseEnrollmentUseCase{CourseEnrollmentRepo: courseEnrollmentRepo}
 	courseEnrollmentHandler = handler.CourseEnrollmentHandler{CourseEnrollmentUseCase: courseEnrollmentUseCase}
 
+	// folder
+	folderRepo = repository.FolderRepository{DB: db.DbMysql}
+	folderUsecase = usecase.FolderUseCase{Repo: folderRepo}
+	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase}
+
 	// attachment
 	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
 	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
 	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
+	// Promo
+	promoRepo = repository.PromoRepository{DB: db.DbMysql}
+	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
+	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
+
 }
 
 func InitRoutes() *echo.Echo {
 	db.Init()
 	declare()
 
-	// Middleware untuk mengizinkan header "Content-Type: application/json"
-	jsonMiddleware := func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-			return next(c)
-		}
-	}
-
 	e := echo.New()
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
-	e.POST("/verify-otp", AuthHandler.VerifyOTP(), jsonMiddleware)
+	e.POST("/verify-otp", AuthHandler.VerifyOTP())
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -122,9 +133,46 @@ func InitRoutes() *echo.Echo {
 
 	mentors.GET("/chat/students/:id", courseEnrollmentHandler.GetAllStudents())
 	mentors.GET("/chat/courses", courseEnrollmentHandler.GetAllCourse())
+	// route folders
+	mentors.GET("/folders", folderHandler.GetAllFolders())
+	mentors.GET("/folders/:id", folderHandler.GetFolder())
+	mentors.POST("/folders", folderHandler.CreateFolder())
+	mentors.DELETE("/folders/:id", folderHandler.DeleteFolder())
+
+	// route attachment
+	mentors.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
+	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
+	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
+	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
+
+	mentors.GET("/classes", classHandler.GetAllClasses())
+	mentors.GET("/classes/:id", classHandler.GetClass())
+	mentors.PUT("/classes/:id", classHandler.UpdateClass())
+	mentors.POST("/classes", classHandler.CreateClass())
+	mentors.DELETE("/classes/:id", classHandler.DeleteClass())
+
+	mentors.GET("/categories", categoryHandler.GetAllCategories())
+	mentors.GET("/categories/:id", categoryHandler.GetCategory())
+	mentors.PUT("/cateories/:id", categoryHandler.UpdateCategory())
+	mentors.POST("/categories", categoryHandler.CreateCategory())
+	mentors.DELETE("/categories/:id", categoryHandler.DeleteCategory())
+
+	mentors.GET("/majors", majorHandler.GetAllMajors())
+	mentors.GET("/majors/:id", majorHandler.CreateMajor())
+	mentors.PUT("/majors/:id", majorHandler.UpdateMajor())
+	mentors.POST("/majors", majorHandler.CreateMajor())
+	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
+
+	mentors.GET("/courses", courseHandler.GetAllCourses())
+	mentors.GET("/courses/:id", courseHandler.CreateCourse())
+	// mentors.GET("/courses/:id", courseHandler.CreateCourse())
+	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
+	mentors.POST("/courses", courseHandler.CreateCourse())
+	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
+	e.GET("/class/filter", classHandler.FilterClasses())
 	e.PUT("/classes/:id", classHandler.UpdateClass())
 	e.POST("/classes", classHandler.CreateClass())
 	e.DELETE("/classes/:id", classHandler.DeleteClass())
@@ -137,12 +185,15 @@ func InitRoutes() *echo.Echo {
 
 	e.GET("/majors", majorHandler.GetAllMajors())
 	e.GET("/majors/:id", majorHandler.CreateMajor())
+	e.GET("/majors/:id", majorHandler.GetMajor())
+	e.GET("/majors/filter", majorHandler.FilterMajors())
 	e.PUT("/majors/:id", majorHandler.UpdateMajor())
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
 	e.GET("/courses", courseHandler.GetAllCourses())
 	e.GET("/courses/:id", courseHandler.CreateCourse())
+	e.GET("/courses/:id", courseHandler.GetCourse())
 	e.PUT("/courses/:id", courseHandler.UpdateCourse())
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
@@ -152,6 +203,11 @@ func InitRoutes() *echo.Echo {
 	e.PUT("/section/:id", sectionHandler.UpdateSection())
 	e.POST("/section", sectionHandler.CreateSection())
 	e.DELETE("/section/:id", sectionHandler.DeleteSection())
+	e.GET("/promos", promoHandler.GetAllPromo())
+	e.GET("/promos/:id", promoHandler.GetPromo())
+	e.PUT("/promos/:id", promoHandler.UpdatePromo())
+	e.POST("/promos", promoHandler.CreatePromo())
+	e.DELETE("/promos/:id", promoHandler.DeletePromo())
 
 	// students group
 	students := e.Group("/students")
@@ -167,21 +223,18 @@ func InitRoutes() *echo.Echo {
 	students.POST("/attachment", attachmentHandler.CreateAttachment())
 	students.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
 
+	students.GET("/classes", classHandler.GetAllClasses())
+	students.GET("/classes/:id", classHandler.GetClass())
+	students.GET("/categories", categoryHandler.GetAllCategories())
+	students.GET("/categories/:id", categoryHandler.GetCategory())
+	students.GET("/majors", majorHandler.GetAllMajors())
+	students.GET("/majors/:id", majorHandler.GetMajor())
+	students.GET("/courses", courseHandler.GetAllCourses())
+	students.GET("/courses/:id", courseHandler.GetCourse())
+	students.GET("/promos", promoHandler.GetAllPromo())
+	students.GET("/promos/:id", promoHandler.GetPromo())
+	students.GET("/class/filter", classHandler.FilterClasses())
+	students.GET("/majors/filter", majorHandler.FilterMajors())
+
 	return e
-}
-
-// Middleware untuk mengizinkan header Content-Type: application/json
-func allowJSONContentType(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		c.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		c.Response().Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-
-		contentType := c.Request().Header.Get("Content-Type")
-		if contentType != "application/json" {
-			return echo.NewHTTPError(http.StatusUnsupportedMediaType, "Only application/json content type is allowed")
-		}
-
-		return next(c)
-	}
 }
