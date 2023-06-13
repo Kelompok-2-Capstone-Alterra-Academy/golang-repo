@@ -13,6 +13,7 @@ func main() {
 	e := http.InitRoutes()
 	e.Debug = true
 	e.Pre(middleware.HTTPSRedirect())
+	e.Use(middleware.CORS())
 
 	address := fmt.Sprintf(":%s", viper.GetString("EXSPOSE_PORT"))
 	if address == ":" {
@@ -21,6 +22,7 @@ func main() {
 	// Load certificate and key from file
 	certFile := "cert.pem"
 	keyFile := "key.pem"
+
 	err := e.StartTLS(address, certFile, keyFile)
 	if err != nil {
 		log.Fatal(err)
