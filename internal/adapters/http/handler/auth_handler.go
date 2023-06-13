@@ -96,6 +96,86 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 	}
 }
 
+func (handler AuthHandler) NewPassword() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user entity.User
+
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		hashedPassword, err := service.Encrypt(user.Password)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+		user.Password = string(hashedPassword)
+		StudentId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		err = handler.Usecase.UpdateUser(StudentId, user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+
+		data := make(map[string]interface{})
+		data["users"] = user
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status_code": http.StatusCreated,
+			"message":     "user created successfully",
+			"data":        data,
+		})
+	}
+}
+
+func (handler AuthHandler) ForgotPassword() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user entity.User
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		// sending otp
+		otp := service.GenerateOTP()
+		// Simpan token ke database
+		expiredAt := time.Now().Add(time.Minute * 5) // Token berlaku selama 5 menit
+		otpToken := entity.OTPToken{
+			Otp:       otp,
+			Email:     user.Email,
+			ExpiredAt: expiredAt,
+		}
+		err := handler.Usecase.SaveOTP(otpToken)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to save otp token"})
+		}
+
+		body := "OTP Kamu adalah sebagai berikut ini : " + otp
+		err = service.SendEmail(user.Email, "lakukan verifikasi akun anda sebelum 10 menit", body)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status_code": http.StatusInternalServerError,
+				"message":     "Failed to send OTP email",
+				"errors":      err.Error(),
+			})
+		}
+
+		data := make(map[string]interface{})
+		data["users"] = user
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status_code": http.StatusCreated,
+			"message":     "OTP sent successfully",
+		})
+	}
+}
 func (handler AuthHandler) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Bind request body to user struct
