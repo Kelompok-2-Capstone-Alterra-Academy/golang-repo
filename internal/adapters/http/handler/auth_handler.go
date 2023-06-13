@@ -172,8 +172,7 @@ func (handler AuthHandler) ForgotPassword() echo.HandlerFunc {
 		data["users"] = user
 		return e.JSON(http.StatusCreated, map[string]interface{}{
 			"status_code": http.StatusCreated,
-			"message":     "user created successfully",
-			"data":        data,
+			"message":     "OTP sent successfully",
 		})
 	}
 }

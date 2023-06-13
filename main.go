@@ -3,8 +3,8 @@ package main
 import (
 	"capston-lms/internal/adapters/http"
 	"fmt"
-	"log"
 
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 )
@@ -12,19 +12,17 @@ import (
 func main() {
 	e := http.InitRoutes()
 	e.Debug = true
-	e.Pre(middleware.HTTPSRedirect())
-	e.Use(middleware.CORS())
+
+	// Middleware CORS
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"}, // Ganti dengan origin yang diizinkan
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
 
 	address := fmt.Sprintf(":%s", viper.GetString("EXSPOSE_PORT"))
 	if address == ":" {
 		address = ":8080" // Port default 8080 jika PORT tidak diset
 	}
-	// Load certificate and key from file
-	certFile := "cert.pem"
-	keyFile := "key.pem"
-
-	err := e.StartTLS(address, certFile, keyFile)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Start server
+	e.Logger.Fatal(e.Start(address))
 }

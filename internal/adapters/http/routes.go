@@ -140,17 +140,11 @@ func InitRoutes() *echo.Echo {
 	declare()
 
 	e := echo.New()
-	e.Use(middleware.CORS())
-	// Setel middleware CORS
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-	}))
 
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
 	e.POST("/verify-otp", AuthHandler.VerifyOTP())
+	e.POST("/forgot-password", AuthHandler.ForgotPassword())
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -259,6 +253,7 @@ func InitRoutes() *echo.Echo {
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
+	students.POST("/new-password", AuthHandler.NewPassword())
 	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
 
