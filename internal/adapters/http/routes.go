@@ -140,6 +140,14 @@ func InitRoutes() *echo.Echo {
 	declare()
 
 	e := echo.New()
+	e.Use(middleware.CORS())
+	// Setel middleware CORS
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
 	e.POST("/verify-otp", AuthHandler.VerifyOTP())
