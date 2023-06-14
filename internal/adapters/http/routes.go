@@ -180,12 +180,15 @@ func InitRoutes() *echo.Echo {
 	e.PUT("/courses/:id", courseHandler.UpdateCourse())
 	e.POST("/courses", courseHandler.CreateCourse())
 	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	e.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 
 	e.GET("/promos", promoHandler.GetAllPromo())
 	e.GET("/promos/:id", promoHandler.GetPromo())
 	e.PUT("/promos/:id", promoHandler.UpdatePromo())
 	e.POST("/promos", promoHandler.CreatePromo())
 	e.DELETE("/promos/:id", promoHandler.DeletePromo())
+
+
 
 	// students group
 	students := e.Group("/students")

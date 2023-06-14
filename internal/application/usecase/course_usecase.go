@@ -41,3 +41,45 @@ func (usecase CourseUseCase) FindCourse(id int) error {
 	err := usecase.Repo.FindCourse(id)
 	return err
 }
+
+func (usecase CourseUseCase) GetAllCoursesSortedByCompletion(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByCompletion(ascending)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCoursesSortedByNewness(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByNewness(ascending)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByHighLevel(ascending)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCoursesSortedByLowLevel(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByLowLevel(ascending)
+	return courses, err
+}
+
+
+
+// func (usecase CourseUseCase) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
+// 	courses, err := usecase.Repo.GetAllCoursesSortedByHighLevel(ascending)
+// 	return courses, err
+// }
+
+// func (usecase CourseUseCase) GetAllCoursesSortedByLowLevel(ascending bool) ([]entity.Course, error) {
+// 	courses, err := usecase.Repo.GetAllCoursesSortedByLowLevel(ascending)
+// 	return courses, err
+// }
+
+// func (repo CourseUseCase) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
+// 	var courses []entity.Course
+// 	order := "ASC"
+// 	if !ascending {
+// 		order = "DESC"
+// 	}
+// 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("level " + order).Find(&courses)
+// 	return courses, result.Error
+// }

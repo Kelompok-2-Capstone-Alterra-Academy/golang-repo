@@ -197,3 +197,42 @@ func (handler CourseHandler) DeleteCourse() echo.HandlerFunc {
 		})
 	}
 }
+
+func (handler CourseHandler) GetAllCoursesSortedByField() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		sortBy := e.QueryParam("sort_by")
+		ascending, _ := strconv.ParseBool(e.QueryParam("ascending"))
+
+		var courses []entity.Course
+		var err error
+
+		switch sortBy {
+		case "Segera Selesai":
+			courses, err = handler.CourseUsecase.GetAllCoursesSortedByCompletion(ascending)
+		case "Kursus Baru":
+			courses, err = handler.CourseUsecase.GetAllCoursesSortedByNewness(ascending)
+		case "Kelas Atas":
+			courses, err = handler.CourseUsecase.GetAllCoursesSortedByHighLevel(ascending)
+		case "Kelas Bawah":
+			courses, err = handler.CourseUsecase.GetAllCoursesSortedByLowLevel(ascending)
+		default:
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     "Invalid sort_by parameter",
+			})
+		}
+
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "Success get all courses sorted by field",
+			"data":        courses,
+		})
+	}
+}
