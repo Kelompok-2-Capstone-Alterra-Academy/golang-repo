@@ -225,32 +225,6 @@ func (handler CourseHandler) GetCoursesByUserID(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (handler CourseHandler) CourseInProgress(c echo.Context) error {
-	userID, err := service.GetUserIDFromToken(c)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"status code": http.StatusInternalServerError,
-			"message":     err.Error(),
-		})
-	}
-
-	courses, err := handler.CourseUsecase.GetCoursesByUserID(userID)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"status code": http.StatusInternalServerError,
-			"message":     err.Error(),
-		})
-	}
-
-	response := map[string]interface{}{
-		"status code": http.StatusOK,
-		"message":     "Success get course by user ID and course ID",
-		"data":        courses,
-	}
-
-	return c.JSON(http.StatusOK, response)
-}
-
 func (handler CourseHandler) GetCoursesStatus(c echo.Context) error {
 	userID, err := service.GetUserIDFromToken(c)
 	if err != nil {
