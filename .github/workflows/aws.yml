@@ -1,7 +1,7 @@
 name: Deploy
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "staging" ]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,7 +15,7 @@ jobs:
         port: 22
         script: |
           export PATH=$PATH:/usr/local/go/bin
-          cd master/golang-repo
+          cd dev/golang-repo
           git pull
           go build .
-          sudo systemctl restart go-master.service 
+          sudo systemctl restart go-staging.service 

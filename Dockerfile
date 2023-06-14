@@ -17,7 +17,7 @@ COPY . .
 RUN go build -o main ./cmd/app
 
 # Expose port
-EXPOSE 9091
+EXPOSE 8081
 
 # Command to run the application
 CMD ["./main"]

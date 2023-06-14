@@ -24,6 +24,11 @@ func (usecase UserUseCase) CreateUser(user entity.User) error {
 	return err
 }
 
+func (usecase UserUseCase) SaveOTP(otp entity.OTPToken) error {
+	err := usecase.Repo.SaveOTP(otp)
+	return err
+}
+
 func (usecase UserUseCase) UpdateUser(id int, user entity.User) error {
 	err := usecase.Repo.UpdateUser(id, user)
 	return err
@@ -38,6 +43,12 @@ func (usecase UserUseCase) UniqueEmail(email string) error {
 	err := usecase.Repo.UniqueEmail(email)
 	return err
 }
+
 func (usecase UserUseCase) GetUserByEmail(email string) (*entity.User, error) {
 	return usecase.Repo.FindByEmail(email)
+}
+
+func (usecase UserUseCase) VerifiedOtpToken(email string, token string) error {
+	err := usecase.Repo.VerifiedOtpToken(email, token)
+	return err
 }

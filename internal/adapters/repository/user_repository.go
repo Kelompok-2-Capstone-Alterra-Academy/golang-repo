@@ -29,7 +29,7 @@ func (repo UserRepository) CreateUser(user entity.User) error {
 }
 
 func (repo UserRepository) UpdateUser(id int, user entity.User) error {
-	result := repo.DB.Model(&user).Where("id = ?", id).Updates(&user)
+	result := repo.DB.Model(&user).Where("id = ?", id).UpdateColumns(&user)
 	return result.Error
 }
 
@@ -52,5 +52,31 @@ func (repo UserRepository) UniqueEmail(email string) error {
 	if result.RowsAffected > 0 {
 		return fmt.Errorf("email %s already exists", email)
 	}
+	return nil
+}
+
+func (repo UserRepository) SaveOTP(otp entity.OTPToken) error {
+	result := repo.DB.Create(&otp)
+	return result.Error
+}
+
+func (repo UserRepository) VerifiedOtpToken(email string, token string) error {
+	var otpToken entity.OTPToken
+	err := repo.DB.Where("email = ? AND otp = ? AND status = ? ", email, token, "not-used").First(&otpToken).Error
+	if err != nil {
+		return err
+	}
+
+	err = repo.DB.Model(&otpToken).Update("status", "used").Error
+	if err != nil {
+		return err
+	}
+
+	user := entity.User{}
+	err = repo.DB.Model(&user).Where("email = ?", email).Update("status", "active").Error
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
