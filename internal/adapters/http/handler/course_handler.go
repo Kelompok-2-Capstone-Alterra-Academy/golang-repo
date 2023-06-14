@@ -100,7 +100,8 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		course.MentorId = mentorId
+
+		course.MentorId = strconv.Itoa(mentorId)
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
