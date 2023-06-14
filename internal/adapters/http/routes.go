@@ -51,7 +51,7 @@ var (
 	// attachment
 	attachmentRepo    repository.AttachmentRepository
 	attachmentHandler handler.AttachmentHandler
-	attachmentUsecase usecase.AttachmentUseCase 
+	attachmentUsecase usecase.AttachmentUseCase
 	// module
 	moduleRepo    repository.ModuleRepository
 	moduleHandler handler.ModuleHandler
@@ -63,11 +63,11 @@ var (
 	// submission
 	submissionRepo    repository.SubmissionRepository
 	submissionHandler handler.SubmissionHandler
-	submissionUsecase usecase.SubmissionUseCase 
+	submissionUsecase usecase.SubmissionUseCase
 	//Promo
 	promoRepo    repository.PromoRepository
 	promoHandler handler.PromoHandler
-	promoUsecase usecase.PromoUseCase 
+	promoUsecase usecase.PromoUseCase
 )
 
 func declare() {
@@ -107,7 +107,7 @@ func declare() {
 	// folder
 	folderRepo = repository.FolderRepository{DB: db.DbMysql}
 	folderUsecase = usecase.FolderUseCase{Repo: folderRepo}
-	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase} 
+	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase}
 	// attachments
 	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
 	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
@@ -123,7 +123,7 @@ func declare() {
 	// task
 	submissionRepo = repository.SubmissionRepository{DB: db.DbMysql}
 	submissionUsecase = usecase.SubmissionUseCase{Repo: submissionRepo}
-	submissionHandler = handler.SubmissionHandler{SubmissionUseCase: submissionUsecase} 
+	submissionHandler = handler.SubmissionHandler{SubmissionUseCase: submissionUsecase}
 	// attachment
 	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
 	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
@@ -132,7 +132,7 @@ func declare() {
 	promoRepo = repository.PromoRepository{DB: db.DbMysql}
 	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
 	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
- 
+
 }
 
 func InitRoutes() *echo.Echo {
@@ -168,7 +168,7 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
 	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
 	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
- 
+
 	// route modules
 	mentors.GET("/module", moduleHandler.GetAllModules())
 	mentors.GET("/module/:id", moduleHandler.GetModule())
@@ -188,7 +188,7 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/submission/:id", submissionHandler.UpdateSubmission())
 	mentors.POST("/submission", submissionHandler.CreateSubmission())
 	mentors.DELETE("/submission/:id", submissionHandler.DeleteSubmission())
- 
+
 	mentors.GET("/classes", classHandler.GetAllClasses())
 	mentors.GET("/classes/:id", classHandler.GetClass())
 	mentors.PUT("/classes/:id", classHandler.UpdateClass())
@@ -213,7 +213,7 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
- 
+
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
 	e.GET("/class/filter", classHandler.FilterClasses())
@@ -258,9 +258,13 @@ func InitRoutes() *echo.Echo {
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
+
+	//route course student
 	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
- 
+	students.GET("/courses/module", courseHandler.GetAllModules())
+	students.GET("/courses/module/:id", courseHandler.GetModule())
+
 	// route attachment
 	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
 	students.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
@@ -279,6 +283,6 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
- 
+
 	return e
 }

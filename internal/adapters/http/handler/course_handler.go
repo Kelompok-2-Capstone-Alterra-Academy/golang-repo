@@ -272,3 +272,50 @@ func (handler CourseHandler) GetCoursesStatus(c echo.Context) error {
 		"data":        coursesStatus,
 	})
 }
+
+func (handler CourseHandler) GetAllModules() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var modules []entity.Module
+
+		modules, err := handler.CourseUsecase.GetAllModules()
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get all modules",
+			"data":        modules,
+		})
+	}
+}
+
+func (handler CourseHandler) GetModule() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var module entity.Module
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
+			})
+		}
+
+		module, err = handler.CourseUsecase.GetModule(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get module by id",
+			"data":        module,
+		})
+	}
+}
