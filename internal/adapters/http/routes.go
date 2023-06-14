@@ -208,6 +208,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
+
 
 	return e
 }
