@@ -12,6 +12,7 @@ import (
 	"capston-lms/internal/entity"
 
 	"github.com/go-playground/validator"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -225,6 +226,47 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 			"status_code": http.StatusOK,
 			"message":     "congratulations successful login",
 			"data":        data,
+		})
+	}
+}
+
+func (handler AuthHandler) Logout() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		// Mengambil token dari header Authorization
+		token := c.Get("user").(*jwt.Token)
+
+		// Menghapus token dengan mengatur nilai kosong pada header Authorization
+		c.Response().Header().Set("Authorization", "")
+
+		// Menambahkan header untuk menghapus cookie
+		c.SetCookie(&http.Cookie{
+			Name:     "token",
+			Value:    "",
+			Expires:  time.Now(),
+			HttpOnly: true,
+		})
+
+		// Melakukan validasi token dan mengembalikan pesan sukses jika berhasil
+		if token != nil {
+			claims := token.Claims.(*jwt.MapClaims)
+			userID := int((*claims)["id"].(float64))
+			email := (*claims)["email"].(string)
+			role := (*claims)["role"].(string)
+
+			// Proses logout (misalnya menghapus token dari database, menghapus sesi, dll)
+
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"message": "Logout successful",
+				"user_id": userID,
+				"email":   email,
+				"role":    role,
+			})
+		}
+
+		// Mengembalikan pesan sukses jika tidak ada token yang ditemukan
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "Logout successful",
 		})
 	}
 }
