@@ -220,6 +220,8 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/section/:id", sectionHandler.UpdateSection())
 	mentors.POST("/section", sectionHandler.CreateSection())
 	mentors.DELETE("/section/:id", sectionHandler.DeleteSection())
+	// mentor logout
+	mentors.POST("/logout", AuthHandler.Logout())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
