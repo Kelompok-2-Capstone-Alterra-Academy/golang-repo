@@ -75,3 +75,7 @@ func (usecase CourseUseCase) GetCoursesStatus(userID int) (map[string]interface{
 
 	return data, nil
 }
+func (usecase CourseUseCase) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
+	totalCourse, err := usecase.Repo.GetAllCoursesWithSectionCount(courseId)
+	return totalCourse, err
+}

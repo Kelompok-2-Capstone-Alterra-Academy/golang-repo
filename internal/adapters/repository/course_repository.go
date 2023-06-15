@@ -89,3 +89,20 @@ func (repo CourseRepository) CoursesDone(userID int) ([]entity.Course, error) {
 		Find(&courses)
 	return courses, result.Error
 }
+
+func (repo CourseRepository) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
+	var courses []entity.CourseWithSectionCount
+
+	result := repo.DB.Table("courses").
+		Select("courses.*, COUNT(sections.id) AS section_count").
+		Where("courses.id = ?", courseId).
+		Joins("LEFT JOIN sections ON courses.id = sections.course_id").
+		Group("courses.id").
+		Scan(&courses)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return courses, nil
+}

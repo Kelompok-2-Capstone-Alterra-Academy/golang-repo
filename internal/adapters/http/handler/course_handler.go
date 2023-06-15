@@ -65,7 +65,8 @@ func (handler CourseHandler) GetAllCourseStudents() echo.HandlerFunc {
 
 func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var course entity.Course
+		var countSection []entity.CourseWithSectionCount
+
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -73,8 +74,7 @@ func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-
-		course, err = handler.CourseUsecase.GetCourse(id)
+		countSection, err = handler.CourseUsecase.GetAllCoursesWithSectionCount(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -82,10 +82,13 @@ func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 			})
 		}
 
+		data := make(map[string]interface{})
+		data["coursesCount"] = countSection
+
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "success get course by id",
-			"data":        course,
+			"data":        data,
 		})
 	}
 }
