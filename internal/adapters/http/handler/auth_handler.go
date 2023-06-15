@@ -12,6 +12,7 @@ import (
 	"capston-lms/internal/entity"
 
 	"github.com/go-playground/validator"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -96,6 +97,86 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 	}
 }
 
+func (handler AuthHandler) NewPassword() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user entity.User
+
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		hashedPassword, err := service.Encrypt(user.Password)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+		user.Password = string(hashedPassword)
+		StudentId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		err = handler.Usecase.UpdateUser(StudentId, user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+
+		data := make(map[string]interface{})
+		data["users"] = user
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status_code": http.StatusCreated,
+			"message":     "user created successfully",
+			"data":        data,
+		})
+	}
+}
+
+func (handler AuthHandler) ForgotPassword() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user entity.User
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		// sending otp
+		otp := service.GenerateOTP()
+		// Simpan token ke database
+		expiredAt := time.Now().Add(time.Minute * 5) // Token berlaku selama 5 menit
+		otpToken := entity.OTPToken{
+			Otp:       otp,
+			Email:     user.Email,
+			ExpiredAt: expiredAt,
+		}
+		err := handler.Usecase.SaveOTP(otpToken)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to save otp token"})
+		}
+
+		body := "OTP Kamu adalah sebagai berikut ini : " + otp
+		err = service.SendEmail(user.Email, "lakukan verifikasi akun anda sebelum 10 menit", body)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status_code": http.StatusInternalServerError,
+				"message":     "Failed to send OTP email",
+				"errors":      err.Error(),
+			})
+		}
+
+		data := make(map[string]interface{})
+		data["users"] = user
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status_code": http.StatusCreated,
+			"message":     "OTP sent successfully",
+		})
+	}
+}
 func (handler AuthHandler) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Bind request body to user struct
@@ -145,6 +226,47 @@ func (handler AuthHandler) Login() echo.HandlerFunc {
 			"status_code": http.StatusOK,
 			"message":     "congratulations successful login",
 			"data":        data,
+		})
+	}
+}
+
+func (handler AuthHandler) Logout() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		// Mengambil token dari header Authorization
+		token := c.Get("user").(*jwt.Token)
+
+		// Menghapus token dengan mengatur nilai kosong pada header Authorization
+		c.Response().Header().Set("Authorization", "")
+
+		// Menambahkan header untuk menghapus cookie
+		c.SetCookie(&http.Cookie{
+			Name:     "token",
+			Value:    "",
+			Expires:  time.Now(),
+			HttpOnly: true,
+		})
+
+		// Melakukan validasi token dan mengembalikan pesan sukses jika berhasil
+		if token != nil {
+			claims := token.Claims.(*jwt.MapClaims)
+			userID := int((*claims)["id"].(float64))
+			email := (*claims)["email"].(string)
+			role := (*claims)["role"].(string)
+
+			// Proses logout (misalnya menghapus token dari database, menghapus sesi, dll)
+
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"message": "Logout successful",
+				"user_id": userID,
+				"email":   email,
+				"role":    role,
+			})
+		}
+
+		// Mengembalikan pesan sukses jika tidak ada token yang ditemukan
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "Logout successful",
 		})
 	}
 }

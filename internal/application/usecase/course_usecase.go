@@ -10,8 +10,8 @@ type CourseUseCase struct {
 	CourseEnrollmentRepo repository.CourseEnrollmentRepository
 }
 
-func (usecase CourseUseCase) GetAllCourses() ([]entity.Course, error) {
-	courses, err := usecase.Repo.GetAllCourses()
+func (usecase CourseUseCase) GetAllCourses(mentorId int) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCourses(mentorId)
 	return courses, err
 }
 

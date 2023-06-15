@@ -29,7 +29,7 @@ func (repo UserRepository) CreateUser(user entity.User) error {
 }
 
 func (repo UserRepository) UpdateUser(id int, user entity.User) error {
-	result := repo.DB.Model(&user).Where("id = ?", id).Updates(&user)
+	result := repo.DB.Model(&user).Where("id = ?", id).UpdateColumns(&user)
 	return result.Error
 }
 

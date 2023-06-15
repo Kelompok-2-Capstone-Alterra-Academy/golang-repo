@@ -140,9 +140,11 @@ func InitRoutes() *echo.Echo {
 	declare()
 
 	e := echo.New()
+
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
 	e.POST("/verify-otp", AuthHandler.VerifyOTP())
+	e.POST("/forgot-password", AuthHandler.ForgotPassword())
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -206,13 +208,21 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/majors/:id", majorHandler.UpdateMajor())
 	mentors.POST("/majors", majorHandler.CreateMajor())
 	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
-
+	// route courses
 	mentors.GET("/courses", courseHandler.GetAllCourses())
 	mentors.GET("/courses/:id", courseHandler.CreateCourse())
-	// mentors.GET("/courses/:id", courseHandler.CreateCourse())
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
+	// route section
+	mentors.GET("/section", sectionHandler.GetAllSections())
+	mentors.GET("/section/:id", sectionHandler.CreateSection())
+	mentors.PUT("/section/:id", sectionHandler.UpdateSection())
+	mentors.POST("/section", sectionHandler.CreateSection())
+	mentors.DELETE("/section/:id", sectionHandler.DeleteSection())
+	// mentor logout
+	mentors.POST("/logout", AuthHandler.Logout())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
@@ -235,18 +245,6 @@ func InitRoutes() *echo.Echo {
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
-	e.GET("/courses", courseHandler.GetAllCourses())
-	e.GET("/courses/:id", courseHandler.CreateCourse())
-	e.GET("/courses/:id", courseHandler.GetCourse())
-	e.PUT("/courses/:id", courseHandler.UpdateCourse())
-	e.POST("/courses", courseHandler.CreateCourse())
-	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
-
-	e.GET("/section", sectionHandler.GetAllSections())
-	e.GET("/section/:id", sectionHandler.CreateSection())
-	e.PUT("/section/:id", sectionHandler.UpdateSection())
-	e.POST("/section", sectionHandler.CreateSection())
-	e.DELETE("/section/:id", sectionHandler.DeleteSection())
 	e.GET("/promos", promoHandler.GetAllPromo())
 	e.GET("/promos/:id", promoHandler.GetPromo())
 	e.PUT("/promos/:id", promoHandler.UpdatePromo())
@@ -264,6 +262,11 @@ func InitRoutes() *echo.Echo {
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
 	students.GET("/courses/module", courseHandler.GetAllModules())
 	students.GET("/courses/module/:id", courseHandler.GetModule())
+
+	students.POST("/new-password", AuthHandler.NewPassword())
+	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
+	students.GET("/courses/status", courseHandler.GetCoursesStatus)
+
 
 	// route attachment
 	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())

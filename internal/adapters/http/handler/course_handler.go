@@ -8,8 +8,6 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
-	// "github.com/golang-jwt/jwt"
-
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
@@ -21,8 +19,15 @@ type CourseHandler struct {
 func (handler CourseHandler) GetAllCourses() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var courses []entity.Course
+		MentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
 
-		courses, err := handler.CourseUsecase.GetAllCourses()
+		courses, err = handler.CourseUsecase.GetAllCourses(MentorId)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -93,7 +98,7 @@ func (handler CourseHandler) GetCourseByMentorId() echo.HandlerFunc {
 func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var course entity.Course
-		mentorId, err := service.GetUserIDFromToken(e)
+		MentorId, err := service.GetUserIDFromToken(e)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -102,6 +107,9 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 		}
 
 		course.MentorId = strconv.Itoa(mentorId)
+		course.MentorId = MentorId
+		course.Status = "draft"
+
 		if err := e.Bind(&course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
@@ -109,7 +117,6 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 			})
 		}
 
-		// Validasi input menggunakan package validator
 		validate := validator.New()
 		if err := validate.Struct(course); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -158,6 +165,15 @@ func (handler CourseHandler) UpdateCourse() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
+		MentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		course.MentorId = MentorId
 
 		err = handler.CourseUsecase.UpdateCourse(id, course)
 		if err != nil {
