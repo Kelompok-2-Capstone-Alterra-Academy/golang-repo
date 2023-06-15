@@ -75,6 +75,16 @@ func (usecase CourseUseCase) GetCoursesStatus(userID int) (map[string]interface{
 
 	return data, nil
 }
+
+func (usecase CourseUseCase) GetAllModules() ([]entity.Module, error) {
+	modules, err := usecase.Repo.GetAllModules()
+	return modules, err
+}
+
+func (usecase CourseUseCase) GetModule(id int) (entity.Module, error) {
+	module, err := usecase.Repo.GetModule(id)
+	return module, err
+}
 func (usecase CourseUseCase) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
 	totalCourse, err := usecase.Repo.GetAllCoursesWithSectionCount(courseId)
 	return totalCourse, err

@@ -214,12 +214,15 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+
 	// route section
 	mentors.GET("/section", sectionHandler.GetAllSections())
 	mentors.GET("/section/:id", sectionHandler.CreateSection())
 	mentors.PUT("/section/:id", sectionHandler.UpdateSection())
 	mentors.POST("/section", sectionHandler.CreateSection())
 	mentors.DELETE("/section/:id", sectionHandler.DeleteSection())
+	// mentor logout
+	mentors.POST("/logout", AuthHandler.Logout())
 
 	e.GET("/classes", classHandler.GetAllClasses())
 	e.GET("/classes/:id", classHandler.GetClass())
@@ -253,15 +256,25 @@ func InitRoutes() *echo.Echo {
 	students.Use(middleware.Logger())
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
+
+	//route course student
+	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
+	students.GET("/courses/status", courseHandler.GetCoursesStatus)
+	students.GET("/courses/module", courseHandler.GetAllModules())
+	students.GET("/courses/module/:id", courseHandler.GetModule())
+
 	students.POST("/new-password", AuthHandler.NewPassword())
 	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
+
 
 	// route attachment
 	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
 	students.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
 	students.POST("/attachment", attachmentHandler.CreateAttachment())
 	students.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
+	students.GET("/courses/quiz-attachments", attachmentHandler.GetQuizAttachments)
+	students.GET("/courses/quiz-attachments/:id", attachmentHandler.GetQuizAttachmentByID)
 
 	students.GET("/classes", classHandler.GetAllClasses())
 	students.GET("/classes/:id", classHandler.GetClass())
@@ -275,6 +288,7 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
-
+	students.PUT("/user/profile", userHandler.UpdateUser())
+	
 	return e
 }
