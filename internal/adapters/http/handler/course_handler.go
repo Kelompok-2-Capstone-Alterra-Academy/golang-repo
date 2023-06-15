@@ -43,6 +43,26 @@ func (handler CourseHandler) GetAllCourses() echo.HandlerFunc {
 	}
 }
 
+func (handler CourseHandler) GetAllCourseStudents() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var courses []entity.Course
+
+		courses, err := handler.CourseUsecase.GetAllCourseStudents()
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get all course",
+			"data":        courses,
+		})
+	}
+}
+
 func (handler CourseHandler) GetCourse() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var course entity.Course

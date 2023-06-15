@@ -19,7 +19,15 @@ func (repo CourseRepository) GetAllCourses(mentorId int) ([]entity.Course, error
 		Preload("Class").Preload("Major").Find(&courses)
 	return courses, result.Error
 }
-
+func (repo CourseRepository) GetAllCourseStudents() ([]entity.Course, error) {
+	var courses []entity.Course
+	result := repo.DB.Preload("Category").
+		Preload("Section", func(db *gorm.DB) *gorm.DB {
+			return db.Omit("course") // Menyembunyikan relasi "Course" pada preload "Section"
+		}).
+		Preload("Class").Preload("Major").Find(&courses)
+	return courses, result.Error
+}
 func (repo CourseRepository) GetCourse(id int) (entity.Course, error) {
 	var courses entity.Course
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").First(&courses, id)

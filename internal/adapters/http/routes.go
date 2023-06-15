@@ -210,7 +210,7 @@ func InitRoutes() *echo.Echo {
 	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
 	// route courses
 	mentors.GET("/courses", courseHandler.GetAllCourses())
-	mentors.GET("/courses/:id", courseHandler.CreateCourse())
+	mentors.GET("/courses/:id", courseHandler.GetCourse())
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
@@ -269,7 +269,7 @@ func InitRoutes() *echo.Echo {
 	students.GET("/categories/:id", categoryHandler.GetCategory())
 	students.GET("/majors", majorHandler.GetAllMajors())
 	students.GET("/majors/:id", majorHandler.GetMajor())
-	students.GET("/courses", courseHandler.GetAllCourses())
+	students.GET("/courses", courseHandler.GetAllCourseStudents())
 	students.GET("/courses/:id", courseHandler.GetCourse())
 	students.GET("/promos", promoHandler.GetAllPromo())
 	students.GET("/promos/:id", promoHandler.GetPromo())
