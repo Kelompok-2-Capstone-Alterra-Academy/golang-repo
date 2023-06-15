@@ -117,6 +117,27 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 	}
 }
 
+func (handler UserHandler) GetUserByRole() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user []entity.User
+		role:="mentor"
+		user, err := handler.UserUsecase.GetUserByRole(role)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get user by role",
+			"data":        user,
+		})
+	}
+}
+
+
 func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
