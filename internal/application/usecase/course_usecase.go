@@ -15,6 +15,11 @@ func (usecase CourseUseCase) GetAllCourses(mentorId int) ([]entity.Course, error
 	return courses, err
 }
 
+func (usecase CourseUseCase) GetAllCourseStudents() ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCourseStudents()
+	return courses, err
+}
+
 func (usecase CourseUseCase) GetCourse(id int) (entity.Course, error) {
 	course, err := usecase.Repo.GetCourse(id)
 	return course, err
@@ -79,4 +84,8 @@ func (usecase CourseUseCase) GetAllModules() ([]entity.Module, error) {
 func (usecase CourseUseCase) GetModule(id int) (entity.Module, error) {
 	module, err := usecase.Repo.GetModule(id)
 	return module, err
+}
+func (usecase CourseUseCase) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
+	totalCourse, err := usecase.Repo.GetAllCoursesWithSectionCount(courseId)
+	return totalCourse, err
 }
