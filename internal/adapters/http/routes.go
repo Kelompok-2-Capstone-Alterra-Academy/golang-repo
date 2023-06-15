@@ -205,10 +205,7 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
-	students.PUT("/majors/:id", majorHandler.UpdateMajor())
-	students.PUT("/classes/:id", classHandler.UpdateClass())
-	students.PUT("/majors/:id", majorHandler.UpdateMajor())
-	students.PUT("/courses/:id", courseHandler.UpdateCourse())
-
+	students.PUT("/user/profile", userHandler.UpdateUser())
+	
 	return e
 }
