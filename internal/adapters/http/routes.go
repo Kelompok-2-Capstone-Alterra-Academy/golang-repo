@@ -68,10 +68,6 @@ var (
 	promoRepo    repository.PromoRepository
 	promoHandler handler.PromoHandler
 	promoUsecase usecase.PromoUseCase
-	//Promo
-	rateCourseRepo    repository.RateCourseRepository
-	rateCourseHandler handler.RateCourseHandler
-	rateCourseUsecase usecase.RateCourseUseCase
 )
 
 func declare() {
@@ -136,10 +132,6 @@ func declare() {
 	promoRepo = repository.PromoRepository{DB: db.DbMysql}
 	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
 	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
-	// Rate course
-	rateCourseRepo = repository.RateCourseRepository{DB: db.DbMysql}
-	rateCourseUsecase = usecase.RateCourseUseCase{Repo: rateCourseRepo}
-	rateCourseHandler = handler.RateCourseHandler{RateCourseUsecase: rateCourseUsecase}
 
 }
 
