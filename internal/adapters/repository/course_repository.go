@@ -81,3 +81,21 @@ func (repo CourseRepository) CoursesDone(userID int) ([]entity.Course, error) {
 		Find(&courses)
 	return courses, result.Error
 }
+
+func (repo CourseRepository) GetAllModules() ([]entity.Module, error) {
+	var modules []entity.Module
+	result := repo.DB.Find(&modules)
+	return modules, result.Error
+}
+
+func (repo CourseRepository) GetModule(id int) (entity.Module, error) {
+	var module entity.Module
+	result := repo.DB.Preload("Section").
+		Preload("Tasks").
+		Preload("Attachment").
+		Preload("Submission").
+		Preload("Submission.User").
+		Preload("Section.Course").
+		First(&module, id)
+	return module, result.Error
+}
