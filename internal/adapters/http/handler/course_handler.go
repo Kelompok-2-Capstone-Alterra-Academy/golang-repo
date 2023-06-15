@@ -129,7 +129,6 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 			})
 		}
 
-		course.MentorId = strconv.Itoa(mentorId)
 		course.MentorId = MentorId
 		course.Status = "draft"
 
