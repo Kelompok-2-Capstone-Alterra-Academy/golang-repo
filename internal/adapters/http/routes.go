@@ -245,11 +245,19 @@ func InitRoutes() *echo.Echo {
 	e.POST("/majors", majorHandler.CreateMajor())
 	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
+	e.GET("/courses", courseHandler.GetAllCourses())
+	e.GET("/courses/:id", courseHandler.GetCourse())
+	e.PUT("/courses/:id", courseHandler.UpdateCourse())
+	e.POST("/courses", courseHandler.CreateCourse())
+	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	e.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	e.GET("/promos", promoHandler.GetAllPromo())
 	e.GET("/promos/:id", promoHandler.GetPromo())
 	e.PUT("/promos/:id", promoHandler.UpdatePromo())
 	e.POST("/promos", promoHandler.CreatePromo())
 	e.DELETE("/promos/:id", promoHandler.DeletePromo())
+
+
 
 	// students group
 	students := e.Group("/students")
@@ -288,6 +296,7 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	students.PUT("/user/profile", userHandler.UpdateUser())
 	
 	return e

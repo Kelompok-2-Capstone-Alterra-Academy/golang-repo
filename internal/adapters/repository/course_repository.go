@@ -58,6 +58,46 @@ func (repo CourseRepository) FindCourse(id int) error {
 	return result.Error
 }
 
+func (repo CourseRepository) GetAllCoursesSortedByCompletion(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("completion " + order).Find(&courses)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByNewness(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("created_at " + order).Find(&courses)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("level " + order).Find(&courses)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByLowLevel(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("level " + order).Find(&courses)
+	return courses, result.Error
+}
+
 func (repo CourseRepository) GetCoursesByUserID(userID int) ([]entity.Course, error) {
 	var courses []entity.Course
 	result := repo.DB.Model(&entity.CourseEnrollment{}).
@@ -124,4 +164,3 @@ func (repo CourseRepository) GetAllCoursesWithSectionCount(courseId int) ([]enti
 
 	return courses, nil
 }
-

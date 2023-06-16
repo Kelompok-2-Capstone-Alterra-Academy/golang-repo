@@ -49,6 +49,26 @@ func (usecase CourseUseCase) FindCourse(id int) error {
 	return err
 }
 
+func (usecase CourseUseCase) GetAllCoursesSortedByCompletion(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByCompletion(ascending)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCoursesSortedByNewness(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByNewness(ascending)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByHighLevel(ascending)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCoursesSortedByLowLevel(ascending bool) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCoursesSortedByLowLevel(ascending)
+	return courses, err
+}
+
 func (usecase CourseUseCase) GetCoursesByUserID(userID int) ([]entity.Course, error) {
 	courses, err := usecase.Repo.GetCoursesByUserID(userID)
 	if err != nil {
