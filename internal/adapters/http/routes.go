@@ -68,6 +68,15 @@ var (
 	promoRepo    repository.PromoRepository
 	promoHandler handler.PromoHandler
 	promoUsecase usecase.PromoUseCase
+
+	//Trsaction
+	transactionDetailRepo    repository.TrasanctionDetailsRepository
+	transactionDetailUsecase usecase.TrasanctionDetailsUseCase
+
+	//Trsaction
+	transactionRepo    repository.TransactionRepository
+	transactionHandler handler.TransactionHandler
+	transactionUsecase usecase.TransactionUsecase
 )
 
 func declare() {
@@ -132,6 +141,19 @@ func declare() {
 	promoRepo = repository.PromoRepository{DB: db.DbMysql}
 	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
 	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
+
+	// Promo
+	transactionDetailRepo = repository.TrasanctionDetailsRepository{DB: db.DbMysql}
+	transactionDetailUsecase = usecase.TrasanctionDetailsUseCase{TransactionDetailRepo: transactionDetailRepo}
+
+	// Transaction
+	transactionRepo = repository.TransactionRepository{DB: db.DbMysql}
+	transactionUsecase = usecase.TransactionUsecase{TransactionRepo: transactionRepo, UserRepo: userRepo}
+
+	transactionHandler = handler.TransactionHandler{
+		TransactionUsecase:        transactionUsecase,
+		Usecase:                   userUsecase,
+		TrasanctionDetailsUseCase: transactionDetailUsecase}
 
 }
 
@@ -275,7 +297,6 @@ func InitRoutes() *echo.Echo {
 	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
 
-
 	// route attachment
 	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
 	students.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
@@ -298,6 +319,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/majors/filter", majorHandler.FilterMajors())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	students.PUT("/user/profile", userHandler.UpdateUser())
-	
+	// transaction
+	students.POST("/transaction", transactionHandler.CheckoutTransaction())
+
 	return e
 }
