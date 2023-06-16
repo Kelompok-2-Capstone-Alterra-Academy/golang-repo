@@ -6,11 +6,17 @@ import (
 )
 
 type CourseUseCase struct {
-	Repo repository.CourseRepository
+	Repo                 repository.CourseRepository
+	CourseEnrollmentRepo repository.CourseEnrollmentRepository
 }
 
-func (usecase CourseUseCase) GetAllCourses() ([]entity.Course, error) {
-	courses, err := usecase.Repo.GetAllCourses()
+func (usecase CourseUseCase) GetAllCourses(mentorId int) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCourses(mentorId)
+	return courses, err
+}
+
+func (usecase CourseUseCase) GetAllCourseStudents() ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetAllCourseStudents()
 	return courses, err
 }
 
@@ -18,6 +24,7 @@ func (usecase CourseUseCase) GetCourse(id int) (entity.Course, error) {
 	course, err := usecase.Repo.GetCourse(id)
 	return course, err
 }
+
 func (usecase CourseUseCase) GetCourseByMentorId(id int) (entity.Course, error) {
 	course, err := usecase.Repo.GetCourseByMentorId(id)
 	return course, err
@@ -62,24 +69,43 @@ func (usecase CourseUseCase) GetAllCoursesSortedByLowLevel(ascending bool) ([]en
 	return courses, err
 }
 
+func (usecase CourseUseCase) GetCoursesByUserID(userID int) ([]entity.Course, error) {
+	courses, err := usecase.Repo.GetCoursesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
 
+	return courses, nil
+}
 
-// func (usecase CourseUseCase) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
-// 	courses, err := usecase.Repo.GetAllCoursesSortedByHighLevel(ascending)
-// 	return courses, err
-// }
+func (usecase CourseUseCase) GetCoursesStatus(userID int) (map[string]interface{}, error) {
+	data := make(map[string]interface{})
 
-// func (usecase CourseUseCase) GetAllCoursesSortedByLowLevel(ascending bool) ([]entity.Course, error) {
-// 	courses, err := usecase.Repo.GetAllCoursesSortedByLowLevel(ascending)
-// 	return courses, err
-// }
+	coursesInProgress, err := usecase.Repo.CoursesInProgress(userID)
+	if err != nil {
+		return nil, err
+	}
+	data["in_progress"] = coursesInProgress
 
-// func (repo CourseUseCase) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
-// 	var courses []entity.Course
-// 	order := "ASC"
-// 	if !ascending {
-// 		order = "DESC"
-// 	}
-// 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("level " + order).Find(&courses)
-// 	return courses, result.Error
-// }
+	coursesDone, err := usecase.Repo.CoursesDone(userID)
+	if err != nil {
+		return nil, err
+	}
+	data["selesai"] = coursesDone
+
+	return data, nil
+}
+
+func (usecase CourseUseCase) GetAllModules() ([]entity.Module, error) {
+	modules, err := usecase.Repo.GetAllModules()
+	return modules, err
+}
+
+func (usecase CourseUseCase) GetModule(id int) (entity.Module, error) {
+	module, err := usecase.Repo.GetModule(id)
+	return module, err
+}
+func (usecase CourseUseCase) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
+	totalCourse, err := usecase.Repo.GetAllCoursesWithSectionCount(courseId)
+	return totalCourse, err
+}
