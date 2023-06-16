@@ -49,3 +49,15 @@ func (usecase AttachmentUseCase) GetQuizAttachmentByID(id int) (entity.Attachmen
 	}
 	return attachment, nil
 }
+
+func (usecase AttachmentUseCase) GetMateriAttachments() ([]entity.Attachment, error) {
+	return usecase.Repo.GetMateriAttachments()
+}
+
+func (usecase AttachmentUseCase) GetMateriAttachmentByID(id int) (entity.Attachment, error) {
+	attachment, err := usecase.Repo.GetMateriAttachmentByID(id)
+	if err != nil {
+		return entity.Attachment{}, err
+	}
+	return attachment, nil
+}

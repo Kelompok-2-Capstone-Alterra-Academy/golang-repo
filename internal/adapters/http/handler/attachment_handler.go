@@ -203,10 +203,44 @@ func (handler AttachmentHandler) GetQuizAttachmentByID(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Invalid attachment ID")
 	}
 
-	attachment, err := handler.AttachmentUsecase.GetQuizAttachmentByID(attachmentID)
+	attachment, err := handler.AttachmentUsecase.GetMateriAttachmentByID(attachmentID)
 	if err != nil {
 		// Handle the error
 		return c.String(http.StatusInternalServerError, "Failed to get quiz attachment")
+	}
+
+	// Return the selected fields of the attachment as a response
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"attachment_name":   attachment.AttachmentName,
+		"description":       attachment.Description,
+		"attachment_source": attachment.AttachmentSource,
+	})
+}
+
+func (handler AttachmentHandler) GetMateriAttachments(c echo.Context) error {
+	attachments, err := handler.AttachmentUsecase.GetMateriAttachments()
+	if err != nil {
+		// Handle error from use case
+		return c.String(http.StatusInternalServerError, "Failed to get materi attachments")
+	}
+
+	return c.JSON(http.StatusOK, attachments)
+}
+
+func (handler AttachmentHandler) GetMateriAttachmentByID(c echo.Context) error {
+	id := c.Param("id")
+
+	// Convert the ID to an integer
+	attachmentID, err := strconv.Atoi(id)
+	if err != nil {
+		// Handle the error
+		return c.String(http.StatusBadRequest, "Invalid attachment ID")
+	}
+
+	attachment, err := handler.AttachmentUsecase.GetMateriAttachmentByID(attachmentID)
+	if err != nil {
+		// Handle the error
+		return c.String(http.StatusInternalServerError, "Failed to get materi attachment")
 	}
 
 	// Return the selected fields of the attachment as a response
