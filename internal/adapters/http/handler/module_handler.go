@@ -7,19 +7,18 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
-	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
 
-type MajorHandler struct {
-	MajorUsecase usecase.MajorUseCase
+type ModuleHandler struct {
+	ModuleUseCase usecase.ModuleUseCase
 }
 
-func (handler MajorHandler) GetAllMajors() echo.HandlerFunc {
+func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var majors []entity.Major
+		var modules []entity.Module
 
-		majors, err := handler.MajorUsecase.GetAllMajors()
+		modules, err := handler.ModuleUseCase.GetAllModules()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -29,15 +28,15 @@ func (handler MajorHandler) GetAllMajors() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all major",
-			"data":        majors,
+			"message":     "success get all modules",
+			"data":        modules,
 		})
 	}
 }
 
-func (handler MajorHandler) GetMajor() echo.HandlerFunc {
+func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var major entity.Major
+		var module entity.Module
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -46,7 +45,7 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 			})
 		}
 
-		major, err = handler.MajorUsecase.GetMajor(id)
+		module, err = handler.ModuleUseCase.GetModule(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -56,66 +55,39 @@ func (handler MajorHandler) GetMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get major by id",
-			"data":        major,
+			"message":     "success get module by id",
+			"data":        module,
 		})
 	}
 }
 
-func (handler MajorHandler) FilterMajors() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var majors []entity.Major
-		selectedMajors := c.QueryParams()["major"]
-		filteredMajors := make([]entity.Major, 0)
-
-		for _, major := range majors {
-			for _, selectedMajor := range selectedMajors {
-				if major.MajorName == selectedMajor {
-					filteredMajors = append(filteredMajors, major)
-				}
-			}
-		}
-
-		return c.JSON(http.StatusOK, filteredMajors)
-	}
-}
-
-func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
+func (handler ModuleHandler) CreateModule() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var major entity.Major
-		if err := e.Bind(&major); err != nil {
+		var module entity.Module
+		if err := e.Bind(&module); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		// Validasi input menggunakan package validator
-		validate := validator.New()
-		if err := validate.Struct(major); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
-			})
-		}
-		err := handler.MajorUsecase.CreateMajor(major)
+		err := handler.ModuleUseCase.CreateModule(module)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created major",
+				"message":     "failed to created module",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 				"status code": http.StatusCreated,
-				"message":     "success create new major",
-				"data":        major,
+				"message":     "success create new module",
+				"data":        module,
 			})
 	}
 }
-func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
-	var major entity.Major
-
+func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
+	var module entity.Module
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -125,7 +97,7 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.MajorUsecase.FindMajor(id)
+		err = handler.ModuleUseCase.FindModule(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -133,14 +105,14 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 			})
 		}
 
-		if err := e.Bind(&major); err != nil {
+		if err := e.Bind(&module); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
 				"message":     err.Error(),
 			})
 		}
 
-		err = handler.MajorUsecase.UpdateMajor(id, major)
+		err = handler.ModuleUseCase.UpdateModule(id, module)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -150,13 +122,13 @@ func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success update major",
-			"data":        major,
+			"message":     "success update module",
+			"data":        module,
 		})
 	}
 }
 
-func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
+func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -166,7 +138,7 @@ func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.MajorUsecase.DeleteMajor(id)
+		err = handler.ModuleUseCase.DeleteModule(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -176,7 +148,7 @@ func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete Major`",
+			"message":     "Success Delete module`",
 		})
 	}
 }

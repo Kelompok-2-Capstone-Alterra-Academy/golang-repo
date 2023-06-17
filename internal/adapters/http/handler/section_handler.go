@@ -11,172 +11,156 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type MajorHandler struct {
-	MajorUsecase usecase.MajorUseCase
+type SectionHandler struct {
+	SectionUsecase usecase.SectionUseCase
 }
 
-func (handler MajorHandler) GetAllMajors() echo.HandlerFunc {
+func (handler SectionHandler) GetAllSections() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var majors []entity.Major
+		var sections []entity.Section
 
-		majors, err := handler.MajorUsecase.GetAllMajors()
+		sections, err := handler.SectionUsecase.GetAllSections()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all major",
-			"data":        majors,
+			"message": "success get all section",
+			"data":   sections,
 		})
 	}
 }
 
-func (handler MajorHandler) GetMajor() echo.HandlerFunc {
+func (handler SectionHandler) GetSection() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var major entity.Major
+		var section entity.Section
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
-		major, err = handler.MajorUsecase.GetMajor(id)
+		section, err = handler.SectionUsecase.GetSection(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get major by id",
-			"data":        major,
+			"message": "success get section by id",
+			"data":   section,
 		})
 	}
 }
 
-func (handler MajorHandler) FilterMajors() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var majors []entity.Major
-		selectedMajors := c.QueryParams()["major"]
-		filteredMajors := make([]entity.Major, 0)
-
-		for _, major := range majors {
-			for _, selectedMajor := range selectedMajors {
-				if major.MajorName == selectedMajor {
-					filteredMajors = append(filteredMajors, major)
-				}
-			}
-		}
-
-		return c.JSON(http.StatusOK, filteredMajors)
-	}
-}
-
-func (handler MajorHandler) CreateMajor() echo.HandlerFunc {
+func (handler SectionHandler) CreateSection() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var major entity.Major
-		if err := e.Bind(&major); err != nil {
+		var section entity.Section
+		if err := e.Bind(&section); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
 
 		// Validasi input menggunakan package validator
 		validate := validator.New()
-		if err := validate.Struct(major); err != nil {
+		if err := validate.Struct(section); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": err.Error(),
 			})
 		}
-		err := handler.MajorUsecase.CreateMajor(major)
+
+		err := handler.SectionUsecase.CreateSection(section)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created major",
+				"message": "failed to created section",
 			})
 		}
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
-				"status code": http.StatusCreated,
-				"message":     "success create new major",
-				"data":        major,
-			})
-	}
-}
-func (handler MajorHandler) UpdateMajor() echo.HandlerFunc {
-	var major entity.Major
-
-	return func(e echo.Context) error {
-		id, err := strconv.Atoi(e.Param("id"))
-		if err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
-			})
-		}
-
-		err = handler.MajorUsecase.FindMajor(id)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
-		}
-
-		if err := e.Bind(&major); err != nil {
-			return e.JSON(http.StatusNotFound, map[string]interface{}{
-				"status code": http.StatusNotFound,
-				"message":     err.Error(),
-			})
-		}
-
-		err = handler.MajorUsecase.UpdateMajor(id, major)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
-		}
-
-		return e.JSON(http.StatusOK, map[string]interface{}{
-			"status code": http.StatusOK,
-			"message":     "success update major",
-			"data":        major,
+			"status code": http.StatusCreated,
+			"message": "success create new section",
+			"data":   section,
 		})
 	}
 }
+func (handler SectionHandler) UpdateSection() echo.HandlerFunc {
+	var section entity.Section
 
-func (handler MajorHandler) DeleteMajor() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message":     "input id is not number",
+				"message": err.Error(),
 			})
 		}
 
-		err = handler.MajorUsecase.DeleteMajor(id)
+		err = handler.SectionUsecase.FindSection(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&section); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.SectionUsecase.UpdateSection(id, section)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update section",
+				"data":section,
+
+			})
+	}
+}
+
+func (handler SectionHandler) DeleteSection() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": "input id is not number",
+			})
+		}
+
+		err = handler.SectionUsecase.DeleteSection(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete Major`",
+			"message": "Success Delete Section`",
 		})
 	}
 }
