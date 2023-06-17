@@ -29,9 +29,10 @@ func (repo UserRepository) CreateUser(user entity.User) error {
 }
 
 func (repo UserRepository) UpdateUser(id int, user entity.User) error {
-	result := repo.DB.Model(&user).Where("id = ?", id).Updates(&user)
+	result := repo.DB.Model(&user).Where("id = ?", id).UpdateColumns(&user)
 	return result.Error
 }
+
 
 func (repo UserRepository) DeleteUser(id int) error {
 	result := repo.DB.Delete(&entity.User{}, id)
@@ -80,3 +81,9 @@ func (repo UserRepository) VerifiedOtpToken(email string, token string) error {
 
 	return nil
 }
+func (repo UserRepository) GetUserByRole(role string) ([]entity.User, error) {
+	var users []entity.User
+	result := repo.DB.Where("role = ?", role).Find(&users)
+	return users, result.Error
+}
+

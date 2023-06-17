@@ -10,12 +10,30 @@ type CourseRepository struct {
 	DB *gorm.DB
 }
 
-func (repo CourseRepository) GetAllCourses() ([]entity.Course, error) {
+func (repo CourseRepository) GetAllCourses(mentorId int) ([]entity.Course, error) {
 	var courses []entity.Course
-	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Find(&courses)
+	result := repo.DB.Where("mentor_id = ?", mentorId).Preload("Category").
+		Preload("Section", func(db *gorm.DB) *gorm.DB {
+			return db.Omit("course") // Menyembunyikan relasi "Course" pada preload "Section"
+		}).
+		Preload("Class").Preload("Major").Find(&courses)
 	return courses, result.Error
 }
-
+func (repo CourseRepository) GetAllCourseStudents() ([]entity.Course, error) {
+	var courses []entity.Course
+	result := repo.DB.Preload("Category").
+		Preload("Section", func(db *gorm.DB) *gorm.DB {
+			return db.Omit("course") // Menyembunyikan relasi "Course" pada preload "Section"
+		}).
+		Preload("Class").Preload("Major").Find(&courses)
+	// Mendapatkan jumlah siswa yang mengikuti setiap kursus
+	for i := range courses {
+		var count int64
+		repo.DB.Model(&entity.CourseEnrollment{}).Where("course_id = ?", courses[i].ID).Count(&count)
+		courses[i].NumStudents = int(count)
+	}
+	return courses, result.Error
+}
 func (repo CourseRepository) GetCourse(id int) (entity.Course, error) {
 	var courses entity.Course
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").First(&courses, id)
@@ -33,7 +51,7 @@ func (repo CourseRepository) CreateCourse(course entity.Course) error {
 }
 
 func (repo CourseRepository) UpdateCourse(id int, course entity.Course) error {
-	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Model(&course).Where("id = ?", id).Updates(&course)
+	result := repo.DB.Model(&course).Where("id = ?", id).UpdateColumns(course)
 	return result.Error
 }
 
@@ -44,6 +62,46 @@ func (repo CourseRepository) DeleteCourse(id int) error {
 func (repo CourseRepository) FindCourse(id int) error {
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").First(&entity.Course{}, id)
 	return result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByCompletion(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("completion " + order).Find(&courses)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByNewness(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("created_at " + order).Find(&courses)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByHighLevel(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("level " + order).Find(&courses)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetAllCoursesSortedByLowLevel(ascending bool) ([]entity.Course, error) {
+	var courses []entity.Course
+	order := "ASC"
+	if !ascending {
+		order = "DESC"
+	}
+	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Order("level " + order).Find(&courses)
+	return courses, result.Error
 }
 
 func (repo CourseRepository) GetCoursesByUserID(userID int) ([]entity.Course, error) {
@@ -94,4 +152,27 @@ func (repo CourseRepository) GetModule(id int) (entity.Module, error) {
 		Preload("Section.Course").
 		First(&module, id)
 	return module, result.Error
+
+}
+func (repo CourseRepository) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
+	var courses []entity.CourseWithSectionCount
+
+	result := repo.DB.Table("courses").
+		Select("courses.*, COUNT(sections.id) AS section_count").
+		Where("courses.id = ?", courseId).
+		Joins("LEFT JOIN sections ON courses.id = sections.course_id").
+		Group("courses.id").
+		Scan(&courses)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return courses, nil
+}
+
+func (repo CourseRepository) GetCourseSection(id int) (entity.Course, error) {
+	var courses entity.Course
+	result := repo.DB.Preload("Section").Preload("Section.Module").Preload("Section.Module.Attachment").First(&courses, id)
+	return courses, result.Error
 }

@@ -23,7 +23,6 @@ func (repo ModuleRepository) GetModule(id int) (entity.Module, error) {
 		Preload("Attachment").
 		Preload("Submission").
 		Preload("Submission.User").
-		Preload("Section.Course").
 		First(&module, id)
 	return module, result.Error
 }
@@ -35,7 +34,7 @@ func (repo ModuleRepository) CreateModule(module entity.Module) error {
 
 func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
 
-	result := repo.DB.Model(&module).Where("ids = ?", id).Updates(&module)
+	result := repo.DB.Model(&module).Where("id = ?", id).Updates(&module)
 	return result.Error
 }
 
