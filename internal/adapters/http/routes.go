@@ -193,6 +193,8 @@ func InitRoutes() *echo.Echo {
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
 
+	students.GET("/users", userHandler.GetAllUsers())
+	students.GET("/users/:id", userHandler.GetUser())
 	students.GET("/classes", classHandler.GetAllClasses())
 	students.GET("/classes/:id", classHandler.GetClass())
 	students.GET("/categories", categoryHandler.GetAllCategories())
