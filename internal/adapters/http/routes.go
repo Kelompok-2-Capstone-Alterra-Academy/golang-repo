@@ -68,6 +68,10 @@ var (
 	promoRepo    repository.PromoRepository
 	promoHandler handler.PromoHandler
 	promoUsecase usecase.PromoUseCase
+	//Rate course
+	rateCourseRepo    repository.RateCourseRepository
+	rateCourseHandler handler.RateCourseHandler
+	rateCourseUsecase usecase.RateCourseUseCase
 
 	//Trsaction
 	transactionDetailRepo    repository.TrasanctionDetailsRepository
@@ -141,6 +145,10 @@ func declare() {
 	promoRepo = repository.PromoRepository{DB: db.DbMysql}
 	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
 	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
+	// Promo
+	rateCourseRepo = repository.RateCourseRepository{DB: db.DbMysql}
+	rateCourseUsecase = usecase.RateCourseUseCase{Repo: rateCourseRepo}
+	rateCourseHandler = handler.RateCourseHandler{RateCourseUsecase: rateCourseUsecase}
 
 	// Promo
 	transactionDetailRepo = repository.TrasanctionDetailsRepository{DB: db.DbMysql}
@@ -319,6 +327,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+	// rate course
+	students.GET("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	students.PUT("/user/profile", userHandler.UpdateUser())
 	// transaction
