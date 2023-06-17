@@ -83,7 +83,7 @@ func (repo UserRepository) VerifiedOtpToken(email string, token string) error {
 }
 func (repo UserRepository) GetUserByRole(role string) ([]entity.User, error) {
 	var users []entity.User
-	result := repo.DB.Where("role != ?", role).Find(&users)
+	result := repo.DB.Where("role = ?", role).Find(&users)
 	return users, result.Error
 }
 
