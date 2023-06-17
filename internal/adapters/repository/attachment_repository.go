@@ -44,3 +44,22 @@ func (repo AttachmentRepository) FindAttachment(id int) error {
 	result := repo.DB.First(&entity.Attachment{}, id)
 	return result.Error
 }
+
+func (repo AttachmentRepository) GetVideoAttachments() ([]entity.Attachment, error) {
+	var attachments []entity.Attachment
+
+	// Query the attachments with type "materi"
+	if err := repo.DB.Where("type = ?", "video").Find(&attachments).Error; err != nil {
+		// Handle the error
+		return nil, err
+	}
+
+	// Return the attachments
+	return attachments, nil
+}
+
+func (repo AttachmentRepository) GetVideoAttachmentByID(id int) (entity.Attachment, error) {
+	var attachment entity.Attachment
+	result := repo.DB.First(&attachment, id)
+	return attachment, result.Error
+}

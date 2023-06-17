@@ -182,3 +182,37 @@ func (handler AttachmentHandler) DeleteAttachment() echo.HandlerFunc {
 		})
 	}
 }
+
+func (handler AttachmentHandler) GetVideoAttachments(c echo.Context) error {
+	attachments, err := handler.AttachmentUsecase.GetVideoAttachments()
+	if err != nil {
+		// Handle error from use case
+		return c.String(http.StatusInternalServerError, "Failed to get video attachments")
+	}
+
+	return c.JSON(http.StatusOK, attachments)
+}
+
+func (handler AttachmentHandler) GetVideoAttachmentByID(c echo.Context) error {
+	id := c.Param("id")
+
+	// Convert the ID to an integer
+	attachmentID, err := strconv.Atoi(id)
+	if err != nil {
+		// Handle the error
+		return c.String(http.StatusBadRequest, "Invalid attachment ID")
+	}
+
+	attachment, err := handler.AttachmentUsecase.GetVideoAttachmentByID(attachmentID)
+	if err != nil {
+		// Handle the error
+		return c.String(http.StatusInternalServerError, "Failed to get video attachment")
+	}
+
+	// Return the selected fields of the attachment as a response
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"attachment_name":   attachment.AttachmentName,
+		"description":       attachment.Description,
+		"attachment_source": attachment.AttachmentSource,
+	})
+}
