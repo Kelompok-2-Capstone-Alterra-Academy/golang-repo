@@ -329,8 +329,9 @@ func InitRoutes() *echo.Echo {
 	students.GET("/majors/filter", majorHandler.FilterMajors())
 	// chat mentor
 	students.GET("/mentors", userHandler.GetUserByRole())
+	students.GET("/mentors/:id", userHandler.GetUser())
 	// rate course
-	students.GET("/rate-course", rateCourseHandler.CreateRateCourse())
+	students.POST("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	students.PUT("/user/profile", userHandler.UpdateUser())
 	// transaction
