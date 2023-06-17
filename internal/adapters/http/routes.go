@@ -197,12 +197,6 @@ func InitRoutes() *echo.Echo {
 	e.POST("/promos", promoHandler.CreatePromo())
 	e.DELETE("/promos/:id", promoHandler.DeletePromo())
 
-	e.GET("/education_newses", education_newsHandler.GetAllEducationNewses())
-	e.GET("/education_newses/:id", education_newsHandler.GetEducationNews())
-	e.POST("/education_newses", education_newsHandler.CreateEducationNews())
-	e.PUT("/education_newses/:id", education_newsHandler.UpdateEducationNews())
-	e.DELETE("/education_newses/:id", education_newsHandler.DeleteEducationNews())
-
 	// students group
 	students := e.Group("/students")
 	students.Use(middleware.Logger())
@@ -221,6 +215,11 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+	students.GET("/education_newses", education_newsHandler.GetAllEducationNewses())
+	students.GET("/education_newses/:id", education_newsHandler.GetEducationNews())
+	students.POST("/education_newses", education_newsHandler.CreateEducationNews())
+	students.PUT("/education_newses/:id", education_newsHandler.UpdateEducationNews())
+	students.DELETE("/education_newses/:id", education_newsHandler.DeleteEducationNews())
 
 	return e
 }
