@@ -296,6 +296,8 @@ func InitRoutes() *echo.Echo {
 	students.Use(middlewares.AuthMiddleware())
 	students.Use(middlewares.RequireRole("students"))
 
+	students.GET("/users", userHandler.GetAllUsers())
+	students.GET("/users/:id", userHandler.GetUser())
 	//route course student
 	students.GET("/courses/:userID", courseHandler.GetCoursesByUserID)
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
@@ -315,7 +317,6 @@ func InitRoutes() *echo.Echo {
 	students.GET("/courses/quiz-attachments/:id", attachmentHandler.GetQuizAttachmentByID)
 	students.GET("/courses/materi-attachments", attachmentHandler.GetMateriAttachments)
 	students.GET("/courses/materi-attachments/:id", attachmentHandler.GetMateriAttachmentByID)
-
 	students.GET("/classes", classHandler.GetAllClasses())
 	students.GET("/classes/:id", classHandler.GetClass())
 	students.GET("/categories", categoryHandler.GetAllCategories())
