@@ -23,6 +23,7 @@ type Course struct {
 	Thumbnail       string    `json:"thumbnail" form:"thumbnail"`
 	LiveSessionWeek string    `json:"live_session_week" form:"live_session_week"`
 	Section         []Section `json:"section,omitempty" gorm:"foreignKey:CourseId"`
+	NumStudents     int       `json:"num_students" form:"num_students"`
 }
 
 type CourseWithSectionCount struct {

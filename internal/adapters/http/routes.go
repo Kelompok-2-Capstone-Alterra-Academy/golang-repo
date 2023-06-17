@@ -279,8 +279,6 @@ func InitRoutes() *echo.Echo {
 	e.POST("/promos", promoHandler.CreatePromo())
 	e.DELETE("/promos/:id", promoHandler.DeletePromo())
 
-
-
 	// students group
 	students := e.Group("/students")
 	students.Use(middleware.Logger())
@@ -323,6 +321,7 @@ func InitRoutes() *echo.Echo {
 	students.PUT("/user/profile", userHandler.UpdateUser())
 	// transaction
 	students.POST("/transaction", transactionHandler.CheckoutTransaction())
+	students.GET("/transaction/history", transactionHandler.GetMyTransaction())
 
 	return e
 }

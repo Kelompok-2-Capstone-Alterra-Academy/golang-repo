@@ -2,7 +2,9 @@ package handler
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
@@ -18,6 +20,34 @@ type TransactionHandler struct {
 	TrasanctionDetailsUseCase usecase.TrasanctionDetailsUseCase
 }
 
+func (handler TransactionHandler) GetMyTransaction() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var Transaction []entity.Transaction
+		StudentId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		Transaction, err = handler.TransactionUsecase.GetTransaction(StudentId)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		data := make(map[string]interface{})
+		data["transaction"] = Transaction
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get Transaction history ",
+			"data":        data,
+		})
+	}
+}
+
 func (handler TransactionHandler) CheckoutTransaction() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var order entity.Transaction
@@ -30,6 +60,10 @@ func (handler TransactionHandler) CheckoutTransaction() echo.HandlerFunc {
 
 		order.Status = "pending"
 		order.StudentId = UserID
+		currentTime := time.Now().Format("20060102")
+		rand.Seed(time.Now().UnixNano())
+		randomNumber := rand.Intn(99999)
+		order.InvoiceNumber = fmt.Sprintf("%s%04d", currentTime, randomNumber)
 
 		err := handler.TransactionUsecase.CreateTransaction(order)
 		if err != nil {
@@ -82,6 +116,13 @@ func (handler TransactionHandler) CheckoutTransaction() echo.HandlerFunc {
 		token := respPayment.Token
 		redirectURL := respPayment.RedirectURL
 
+		order.Token = token
+		err = handler.TransactionUsecase.UpdateTransaction(int(orderID), order)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{
+				"error": err.Error(),
+			})
+		}
 		// Return response
 		response := map[string]interface{}{
 			"transaction":  snapReq,
