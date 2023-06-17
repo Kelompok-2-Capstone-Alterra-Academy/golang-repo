@@ -173,6 +173,7 @@ func InitRoutes() *echo.Echo {
 
 	e.POST("/login", AuthHandler.Login())
 	e.POST("/registrasi", AuthHandler.Register())
+	e.POST("/registrasi-mentor", AuthHandler.MentorRegister())
 	e.POST("/verify-otp", AuthHandler.VerifyOTP())
 	e.POST("/forgot-password", AuthHandler.ForgotPassword())
 

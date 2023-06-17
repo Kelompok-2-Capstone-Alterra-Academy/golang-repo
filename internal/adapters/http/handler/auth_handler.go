@@ -55,7 +55,83 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
 		}
 		user.Password = string(hashedPassword)
-		user.Role = "students"
+		user.Role = "student"
+		user.Status = "not-verified"
+
+		// sending otp
+		otp := service.GenerateOTP()
+		// Simpan token ke database
+		expiredAt := time.Now().Add(time.Minute * 5) // Token berlaku selama 5 menit
+		otpToken := entity.OTPToken{
+			Otp:       otp,
+			Email:     user.Email,
+			ExpiredAt: expiredAt,
+		}
+		err = handler.Usecase.SaveOTP(otpToken)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to save otp token"})
+		}
+
+		body := "OTP Kamu adalah sebagai berikut ini : " + otp
+		err = service.SendEmail(user.Email, "lakukan verifikasi akun anda sebelum 10 menit", body)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status_code": http.StatusInternalServerError,
+				"message":     "Failed to send OTP email",
+				"errors":      err.Error(),
+			})
+		}
+
+		err = handler.Usecase.CreateUser(user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+
+		data := make(map[string]interface{})
+		data["users"] = user
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status_code": http.StatusCreated,
+			"message":     "user created successfully",
+			"data":        data,
+		})
+	}
+}
+
+func (handler AuthHandler) MentorRegister() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user entity.User
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		// Validasi input menggunakan package validator
+		validate := validator.New()
+		if err := validate.Struct(user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Validation errors",
+				"errors":      err.Error(),
+			})
+		}
+
+		// Validasi email unik
+		if err := handler.Usecase.UniqueEmail(user.Email); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Validation errors",
+				"errors":      err.Error(),
+			})
+		}
+
+		hashedPassword, err := service.Encrypt(user.Password)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+		user.Password = string(hashedPassword)
+		user.Role = "mentor"
 		user.Status = "not-verified"
 
 		// sending otp
