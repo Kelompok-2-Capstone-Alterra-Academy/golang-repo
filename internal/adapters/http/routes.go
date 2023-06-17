@@ -264,6 +264,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/courses/status", courseHandler.GetCoursesStatus)
 	students.GET("/courses/module", courseHandler.GetAllModules())
 	students.GET("/courses/module/:id", courseHandler.GetModule())
+	students.GET("/courses/video-attachments", attachmentHandler.GetVideoAttachments)
+	students.GET("/courses/video-attachments/:id", attachmentHandler.GetVideoAttachmentByID)
 
 	// route attachment
 	students.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
