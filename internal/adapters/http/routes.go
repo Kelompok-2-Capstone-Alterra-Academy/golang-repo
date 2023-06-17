@@ -68,6 +68,10 @@ var (
 	promoRepo    repository.PromoRepository
 	promoHandler handler.PromoHandler
 	promoUsecase usecase.PromoUseCase
+	//Rate course
+	rateCourseRepo    repository.RateCourseRepository
+	rateCourseHandler handler.RateCourseHandler
+	rateCourseUsecase usecase.RateCourseUseCase
 
 	//Trsaction
 	transactionDetailRepo    repository.TrasanctionDetailsRepository
@@ -141,6 +145,10 @@ func declare() {
 	promoRepo = repository.PromoRepository{DB: db.DbMysql}
 	promoUsecase = usecase.PromoUseCase{Repo: promoRepo}
 	promoHandler = handler.PromoHandler{PromoUsecase: promoUsecase}
+	// Promo
+	rateCourseRepo = repository.RateCourseRepository{DB: db.DbMysql}
+	rateCourseUsecase = usecase.RateCourseUseCase{Repo: rateCourseRepo}
+	rateCourseHandler = handler.RateCourseHandler{RateCourseUsecase: rateCourseUsecase}
 
 	// Promo
 	transactionDetailRepo = repository.TrasanctionDetailsRepository{DB: db.DbMysql}
@@ -246,38 +254,38 @@ func InitRoutes() *echo.Echo {
 	// mentor logout
 	mentors.POST("/logout", AuthHandler.Logout())
 
-	e.GET("/classes", classHandler.GetAllClasses())
-	e.GET("/classes/:id", classHandler.GetClass())
-	e.GET("/class/filter", classHandler.FilterClasses())
-	e.PUT("/classes/:id", classHandler.UpdateClass())
-	e.POST("/classes", classHandler.CreateClass())
-	e.DELETE("/classes/:id", classHandler.DeleteClass())
+	mentors.GET("/classes", classHandler.GetAllClasses())
+	mentors.GET("/classes/:id", classHandler.GetClass())
+	mentors.GET("/class/filter", classHandler.FilterClasses())
+	mentors.PUT("/classes/:id", classHandler.UpdateClass())
+	mentors.POST("/classes", classHandler.CreateClass())
+	mentors.DELETE("/classes/:id", classHandler.DeleteClass())
 
-	e.GET("/categories", categoryHandler.GetAllCategories())
-	e.GET("/categories/:id", categoryHandler.GetCategory())
-	e.PUT("/cateories/:id", categoryHandler.UpdateCategory())
-	e.POST("/categories", categoryHandler.CreateCategory())
-	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
+	mentors.GET("/categories", categoryHandler.GetAllCategories())
+	mentors.GET("/categories/:id", categoryHandler.GetCategory())
+	mentors.PUT("/cateories/:id", categoryHandler.UpdateCategory())
+	mentors.POST("/categories", categoryHandler.CreateCategory())
+	mentors.DELETE("/categories/:id", categoryHandler.DeleteCategory())
 
-	e.GET("/majors", majorHandler.GetAllMajors())
-	e.GET("/majors/:id", majorHandler.CreateMajor())
-	e.GET("/majors/:id", majorHandler.GetMajor())
-	e.GET("/majors/filter", majorHandler.FilterMajors())
-	e.PUT("/majors/:id", majorHandler.UpdateMajor())
-	e.POST("/majors", majorHandler.CreateMajor())
-	e.DELETE("/majors/:id", majorHandler.DeleteMajor())
+	mentors.GET("/majors", majorHandler.GetAllMajors())
+	mentors.GET("/majors/:id", majorHandler.CreateMajor())
+	mentors.GET("/majors/:id", majorHandler.GetMajor())
+	mentors.GET("/majors/filter", majorHandler.FilterMajors())
+	mentors.PUT("/majors/:id", majorHandler.UpdateMajor())
+	mentors.POST("/majors", majorHandler.CreateMajor())
+	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
-	e.GET("/courses", courseHandler.GetAllCourses())
-	e.GET("/courses/:id", courseHandler.GetCourse())
-	e.PUT("/courses/:id", courseHandler.UpdateCourse())
-	e.POST("/courses", courseHandler.CreateCourse())
-	e.DELETE("/courses/:id", courseHandler.DeleteCourse())
-	e.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
-	e.GET("/promos", promoHandler.GetAllPromo())
-	e.GET("/promos/:id", promoHandler.GetPromo())
-	e.PUT("/promos/:id", promoHandler.UpdatePromo())
-	e.POST("/promos", promoHandler.CreatePromo())
-	e.DELETE("/promos/:id", promoHandler.DeletePromo())
+	mentors.GET("/courses", courseHandler.GetAllCourses())
+	mentors.GET("/courses/:id", courseHandler.GetCourse())
+	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
+	mentors.POST("/courses", courseHandler.CreateCourse())
+	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	mentors.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
+	mentors.GET("/promos", promoHandler.GetAllPromo())
+	mentors.GET("/promos/:id", promoHandler.GetPromo())
+	mentors.PUT("/promos/:id", promoHandler.UpdatePromo())
+	mentors.POST("/promos", promoHandler.CreatePromo())
+	mentors.DELETE("/promos/:id", promoHandler.DeletePromo())
 
 
 
@@ -321,8 +329,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/majors/filter", majorHandler.FilterMajors())
 	// chat mentor
 	students.GET("/mentors", userHandler.GetUserByRole())
-
-
+	// rate course
+	students.GET("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	students.PUT("/user/profile", userHandler.UpdateUser())
 	// transaction
