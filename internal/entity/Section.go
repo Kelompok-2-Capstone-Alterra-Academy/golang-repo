@@ -4,7 +4,8 @@ import "gorm.io/gorm"
 
 type Section struct {
 	*gorm.Model
-	CourseName string `json:"course_name" form:"course_name"`
-	CourseId   string `json:"course_id" form:"course_id"`
-	Course     Course `json:"course" gorm:"foreignKey:CourseId"`
+	SectionName string   `json:"section_name" form:"section_name"`
+	CourseId    string   `json:"course_id" form:"course_id"`
+	Course      Course   `json:"course" gorm:"foreignKey:CourseId"`
+	Module      []Module `json:"module,omitempty" gorm:"foreignKey:SectionId"`
 }

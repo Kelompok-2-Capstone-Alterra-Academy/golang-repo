@@ -24,14 +24,14 @@ func (handler UserHandler) GetAllUsers() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get all user",
-			"data":   users,
+			"message":     "success get all user",
+			"data":        users,
 		})
 	}
 }
@@ -43,7 +43,7 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
@@ -51,14 +51,14 @@ func (handler UserHandler) GetUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success get user by id",
-			"data":   user,
+			"message":     "success get user by id",
+			"data":        user,
 		})
 	}
 }
@@ -69,7 +69,7 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 		if err := e.Bind(&user); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
@@ -78,7 +78,7 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 		if err := validate.Struct(user); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
@@ -86,7 +86,7 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 		if err := handler.UserUsecase.UniqueEmail(user.Email); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
@@ -94,28 +94,46 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
+				"message":     "failed to created user",
 			})
 		}
 		user.Password = string(hashedPassword)
-		// Set Role default cutomer
-		user.Role = "customer"
 
 		err = handler.UserUsecase.CreateUser(user)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
+				"message":     "failed to created user",
 			})
 		}
 
 		return e.JSON(http.StatusCreated, map[string]interface{}{
 			"status code": http.StatusCreated,
-			"message": "success create new user",
-			"data":   user,
+			"message":     "success create new user",
+			"data":        user,
 		})
 	}
 }
+func (handler UserHandler) GetUserByRole() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user []entity.User
+		role:="mentor"
+		user, err := handler.UserUsecase.GetUserByRole(role)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get user by role",
+			"data":        user,
+		})
+	}
+}
+
 
 func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 	return func(e echo.Context) error {
@@ -123,7 +141,7 @@ func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": "input is not a number",
+				"message":     "input is not a number",
 			})
 		}
 
@@ -131,13 +149,57 @@ func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": "failed to created user",
+				"message":     "failed to created user",
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message": "success delete data",
+			"message":     "success delete data",
 		})
+	}
+}
+
+func (handler UserHandler) UpdateUser() echo.HandlerFunc {
+	var user entity.User
+
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": err.Error(),
+			})
+		}
+
+	err = handler.UserUsecase.UpdateUser(id, user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.UserUsecase.UpdateUser(id, user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update user data",
+				"data":user,
+
+			})
 	}
 }

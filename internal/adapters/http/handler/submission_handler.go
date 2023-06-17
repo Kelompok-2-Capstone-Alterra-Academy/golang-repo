@@ -7,19 +7,18 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
-	// "github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
 
-type EducationNewsHandler struct {
-	EducationNewsUsecase usecase.EducationNewsUseCase
+type SubmissionHandler struct {
+	SubmissionUseCase usecase.SubmissionUseCase
 }
 
-func (handler EducationNewsHandler) GetAllEducationNewses() echo.HandlerFunc {
+func (handler SubmissionHandler) GetAllSubmissions() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var education_newses []entity.EducationNews
+		var Submissions []entity.Submission
 
-		education_newses, err := handler.EducationNewsUsecase.GetAllEducationNewses()
+		Submissions, err := handler.SubmissionUseCase.GetAllSubmissiones()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -29,15 +28,15 @@ func (handler EducationNewsHandler) GetAllEducationNewses() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all news",
-			"data":        education_newses,
+			"message":     "success get all Submissions",
+			"data":        Submissions,
 		})
 	}
 }
 
-func (handler EducationNewsHandler) GetEducationNews() echo.HandlerFunc {
+func (handler SubmissionHandler) GetSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var education_news entity.EducationNews
+		var Submission entity.Submission
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -46,7 +45,7 @@ func (handler EducationNewsHandler) GetEducationNews() echo.HandlerFunc {
 			})
 		}
 
-		education_news, err = handler.EducationNewsUsecase.GetEducationNews(id)
+		Submission, err = handler.SubmissionUseCase.GetSubmission(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -56,87 +55,80 @@ func (handler EducationNewsHandler) GetEducationNews() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get news by id",
-			"data":        education_news,
+			"message":     "success get Submission by id",
+			"data":        Submission,
 		})
 	}
 }
 
-func (handler EducationNewsHandler) CreateEducationNews() echo.HandlerFunc {
+func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var education_news entity.EducationNews
-		if err := e.Bind(&education_news); err != nil {
+		var Submission entity.Submission
+		if err := e.Bind(&Submission); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		// validate := validator.New()
-		// if err := validate.Struct(education_news); err != nil {
-		// 	return e.JSON(http.StatusBadRequest, map[string]interface{}{
-		// 		"status code": http.StatusBadRequest,
-		// 		"message":     err.Error(),
-		// 	})
-		// }
-
-		err := handler.EducationNewsUsecase.CreateEducationNews(education_news)
+		err := handler.SubmissionUseCase.CreateSubmission(Submission)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created user",
+				"message":     "failed to created Submission",
 			})
 		}
-
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 				"status code": http.StatusCreated,
-				"message":     "success create new news",
-				"data":        education_news,
+				"message":     "success create new Submission",
+				"data":        Submission,
 			})
 	}
 }
-
-func (handler EducationNewsHandler) UpdateEducationNews() echo.HandlerFunc {
-	var education_news entity.EducationNews
-
+func (handler SubmissionHandler) UpdateSubmission() echo.HandlerFunc {
+	var Submission entity.Submission
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"message": "input id is not a number",
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
 			})
 		}
 
-		err = handler.EducationNewsUsecase.FindEducationNews(id)
+		err = handler.SubmissionUseCase.FindSubmission(id)
 		if err != nil {
-			return e.JSON(500, echo.Map{
-				"message": "Record Not Found",
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
 			})
 		}
 
-		if err := e.Bind(&education_news); err != nil {
-			return e.JSON(400, echo.Map{
-				"error": err.Error(),
+		if err := e.Bind(&Submission); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message":     err.Error(),
 			})
 		}
 
-		err = handler.EducationNewsUsecase.UpdateEducationNews(id, education_news)
+		err = handler.SubmissionUseCase.UpdateSubmission(id, Submission)
 		if err != nil {
-			return e.JSON(500, echo.Map{
-				"error": err.Error(),
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get news by id",
-			"data":        education_news,
+			"message":     "success update Submission",
+			"data":        Submission,
 		})
 	}
 }
 
-func (handler EducationNewsHandler) DeleteEducationNews() echo.HandlerFunc {
+func (handler SubmissionHandler) DeleteSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -146,7 +138,7 @@ func (handler EducationNewsHandler) DeleteEducationNews() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.EducationNewsUsecase.DeleteEducationNews(id)
+		err = handler.SubmissionUseCase.DeleteSubmission(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -156,7 +148,7 @@ func (handler EducationNewsHandler) DeleteEducationNews() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete News`",
+			"message":     "Success Delete Submission`",
 		})
 	}
 }
