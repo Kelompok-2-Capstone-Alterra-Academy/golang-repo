@@ -54,11 +54,14 @@ func AutoMigrate() {
 		&entity.CourseEnrollment{},
 		&entity.OTPToken{},
 		&entity.Attachment{},
-		&entity.Module{}, 
+		&entity.Module{},
 		&entity.Task{},
-		&entity.Submission{}, 
+		&entity.Submission{},
 		&entity.CourseSection{},
-		&entity.Folder{}, 
+		&entity.Folder{},
+		&entity.Promo{},
+		&entity.Transaction{},
+		&entity.TransactionDetails{},
 	)
 	if err != nil {
 		log.Fatalf("Error migrating database: %s", err.Error())
