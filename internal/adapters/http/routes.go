@@ -322,6 +322,7 @@ func InitRoutes() *echo.Echo {
 	// transaction
 	students.POST("/transaction", transactionHandler.CheckoutTransaction())
 	students.GET("/transaction/history", transactionHandler.GetMyTransaction())
-
+	// section by course
+	students.GET("/courses/section/:id", sectionHandler.GetCourseSection())
 	return e
 }

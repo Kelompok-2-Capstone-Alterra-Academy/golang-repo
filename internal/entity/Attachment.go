@@ -10,6 +10,6 @@ type Attachment struct {
 	Type             string  `json:"type" form:"type" validate:"required"`
 	AttachmentSource string  `json:"attachment_source" form:"attachment_source" validate:"required"`
 	Status           string  `json:"status" gorm:"default:draft"`
-	FolderId         string  `json:"folder_id" form:"folder_id"`
-	Folder           *Folder `json:"folder,omitempty" gorm:"foreignKey:FolderId"`
+	FolderId         *string `json:"folder_id" form:"folder_id"`
+	Folder           Folder  `json:"folder,omitempty" gorm:"foreignKey:FolderId"`
 }

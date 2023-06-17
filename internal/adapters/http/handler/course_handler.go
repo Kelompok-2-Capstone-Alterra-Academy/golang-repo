@@ -370,3 +370,33 @@ func (handler CourseHandler) GetAllCoursesSortedByField() echo.HandlerFunc {
 		})
 	}
 }
+
+func (handler CourseHandler) GetCourseSection() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var course entity.Course
+
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
+			})
+		}
+		course, err = handler.CourseUsecase.GetCourseSection(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		data := make(map[string]interface{})
+		data["courses"] = course
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by id",
+			"data":        data,
+		})
+	}
+}

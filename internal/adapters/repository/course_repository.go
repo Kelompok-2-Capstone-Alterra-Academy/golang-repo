@@ -170,3 +170,9 @@ func (repo CourseRepository) GetAllCoursesWithSectionCount(courseId int) ([]enti
 
 	return courses, nil
 }
+
+func (repo CourseRepository) GetCourseSection(id int) (entity.Course, error) {
+	var courses entity.Course
+	result := repo.DB.Preload("Section").Preload("Section.Module").Preload("Section.Module.Attachment").First(&courses, id)
+	return courses, result.Error
+}
