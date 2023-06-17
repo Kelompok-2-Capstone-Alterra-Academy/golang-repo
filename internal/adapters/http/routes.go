@@ -327,6 +327,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+	// chat mentor
+	students.GET("/mentors", userHandler.GetUserByRole())
 	// rate course
 	students.GET("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
