@@ -41,3 +41,12 @@ func (repo SectionRepository) FindSection(id int) error {
 	result := repo.DB.First(&entity.Section{}, id)
 	return result.Error
 }
+func (repo SectionRepository) GetAllSectionsByCourse(course_id int) ([]entity.Section, error) {
+	var sections []entity.Section
+	result := repo.DB.Preload("Module").
+		Preload("Module.Attachment").
+		Preload("Course").
+		Where("course_id = ?", course_id).
+		Find(&sections)
+	return sections, result.Error
+}

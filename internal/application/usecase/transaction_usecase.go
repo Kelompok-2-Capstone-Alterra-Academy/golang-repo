@@ -14,6 +14,11 @@ type TransactionUsecase struct {
 	UserRepo        repository.UserRepository
 }
 
+func (usecase TransactionUsecase) GetTransaction(id int) ([]entity.Transaction, error) {
+	transaction, err := usecase.TransactionRepo.GetTransaction(id)
+	return transaction, err
+}
+
 func (uc *TransactionUsecase) GetLastTransactionID() (uint, error) {
 	stores, err := uc.TransactionRepo.GetLastTransactionID()
 	return stores, err
