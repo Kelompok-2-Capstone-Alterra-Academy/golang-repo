@@ -116,7 +116,6 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 		})
 	}
 }
-
 func (handler UserHandler) GetUserByRole() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var user []entity.User
@@ -160,5 +159,49 @@ func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 			"status code": http.StatusOK,
 			"message":     "success delete data",
 		})
+	}
+}
+
+func (handler UserHandler) UpdateUser() echo.HandlerFunc {
+	var user entity.User
+
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message": err.Error(),
+			})
+		}
+
+	err = handler.UserUsecase.UpdateUser(id, user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusNotFound, map[string]interface{}{
+				"status code": http.StatusNotFound,
+				"message": err.Error(),
+			})
+		}
+
+		err = handler.UserUsecase.UpdateUser(id, user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message": err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+				"status code": http.StatusOK,
+				"message": "success update user data",
+				"data":user,
+
+			})
 	}
 }
