@@ -51,8 +51,16 @@ func (handler TransactionHandler) GetMyTransaction() echo.HandlerFunc {
 func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Ambil data notifikasi dari body request
-		payload := c.Request().Body
-		invoice_number := c.FormValue("order_id")
+		var jsonReq struct {
+			OrderID string `json:"order_id"`
+			Status  string `json:"transaction_status"`
+		}
+		if err := c.Bind(&jsonReq); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{
+				"error": err.Error(),
+			})
+		}
+		invoice_number := jsonReq.OrderID
 
 		var Transaction entity.Transaction
 		var CourseEnrollment entity.CourseEnrollment
@@ -70,7 +78,6 @@ func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 
 		// Contoh sederhana: Cetak payload notifikasi
 		fmt.Println("Received Midtrans notification:")
-		fmt.Println(payload)
 
 		// Lakukan verifikasi signature notifikasi dari Midtrans
 		// Implementasikan logika verifikasi sesuai dokumentasi Midtrans
@@ -82,10 +89,10 @@ func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 			// Verifikasi signature berhasil
 
 			// Periksa status transaksi
-			transactionStatus := c.FormValue("transaction_status")
+			transactionStatus := jsonReq.Status
 
 			switch transactionStatus {
-			case "capture":
+			case "settlement":
 				// Transaksi berhasil
 				CourseEnrollment.UserId = Transaction.StudentId
 				CourseEnrollment.CourseId = Transaction.TransactionDetails[0].CourseId
@@ -100,7 +107,7 @@ func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 						"error": err.Error(),
 					})
 				}
-				return c.String(http.StatusOK, "Transaction successfully captured")
+				return c.JSON(http.StatusOK, "Transaction successfully captured")
 
 			case "expire":
 				// Transaksi kedaluwarsa
@@ -113,7 +120,7 @@ func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 						"error": err.Error(),
 					})
 				}
-				return c.String(http.StatusOK, "Transaction expired")
+				return c.JSON(http.StatusOK, "Transaction expired")
 
 			default:
 				// Status transaksi lainnya
@@ -126,13 +133,13 @@ func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 						"error": err.Error(),
 					})
 				}
-				return c.String(http.StatusOK, "Other transaction status")
+				return c.JSON(http.StatusOK, "Other transaction status")
 			}
 		} else {
 			// Verifikasi signature gagal
 			log.Error("Invalid signature")
 
-			return c.String(http.StatusBadRequest, "Invalid signature")
+			return c.JSON(http.StatusBadRequest, "Invalid signature")
 		}
 	}
 }
