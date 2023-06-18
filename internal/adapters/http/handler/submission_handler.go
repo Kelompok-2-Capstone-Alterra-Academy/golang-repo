@@ -72,6 +72,14 @@ func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
+		StudentId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
 		file, err := e.FormFile("submission_source")
 		if err != nil {
 			return err
@@ -87,6 +95,7 @@ func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 		}
 
 		Submission.SubmissionSource = result
+		Submission.StudentId = StudentId
 
 		err = handler.SubmissionUseCase.CreateSubmission(Submission)
 		if err != nil {
