@@ -16,6 +16,7 @@ jobs:
         script: |
           export PATH=$PATH:/usr/local/go/bin
           cd dev/golang-repo
+          sudo apt clean
           git pull
           go build .
           sudo systemctl restart go-staging.service 
