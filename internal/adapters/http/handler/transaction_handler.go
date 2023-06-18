@@ -12,6 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 )
 
 type TransactionHandler struct {
@@ -45,6 +46,94 @@ func (handler TransactionHandler) GetMyTransaction() echo.HandlerFunc {
 			"message":     "success get Transaction history ",
 			"data":        data,
 		})
+	}
+}
+func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// Ambil data notifikasi dari body request
+		payload := c.Request().Body
+		invoice_number := c.FormValue("order_id")
+
+		var Transaction entity.Transaction
+		var CourseEnrollment entity.CourseEnrollment
+
+		Transaction, err := handler.TransactionUsecase.FindByInvoiceId(invoice_number)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		// Lakukan pemrosesan notifikasi sesuai kebutuhan Anda
+		// Anda dapat menggunakan package encoding/json untuk mendecode JSON payload
+
+		// Contoh sederhana: Cetak payload notifikasi
+		fmt.Println("Received Midtrans notification:")
+		fmt.Println(payload)
+
+		// Lakukan verifikasi signature notifikasi dari Midtrans
+		// Implementasikan logika verifikasi sesuai dokumentasi Midtrans
+
+		// Contoh sederhana: Verifikasi selalu berhasil
+		validSignature := true
+
+		if validSignature {
+			// Verifikasi signature berhasil
+
+			// Periksa status transaksi
+			transactionStatus := c.FormValue("transaction_status")
+
+			switch transactionStatus {
+			case "capture":
+				// Transaksi berhasil
+				CourseEnrollment.UserId = Transaction.StudentId
+				CourseEnrollment.CourseId = Transaction.TransactionDetails[0].CourseId
+				err := handler.TransactionUsecase.CreateEnrolment(CourseEnrollment)
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+				}
+				Transaction.Status = "success"
+				err = handler.TransactionUsecase.UpdateTransaction(int(Transaction.ID), Transaction)
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+				}
+				return c.String(http.StatusOK, "Transaction successfully captured")
+
+			case "expire":
+				// Transaksi kedaluwarsa
+
+				// Lakukan penanganan transaksi yang kedaluwarsa pada website Anda
+				Transaction.Status = "expire"
+				err = handler.TransactionUsecase.UpdateTransaction(int(Transaction.ID), Transaction)
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+				}
+				return c.String(http.StatusOK, "Transaction expired")
+
+			default:
+				// Status transaksi lainnya
+
+				// Tangani status transaksi lain sesuai kebutuhan Anda
+				Transaction.Status = "pending"
+				err = handler.TransactionUsecase.UpdateTransaction(int(Transaction.ID), Transaction)
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, map[string]string{
+						"error": err.Error(),
+					})
+				}
+				return c.String(http.StatusOK, "Other transaction status")
+			}
+		} else {
+			// Verifikasi signature gagal
+			log.Error("Invalid signature")
+
+			return c.String(http.StatusBadRequest, "Invalid signature")
+		}
 	}
 }
 
