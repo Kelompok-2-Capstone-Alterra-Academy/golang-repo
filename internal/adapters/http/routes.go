@@ -274,6 +274,13 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	mentors.GET("/courses/users/:course_id", courseHandler.GetStudentsByCourseID)
+	mentors.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
+	mentors.GET("/promos", promoHandler.GetAllPromo())
+	mentors.GET("/promos/:id", promoHandler.GetPromo())
+	mentors.PUT("/promos/:id", promoHandler.UpdatePromo())
+	mentors.POST("/promos", promoHandler.CreatePromo())
+	mentors.DELETE("/promos/:id", promoHandler.DeletePromo())
 
 	// route section
 	mentors.GET("/section", sectionHandler.GetAllSections())
