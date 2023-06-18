@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type Module struct {
 	*gorm.Model
 	ModuleName   string       `json:"module_name" form:"module_name"`
+	Description  string       `json:"description" form:"description"`
 	SectionId    int          `json:"section_id" form:"section_id"`
 	Section      Section      `json:"section" gorm:"foreignKey:SectionId"`
 	AttachmentId *int         `json:"attachment_id" form:"attachment_id"`
