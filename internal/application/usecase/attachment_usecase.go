@@ -38,6 +38,18 @@ func (usecase AttachmentUseCase) FindAttachment(id int) error {
 	return err
 }
 
+func (usecase AttachmentUseCase) GetVideoAttachments() ([]entity.Attachment, error) {
+	return usecase.Repo.GetVideoAttachments()
+}
+
+func (usecase AttachmentUseCase) GetVideoAttachmentByID(id int) (entity.Attachment, error) {
+	attachment, err := usecase.Repo.GetVideoAttachmentByID(id)
+	if err != nil {
+		return entity.Attachment{}, err
+	}
+	return attachment, nil
+}
+
 func (usecase AttachmentUseCase) GetQuizAttachments() ([]entity.Attachment, error) {
 	return usecase.Repo.GetQuizAttachments()
 }

@@ -305,6 +305,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
 	students.POST("/attachment", attachmentHandler.CreateAttachment())
 	students.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
+	students.GET("/courses/video-attachments", attachmentHandler.GetVideoAttachments)
+	students.GET("/courses/video-attachments/:id", attachmentHandler.GetVideoAttachmentByID)
 	students.GET("/courses/quiz-attachments", attachmentHandler.GetQuizAttachments)
 	students.GET("/courses/quiz-attachments/:id", attachmentHandler.GetQuizAttachmentByID)
 	students.GET("/courses/materi-attachments", attachmentHandler.GetMateriAttachments)
