@@ -389,5 +389,8 @@ func InitRoutes() *echo.Echo {
 	students.GET("/transaction/history", transactionHandler.GetMyTransaction())
 	// section by course
 	students.GET("/courses/section/:id", sectionHandler.GetCourseSection())
+	// submission
+	students.POST("/courses/submission", submissionHandler.CreateSubmission())
+
 	return e
 }

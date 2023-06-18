@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
@@ -63,6 +64,7 @@ func (handler SubmissionHandler) GetSubmission() echo.HandlerFunc {
 
 func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 	return func(e echo.Context) error {
+
 		var Submission entity.Submission
 		if err := e.Bind(&Submission); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -70,8 +72,23 @@ func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
+		file, err := e.FormFile("submission_source")
+		if err != nil {
+			return err
+		}
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer src.Close()
+		result, err := service.UploadToS3(e, file.Filename, src)
+		if err != nil {
+			return err
+		}
 
-		err := handler.SubmissionUseCase.CreateSubmission(Submission)
+		Submission.SubmissionSource = result
+
+		err = handler.SubmissionUseCase.CreateSubmission(Submission)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -86,6 +103,7 @@ func (handler SubmissionHandler) CreateSubmission() echo.HandlerFunc {
 			})
 	}
 }
+
 func (handler SubmissionHandler) UpdateSubmission() echo.HandlerFunc {
 	var Submission entity.Submission
 	return func(e echo.Context) error {
