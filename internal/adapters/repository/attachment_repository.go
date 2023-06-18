@@ -18,7 +18,15 @@ func (repo AttachmentRepository) GetAllAttachments(folder int) ([]entity.Attachm
 	}
 	return Attachments, nil
 }
-
+func (repo AttachmentRepository) GetQuiz() ([]entity.Attachment, error) {
+	var Attachments []entity.Attachment
+	var quiz = "quiz"
+	result := repo.DB.Where("type = ?", quiz).Find(&Attachments)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return Attachments, nil
+}
 func (repo AttachmentRepository) GetAttachment(id int) (entity.Attachment, error) {
 	var Attachments entity.Attachment
 	result := repo.DB.First(&Attachments, id)

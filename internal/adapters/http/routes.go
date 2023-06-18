@@ -202,8 +202,9 @@ func InitRoutes() *echo.Echo {
 
 	// route attachment
 	mentors.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
+	mentors.GET("/attachment/quiz", attachmentHandler.GetAllQuiz())
 	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
-	mentors.PUT("/attachment/:id", moduleHandler.UpdateModule())
+	mentors.PUT("/attachment/:id", attachmentHandler.UpdateAttachment())
 	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
 	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
 

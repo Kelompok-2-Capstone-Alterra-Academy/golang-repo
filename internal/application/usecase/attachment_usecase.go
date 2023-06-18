@@ -14,9 +14,14 @@ func (usecase AttachmentUseCase) GetAllAttachments(folderId int) ([]entity.Attac
 	return Attachmentes, err
 }
 
+func (usecase AttachmentUseCase) GetAllQuiz() ([]entity.Attachment, error) {
+	Attachmentes, err := usecase.Repo.GetQuiz()
+	return Attachmentes, err
+}
+
 func (usecase AttachmentUseCase) GetAttachment(id int) (entity.Attachment, error) {
-	Attachment, err := usecase.Repo.GetAttachment(id)
-	return Attachment, err
+	attachment, err := usecase.Repo.GetAttachment(id)
+	return attachment, err
 }
 
 func (usecase AttachmentUseCase) CreateAttachment(Attachment *entity.Attachment) error {

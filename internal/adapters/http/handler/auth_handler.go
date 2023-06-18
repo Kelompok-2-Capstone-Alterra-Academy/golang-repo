@@ -55,7 +55,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
 		}
 		user.Password = string(hashedPassword)
-		user.Role = "student"
+		user.Role = "students"
 		user.Status = "not-verified"
 
 		// sending otp
@@ -131,32 +131,7 @@ func (handler AuthHandler) MentorRegister() echo.HandlerFunc {
 			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
 		}
 		user.Password = string(hashedPassword)
-		user.Role = "mentor"
-		user.Status = "not-verified"
-
-		// sending otp
-		otp := service.GenerateOTP()
-		// Simpan token ke database
-		expiredAt := time.Now().Add(time.Minute * 5) // Token berlaku selama 5 menit
-		otpToken := entity.OTPToken{
-			Otp:       otp,
-			Email:     user.Email,
-			ExpiredAt: expiredAt,
-		}
-		err = handler.Usecase.SaveOTP(otpToken)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to save otp token"})
-		}
-
-		body := "OTP Kamu adalah sebagai berikut ini : " + otp
-		err = service.SendEmail(user.Email, "lakukan verifikasi akun anda sebelum 10 menit", body)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status_code": http.StatusInternalServerError,
-				"message":     "Failed to send OTP email",
-				"errors":      err.Error(),
-			})
-		}
+		user.Role = "mentors"
 
 		err = handler.Usecase.CreateUser(user)
 		if err != nil {
