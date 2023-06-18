@@ -18,7 +18,10 @@ var (
 	userUsecase usecase.UserUseCase
 	// auth
 	AuthHandler handler.AuthHandler
-
+	// educatoin news
+	education_newsRepo    repository.EducationNewsRepository
+	education_newsHandler handler.EducationNewsHandler
+	education_newsUsecase usecase.EducationNewsUseCase
 	// class
 	classRepo    repository.ClassRepository
 	classHandler handler.ClassHandler
@@ -90,7 +93,10 @@ func declare() {
 	userHandler = handler.UserHandler{UserUsecase: userUsecase}
 	// auth
 	AuthHandler = handler.AuthHandler{Usecase: userUsecase}
-
+	// education news
+	education_newsRepo = repository.EducationNewsRepository{DB: db.DbMysql}
+	education_newsUsecase = usecase.EducationNewsUseCase{Repo: education_newsRepo}
+	education_newsHandler = handler.EducationNewsHandler{EducationNewsUsecase: education_newsUsecase}
 	// class
 	classRepo = repository.ClassRepository{DB: db.DbMysql}
 	classUsecase = usecase.ClassUseCase{Repo: classRepo}
@@ -121,10 +127,7 @@ func declare() {
 	folderRepo = repository.FolderRepository{DB: db.DbMysql}
 	folderUsecase = usecase.FolderUseCase{Repo: folderRepo}
 	folderHandler = handler.FolderHandler{FolderUsecase: folderUsecase}
-	// attachments
-	attachmentRepo = repository.AttachmentRepository{DB: db.DbMysql}
-	attachmentUsecase = usecase.AttachmentUseCase{Repo: attachmentRepo}
-	attachmentHandler = handler.AttachmentHandler{AttachmentUsecase: attachmentUsecase}
+
 	// attachments
 	moduleRepo = repository.ModuleRepository{DB: db.DbMysql}
 	moduleUsecase = usecase.ModuleUseCase{Repo: moduleRepo}
@@ -188,6 +191,7 @@ func InitRoutes() *echo.Echo {
 	mentors.POST("/users", userHandler.CreateUser())
 	mentors.DELETE("/users/:id", userHandler.DeleteUser())
 
+	// montor group
 	mentors.GET("/chat/students/:id", courseEnrollmentHandler.GetAllStudents())
 	mentors.GET("/chat/courses", courseEnrollmentHandler.GetAllCourse())
 	// route folders
@@ -222,29 +226,18 @@ func InitRoutes() *echo.Echo {
 	mentors.POST("/submission", submissionHandler.CreateSubmission())
 	mentors.DELETE("/submission/:id", submissionHandler.DeleteSubmission())
 
-	mentors.GET("/classes", classHandler.GetAllClasses())
-	mentors.GET("/classes/:id", classHandler.GetClass())
-	mentors.PUT("/classes/:id", classHandler.UpdateClass())
-	mentors.POST("/classes", classHandler.CreateClass())
-	mentors.DELETE("/classes/:id", classHandler.DeleteClass())
+	e.GET("/classes", classHandler.GetAllClasses())
+	e.GET("/classes/:id", classHandler.GetClass())
+	e.GET("/class/filter", classHandler.FilterClasses())
+	e.PUT("/classes/:id", classHandler.UpdateClass())
+	e.POST("/classes", classHandler.CreateClass())
+	e.DELETE("/classes/:id", classHandler.DeleteClass())
 
-	mentors.GET("/categories", categoryHandler.GetAllCategories())
-	mentors.GET("/categories/:id", categoryHandler.GetCategory())
-	mentors.PUT("/cateories/:id", categoryHandler.UpdateCategory())
-	mentors.POST("/categories", categoryHandler.CreateCategory())
-	mentors.DELETE("/categories/:id", categoryHandler.DeleteCategory())
-
-	mentors.GET("/majors", majorHandler.GetAllMajors())
-	mentors.GET("/majors/:id", majorHandler.CreateMajor())
-	mentors.PUT("/majors/:id", majorHandler.UpdateMajor())
-	mentors.POST("/majors", majorHandler.CreateMajor())
-	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
-	// route courses
-	mentors.GET("/courses", courseHandler.GetAllCourses())
-	mentors.GET("/courses/:id", courseHandler.GetCourse())
-	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
-	mentors.POST("/courses", courseHandler.CreateCourse())
-	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	e.GET("/categories", categoryHandler.GetAllCategories())
+	e.GET("/categories/:id", categoryHandler.GetCategory())
+	e.PUT("/categories/:id", categoryHandler.UpdateCategory())
+	e.POST("/categories", categoryHandler.CreateCategory())
+	e.DELETE("/categories/:id", categoryHandler.DeleteCategory())
 
 	// route section
 	mentors.GET("/section", sectionHandler.GetAllSections())
@@ -281,6 +274,7 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
 	mentors.POST("/courses", courseHandler.CreateCourse())
 	mentors.DELETE("/courses/:id", courseHandler.DeleteCourse())
+	mentors.DELETE("/courses/:course_id/users", courseHandler.GetStudentsByCourseID)
 	mentors.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	mentors.GET("/promos", promoHandler.GetAllPromo())
 	mentors.GET("/promos/:id", promoHandler.GetPromo())
@@ -327,6 +321,14 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+
+	// education news
+	students.GET("/education_newses", education_newsHandler.GetAllEducationNewses())
+	students.GET("/education_newses/:id", education_newsHandler.GetEducationNews())
+	students.POST("/education_newses", education_newsHandler.CreateEducationNews())
+	students.PUT("/education_newses/:id", education_newsHandler.UpdateEducationNews())
+	students.DELETE("/education_newses/:id", education_newsHandler.DeleteEducationNews())
+
 	// chat mentor
 	students.GET("/mentors", userHandler.GetUserByRole())
 	students.GET("/mentors/:id", userHandler.GetUser())
