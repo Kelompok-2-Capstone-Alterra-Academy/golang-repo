@@ -400,3 +400,29 @@ func (handler CourseHandler) GetCourseSection() echo.HandlerFunc {
 		})
 	}
 }
+
+func (handler CourseHandler) GetStudentsByCourseID(c echo.Context) error {
+	courseID, err := strconv.Atoi(c.Param("course_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"status code": http.StatusBadRequest,
+			"message":     "Invalid course ID",
+		})
+	}
+
+	users, err := handler.CourseUsecase.GetStudentsByCourseID(courseID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
+		})
+	}
+
+	response := map[string]interface{}{
+		"status code": http.StatusOK,
+		"message":     "Success get users by course ID",
+		"data":        users,
+	}
+
+	return c.JSON(http.StatusOK, response)
+}

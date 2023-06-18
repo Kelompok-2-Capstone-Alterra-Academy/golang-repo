@@ -176,3 +176,13 @@ func (repo CourseRepository) GetCourseSection(id int) (entity.Course, error) {
 	result := repo.DB.Preload("Section").Preload("Section.Module").Preload("Section.Module.Attachment").First(&courses, id)
 	return courses, result.Error
 }
+
+func (repo CourseRepository) GetStudentsByCourseID(courseID int) ([]entity.User, error) {
+	var users []entity.User
+	result := repo.DB.Model(&entity.CourseEnrollment{}).
+		Select("users.*").
+		Joins("JOIN users ON course_enrollments.user_id = users.ID").
+		Where("course_enrollments.course_id = ?", courseID).
+		Find(&users)
+	return users, result.Error
+}
