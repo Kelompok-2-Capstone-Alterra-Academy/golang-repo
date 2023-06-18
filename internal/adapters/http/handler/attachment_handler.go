@@ -96,7 +96,7 @@ func (handler AttachmentHandler) CreateAttachment() echo.HandlerFunc {
 			Attachment.AttachmentSource = result
 		}
 
-		err := handler.AttachmentUsecase.CreateAttachment(Attachment)
+		err := handler.AttachmentUsecase.CreateAttachment(&Attachment)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -143,14 +143,14 @@ func (handler AttachmentHandler) UpdateAttachment() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.AttachmentUsecase.UpdateAttachment(id, Attachment)
+		err = handler.AttachmentUsecase.UpdateAttachment(id, &Attachment)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     err.Error(),
 			})
 		}
-
+		Attachment.ID = uint(id)
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "success update Attachment",

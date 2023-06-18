@@ -27,12 +27,12 @@ func (repo ModuleRepository) GetModule(id int) (entity.Module, error) {
 	return module, result.Error
 }
 
-func (repo ModuleRepository) CreateModule(module entity.Module) error {
+func (repo ModuleRepository) CreateModule(module *entity.Module) error {
 	result := repo.DB.Create(&module)
 	return result.Error
 }
 
-func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
+func (repo ModuleRepository) UpdateModule(id int, module *entity.Module) error {
 
 	result := repo.DB.Model(&module).Where("id = ?", id).Updates(&module)
 	return result.Error

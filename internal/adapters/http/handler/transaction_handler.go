@@ -205,7 +205,7 @@ func (handler TransactionHandler) CheckoutTransaction() echo.HandlerFunc {
 		token := respPayment.Token
 		redirectURL := respPayment.RedirectURL
 
-		order.Token = token
+		order.Token = respPayment.RedirectURL
 		err = handler.TransactionUsecase.UpdateTransaction(int(orderID), order)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]string{

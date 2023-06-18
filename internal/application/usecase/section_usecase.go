@@ -19,12 +19,12 @@ func (usecase SectionUseCase) GetSection(id int) (entity.Section, error) {
 	return section, err
 }
 
-func (usecase SectionUseCase) CreateSection(section entity.Section) error {
+func (usecase SectionUseCase) CreateSection(section *entity.Section) error {
 	err := usecase.Repo.CreateSection(section)
 	return err
 }
 
-func (usecase SectionUseCase) UpdateSection(id int, section entity.Section) error {
+func (usecase SectionUseCase) UpdateSection(id int, section *entity.Section) error {
 	err := usecase.Repo.UpdateSection(id, section)
 	return err
 }
