@@ -59,6 +59,7 @@ var (
 	// task
 	taskRepo    repository.TaskRepository
 	taskHandler handler.TaskHandler
+	taskSubmissionHandler handler.TaskSubmissionHandler
 	taskUsecase usecase.TaskUseCase
 	// submission
 	submissionRepo    repository.SubmissionRepository
@@ -120,6 +121,7 @@ func declare() {
 	taskRepo = repository.TaskRepository{DB: db.DbMysql}
 	taskUsecase = usecase.TaskUseCase{Repo: taskRepo}
 	taskHandler = handler.TaskHandler{TaskUseCase: taskUsecase}
+	taskSubmissionHandler := handler.TaskSubmissionHandler{TaskUseCase: taskUsecase}
 	// task
 	submissionRepo = repository.SubmissionRepository{DB: db.DbMysql}
 	submissionUsecase = usecase.SubmissionUseCase{Repo: submissionRepo}
@@ -145,6 +147,7 @@ func InitRoutes() *echo.Echo {
 	e.POST("/registrasi", AuthHandler.Register())
 	e.POST("/verify-otp", AuthHandler.VerifyOTP())
 	e.POST("/forgot-password", AuthHandler.ForgotPassword())
+	e.POST("/api/tasks/submit", taskSubmissionHandler.SubmitTask())
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -288,6 +291,7 @@ func InitRoutes() *echo.Echo {
 	students.GET("/promos/:id", promoHandler.GetPromo())
 	students.GET("/class/filter", classHandler.FilterClasses())
 	students.GET("/majors/filter", majorHandler.FilterMajors())
+	students.POST("tasks/submit", taskSubmissionHandler.submitTask())
 
 	return e
 }
