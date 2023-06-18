@@ -19,12 +19,12 @@ func (usecase AttachmentUseCase) GetAttachment(id int) (entity.Attachment, error
 	return Attachment, err
 }
 
-func (usecase AttachmentUseCase) CreateAttachment(Attachment entity.Attachment) error {
+func (usecase AttachmentUseCase) CreateAttachment(Attachment *entity.Attachment) error {
 	err := usecase.Repo.CreateAttachment(Attachment)
 	return err
 }
 
-func (usecase AttachmentUseCase) UpdateAttachment(id int, Attachment entity.Attachment) error {
+func (usecase AttachmentUseCase) UpdateAttachment(id int, Attachment *entity.Attachment) error {
 	err := usecase.Repo.UpdateAttachment(id, Attachment)
 	return err
 }

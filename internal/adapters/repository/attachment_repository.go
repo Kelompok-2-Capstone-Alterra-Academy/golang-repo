@@ -25,12 +25,12 @@ func (repo AttachmentRepository) GetAttachment(id int) (entity.Attachment, error
 	return Attachments, result.Error
 }
 
-func (repo AttachmentRepository) CreateAttachment(Attachment entity.Attachment) error {
+func (repo AttachmentRepository) CreateAttachment(Attachment *entity.Attachment) error {
 	result := repo.DB.Create(&Attachment)
 	return result.Error
 }
 
-func (repo AttachmentRepository) UpdateAttachment(id int, Attachment entity.Attachment) error {
+func (repo AttachmentRepository) UpdateAttachment(id int, Attachment *entity.Attachment) error {
 	result := repo.DB.Model(&Attachment).Where("id = ?", id).Updates(&Attachment)
 	return result.Error
 }
