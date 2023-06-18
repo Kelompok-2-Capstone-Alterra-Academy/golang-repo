@@ -67,3 +67,13 @@ func (repo TransactionRepository) GetTransaction(id int) ([]entity.Transaction, 
 	return transaction, result.Error
 
 }
+func (repo TransactionRepository) FindByInvoiceId(invoiceNumber string) (entity.Transaction, error) {
+	var transaction entity.Transaction
+	result := repo.DB.Where("invoice_number = ?", invoiceNumber).Preload("TransactionDetails").First(&transaction)
+	return transaction, result.Error
+}
+
+func (repo TransactionRepository) CreateEnrolment(course entity.CourseEnrollment) error {
+	result := repo.DB.Create(&course)
+	return result.Error
+}

@@ -253,6 +253,8 @@ func InitRoutes() *echo.Echo {
 	e.POST("/classes", classHandler.CreateClass())
 	e.DELETE("/classes/:id", classHandler.DeleteClass())
 
+	e.POST("/transaction", transactionHandler.MidtransNotification())
+
 	e.GET("/categories", categoryHandler.GetAllCategories())
 	e.GET("/categories/:id", categoryHandler.GetCategory())
 	e.PUT("/cateories/:id", categoryHandler.UpdateCategory())
