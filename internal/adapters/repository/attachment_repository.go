@@ -39,7 +39,7 @@ func (repo AttachmentRepository) CreateAttachment(Attachment *entity.Attachment)
 }
 
 func (repo AttachmentRepository) UpdateAttachment(id int, Attachment *entity.Attachment) error {
-	result := repo.DB.Model(&Attachment).Where("id = ?", id).Updates(&Attachment)
+	result := repo.DB.Model(&Attachment).Where("id = ?", id).UpdateColumns(&Attachment)
 	return result.Error
 }
 
