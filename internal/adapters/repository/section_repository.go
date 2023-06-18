@@ -45,6 +45,7 @@ func (repo SectionRepository) GetAllSectionsByCourse(course_id int) ([]entity.Se
 	var sections []entity.Section
 	result := repo.DB.Preload("Module").
 		Preload("Module.Attachment").
+		Preload("Module.Tasks").
 		Preload("Course").
 		Where("course_id = ?", course_id).
 		Find(&sections)
