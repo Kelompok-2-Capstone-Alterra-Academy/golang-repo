@@ -70,3 +70,28 @@ func (handler CourseEnrollmentHandler) GetAllCourse() echo.HandlerFunc {
 		})
 	}
 }
+
+func (handler CourseEnrollmentHandler) DeleteCourseEnrollment() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
+			})
+		}
+
+		err = handler.CourseEnrollmentUseCase.DeleteCourseEnrollment(id, entity.CourseEnrollment{})
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status_code": http.StatusOK,
+			"message":     "The course enrollment has been successfully deleted",
+		})
+	}
+}

@@ -27,3 +27,8 @@ func (repo CourseEnrollmentRepository) GetCourse(userID int) ([]entity.Course, e
 
 	return courses, result.Error
 }
+
+func (repo CourseEnrollmentRepository) DeleteCourseEnrollment(id int, course entity.CourseEnrollment) error {
+	result := repo.DB.Model(&entity.CourseEnrollment{}).Where("id = ?", id).Update("status", "deactive")
+	return result.Error
+}

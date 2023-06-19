@@ -57,6 +57,7 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 		user.Password = string(hashedPassword)
 		user.Role = "students"
 		user.Status = "not-verified"
+		user.Profile = "noimage.png"
 
 		// sending otp
 		otp := service.GenerateOTP()
@@ -132,6 +133,7 @@ func (handler AuthHandler) MentorRegister() echo.HandlerFunc {
 		}
 		user.Password = string(hashedPassword)
 		user.Role = "mentors"
+		user.Profile = "noimage.png"
 
 		err = handler.Usecase.CreateUser(user)
 		if err != nil {

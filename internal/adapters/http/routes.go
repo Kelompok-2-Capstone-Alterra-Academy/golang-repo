@@ -194,6 +194,8 @@ func InitRoutes() *echo.Echo {
 	// montor group
 	mentors.GET("/chat/students/:id", courseEnrollmentHandler.GetAllStudents())
 	mentors.GET("/chat/courses", courseEnrollmentHandler.GetAllCourse())
+	mentors.DELETE("/my-course/delete/:id", courseEnrollmentHandler.DeleteCourseEnrollment())
+
 	// route folders
 	mentors.GET("/folders", folderHandler.GetAllFolders())
 	mentors.GET("/folders/:id", folderHandler.GetFolder())
