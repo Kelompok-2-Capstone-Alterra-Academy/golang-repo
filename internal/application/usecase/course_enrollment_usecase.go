@@ -18,7 +18,7 @@ func (usecase CourseEnrollmentUseCase) GetCourse(id int) ([]entity.Course, error
 	return courses, err
 }
 
-func (usecase CourseEnrollmentUseCase) DeleteCourseEnrollment(id int, course entity.CourseEnrollment) error {
-	courses := usecase.CourseEnrollmentRepo.DeleteCourseEnrollment(id, course)
+func (usecase CourseEnrollmentUseCase) DeleteCourseEnrollment(id int, courseId int, course entity.CourseEnrollment) error {
+	courses := usecase.CourseEnrollmentRepo.DeleteCourseEnrollment(id, courseId, course)
 	return courses
 }

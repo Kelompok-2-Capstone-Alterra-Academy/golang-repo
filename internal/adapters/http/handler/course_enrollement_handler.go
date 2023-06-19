@@ -74,6 +74,8 @@ func (handler CourseEnrollmentHandler) GetAllCourse() echo.HandlerFunc {
 func (handler CourseEnrollmentHandler) DeleteCourseEnrollment() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
+		course_id, err := strconv.Atoi(e.Param("course_id"))
+
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
@@ -81,7 +83,7 @@ func (handler CourseEnrollmentHandler) DeleteCourseEnrollment() echo.HandlerFunc
 			})
 		}
 
-		err = handler.CourseEnrollmentUseCase.DeleteCourseEnrollment(id, entity.CourseEnrollment{})
+		err = handler.CourseEnrollmentUseCase.DeleteCourseEnrollment(id, course_id, entity.CourseEnrollment{})
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
