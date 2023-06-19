@@ -50,3 +50,25 @@ func (repo SectionRepository) GetAllSectionsByCourse(course_id int) ([]entity.Se
 		Find(&sections)
 	return sections, result.Error
 }
+
+func (repo SectionRepository) GetInProgressSectionsByCourse(course_id int) ([]entity.Section, error) {
+	var sections []entity.Section
+	result := repo.DB.Preload("Module").
+		Preload("Module.Attachment").
+		Preload("Course").
+		Joins("JOIN course_enrollments ON sections.course_id = course_enrollments.course_id").
+		Where("sections.course_id = ? AND course_enrollments.status = ?", course_id, "in_progress").
+		Find(&sections)
+	return sections, result.Error
+}
+
+func (repo SectionRepository) GetFinishedSectionsByCourse(course_id int) ([]entity.Section, error) {
+	var sections []entity.Section
+	result := repo.DB.Preload("Module").
+		Preload("Module.Attachment").
+		Preload("Course").
+		Joins("JOIN course_enrollments ON sections.course_id = course_enrollments.course_id").
+		Where("sections.course_id = ? AND course_enrollments.status = ?", course_id, "selesai").
+		Find(&sections)
+	return sections, result.Error
+}
