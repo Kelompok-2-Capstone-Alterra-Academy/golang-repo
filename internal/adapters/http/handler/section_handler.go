@@ -37,7 +37,7 @@ func (handler SectionHandler) GetAllSections() echo.HandlerFunc {
 
 func (handler SectionHandler) GetCourseSection() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var sections []entity.Section
+		sections := make(map[string][]entity.Section)
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -45,7 +45,14 @@ func (handler SectionHandler) GetCourseSection() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		sections, err = handler.SectionUsecase.GetAllSectionsByCourse(id)
+		sections["in_progress"], err = handler.SectionUsecase.GetInProgressSectionsByCourse(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		sections["selesai"], err = handler.SectionUsecase.GetFinishedSectionsByCourse(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -55,7 +62,6 @@ func (handler SectionHandler) GetCourseSection() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all section",
 			"data":        sections,
 		})
 	}
