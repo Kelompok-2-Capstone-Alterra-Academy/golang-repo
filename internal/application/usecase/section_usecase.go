@@ -19,12 +19,12 @@ func (usecase SectionUseCase) GetSection(id int) (entity.Section, error) {
 	return section, err
 }
 
-func (usecase SectionUseCase) CreateSection(section entity.Section) error {
+func (usecase SectionUseCase) CreateSection(section *entity.Section) error {
 	err := usecase.Repo.CreateSection(section)
 	return err
 }
 
-func (usecase SectionUseCase) UpdateSection(id int, section entity.Section) error {
+func (usecase SectionUseCase) UpdateSection(id int, section *entity.Section) error {
 	err := usecase.Repo.UpdateSection(id, section)
 	return err
 }
@@ -37,4 +37,8 @@ func (usecase SectionUseCase) DeleteSection(id int) error {
 func (usecase SectionUseCase) FindSection(id int) error {
 	err := usecase.Repo.FindSection(id)
 	return err
+}
+func (usecase SectionUseCase) GetAllSectionsByCourse(course int) ([]entity.Section, error) {
+	sections, err := usecase.Repo.GetAllSectionsByCourse(course)
+	return sections, err
 }

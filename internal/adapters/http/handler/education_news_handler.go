@@ -7,18 +7,19 @@ import (
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
+	// "github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 )
 
-type ModuleHandler struct {
-	ModuleUseCase usecase.ModuleUseCase
+type EducationNewsHandler struct {
+	EducationNewsUsecase usecase.EducationNewsUseCase
 }
 
-func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
+func (handler EducationNewsHandler) GetAllEducationNewses() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var modules []entity.Module
+		var education_newses []entity.EducationNews
 
-		modules, err := handler.ModuleUseCase.GetAllModules()
+		education_newses, err := handler.EducationNewsUsecase.GetAllEducationNewses()
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -28,15 +29,15 @@ func (handler ModuleHandler) GetAllModules() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get all modules",
-			"data":        modules,
+			"message":     "success get all news",
+			"data":        education_newses,
 		})
 	}
 }
 
-func (handler ModuleHandler) GetModule() echo.HandlerFunc {
+func (handler EducationNewsHandler) GetEducationNews() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var module entity.Module
+		var education_news entity.EducationNews
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -45,7 +46,7 @@ func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 			})
 		}
 
-		module, err = handler.ModuleUseCase.GetModule(id)
+		education_news, err = handler.EducationNewsUsecase.GetEducationNews(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -55,80 +56,87 @@ func (handler ModuleHandler) GetModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success get module by id",
-			"data":        module,
+			"message":     "success get news by id",
+			"data":        education_news,
 		})
 	}
 }
 
-func (handler ModuleHandler) CreateModule() echo.HandlerFunc {
+func (handler EducationNewsHandler) CreateEducationNews() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var module entity.Module
-		if err := e.Bind(&module); err != nil {
+		var education_news entity.EducationNews
+		if err := e.Bind(&education_news); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		err := handler.ModuleUseCase.CreateModule(&module)
+		// validate := validator.New()
+		// if err := validate.Struct(education_news); err != nil {
+		// 	return e.JSON(http.StatusBadRequest, map[string]interface{}{
+		// 		"status code": http.StatusBadRequest,
+		// 		"message":     err.Error(),
+		// 	})
+		// }
+
+		err := handler.EducationNewsUsecase.CreateEducationNews(education_news)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created module",
+				"message":     "failed to created user",
 			})
 		}
+
 		return e.JSON(
 			http.StatusCreated, map[string]interface{}{
 				"status code": http.StatusCreated,
-				"message":     "success create new module",
-				"data":        module,
+				"message":     "success create new news",
+				"data":        education_news,
 			})
 	}
 }
-func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
-	var module entity.Module
+
+func (handler EducationNewsHandler) UpdateEducationNews() echo.HandlerFunc {
+	var education_news entity.EducationNews
+
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
+				"message": "input id is not a number",
 			})
 		}
 
-		err = handler.ModuleUseCase.FindModule(id)
+		err = handler.EducationNewsUsecase.FindEducationNews(id)
 		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+			return e.JSON(500, echo.Map{
+				"message": "Record Not Found",
 			})
 		}
 
-		if err := e.Bind(&module); err != nil {
-			return e.JSON(http.StatusNotFound, map[string]interface{}{
-				"status code": http.StatusNotFound,
-				"message":     err.Error(),
+		if err := e.Bind(&education_news); err != nil {
+			return e.JSON(400, echo.Map{
+				"error": err.Error(),
 			})
 		}
 
-		err = handler.ModuleUseCase.UpdateModule(id, &module)
+		err = handler.EducationNewsUsecase.UpdateEducationNews(id, education_news)
 		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
+			return e.JSON(500, echo.Map{
+				"error": err.Error(),
 			})
 		}
-		module.ID = uint(id)
+
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success update module",
-			"data":        module,
+			"message":     "success get news by id",
+			"data":        education_news,
 		})
 	}
 }
 
-func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
+func (handler EducationNewsHandler) DeleteEducationNews() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
@@ -138,7 +146,7 @@ func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.ModuleUseCase.DeleteModule(id)
+		err = handler.EducationNewsUsecase.DeleteEducationNews(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -148,7 +156,7 @@ func (handler ModuleHandler) DeleteModule() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "Success Delete module`",
+			"message":     "Success Delete News`",
 		})
 	}
 }

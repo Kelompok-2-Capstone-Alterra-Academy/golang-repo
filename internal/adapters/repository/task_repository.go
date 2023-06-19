@@ -22,12 +22,12 @@ func (repo TaskRepository) GetTask(id int) (entity.Task, error) {
 	return Tasks, result.Error
 }
 
-func (repo TaskRepository) CreateTask(Task entity.Task) error {
-	result := repo.DB.Create(&Task)
+func (repo TaskRepository) CreateTask(task *entity.Task) error {
+	result := repo.DB.Create(task)
 	return result.Error
 }
 
-func (repo TaskRepository) UpdateTask(id int, Task entity.Task) error {
+func (repo TaskRepository) UpdateTask(id int, Task *entity.Task) error {
 	result := repo.DB.Model(&Task).Where("id = ?", id).Updates(&Task)
 	return result.Error
 }

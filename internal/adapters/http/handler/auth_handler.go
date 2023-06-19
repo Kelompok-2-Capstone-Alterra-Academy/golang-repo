@@ -97,6 +97,57 @@ func (handler AuthHandler) Register() echo.HandlerFunc {
 	}
 }
 
+func (handler AuthHandler) MentorRegister() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user entity.User
+		if err := e.Bind(&user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Invalid request body",
+			})
+		}
+
+		// Validasi input menggunakan package validator
+		validate := validator.New()
+		if err := validate.Struct(user); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Validation errors",
+				"errors":      err.Error(),
+			})
+		}
+
+		// Validasi email unik
+		if err := handler.Usecase.UniqueEmail(user.Email); err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status_code": http.StatusBadRequest,
+				"message":     "Validation errors",
+				"errors":      err.Error(),
+			})
+		}
+
+		hashedPassword, err := service.Encrypt(user.Password)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+		user.Password = string(hashedPassword)
+		user.Role = "mentors"
+
+		err = handler.Usecase.CreateUser(user)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
+		}
+
+		data := make(map[string]interface{})
+		data["users"] = user
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status_code": http.StatusCreated,
+			"message":     "user created successfully",
+			"data":        data,
+		})
+	}
+}
+
 func (handler AuthHandler) NewPassword() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var user entity.User

@@ -6,7 +6,6 @@ import (
 
 type RateCourse struct {
 	*gorm.Model
-
 	
 	UserId      *int    `json:"user_id" form:"user_id"`
 	User        User  	`json:"user,omitempty" gorm:"foreignKey:UserId"`

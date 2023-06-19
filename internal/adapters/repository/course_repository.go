@@ -26,6 +26,12 @@ func (repo CourseRepository) GetAllCourseStudents() ([]entity.Course, error) {
 			return db.Omit("course") // Menyembunyikan relasi "Course" pada preload "Section"
 		}).
 		Preload("Class").Preload("Major").Find(&courses)
+	// Mendapatkan jumlah siswa yang mengikuti setiap kursus
+	for i := range courses {
+		var count int64
+		repo.DB.Model(&entity.CourseEnrollment{}).Where("course_id = ?", courses[i].ID).Count(&count)
+		courses[i].NumStudents = int(count)
+	}
 	return courses, result.Error
 }
 func (repo CourseRepository) GetCourse(id int) (entity.Course, error) {
@@ -163,4 +169,20 @@ func (repo CourseRepository) GetAllCoursesWithSectionCount(courseId int) ([]enti
 	}
 
 	return courses, nil
+}
+
+func (repo CourseRepository) GetCourseSection(id int) (entity.Course, error) {
+	var courses entity.Course
+	result := repo.DB.Preload("Section").Preload("Section.Module").Preload("Section.Module.Attachment").First(&courses, id)
+	return courses, result.Error
+}
+
+func (repo CourseRepository) GetStudentsByCourseID(courseID int) ([]entity.User, error) {
+	var users []entity.User
+	result := repo.DB.Model(&entity.CourseEnrollment{}).
+		Select("users.*").
+		Joins("JOIN users ON course_enrollments.user_id = users.ID").
+		Where("course_enrollments.course_id = ?", courseID).
+		Find(&users)
+	return users, result.Error
 }

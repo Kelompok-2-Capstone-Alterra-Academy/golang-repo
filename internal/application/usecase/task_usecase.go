@@ -19,12 +19,12 @@ func (usecase TaskUseCase) GetTask(id int) (entity.Task, error) {
 	return Task, err
 }
 
-func (usecase TaskUseCase) CreateTask(Task entity.Task) error {
-	err := usecase.Repo.CreateTask(Task)
+func (usecase TaskUseCase) CreateTask(task *entity.Task) error {
+	err := usecase.Repo.CreateTask(task)
 	return err
 }
 
-func (usecase TaskUseCase) UpdateTask(id int, Task entity.Task) error {
+func (usecase TaskUseCase) UpdateTask(id int, Task *entity.Task) error {
 	err := usecase.Repo.UpdateTask(id, Task)
 	return err
 }

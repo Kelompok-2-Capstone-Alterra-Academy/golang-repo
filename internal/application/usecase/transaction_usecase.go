@@ -14,6 +14,15 @@ type TransactionUsecase struct {
 	UserRepo        repository.UserRepository
 }
 
+func (usecase TransactionUsecase) GetTransaction(id int) ([]entity.Transaction, error) {
+	transaction, err := usecase.TransactionRepo.GetTransaction(id)
+	return transaction, err
+}
+func (usecase TransactionUsecase) FindByInvoiceId(id string) (entity.Transaction, error) {
+	transaction, err := usecase.TransactionRepo.FindByInvoiceId(id)
+	return transaction, err
+}
+
 func (uc *TransactionUsecase) GetLastTransactionID() (uint, error) {
 	stores, err := uc.TransactionRepo.GetLastTransactionID()
 	return stores, err
@@ -23,7 +32,10 @@ func (usecase TransactionUsecase) CreateTransaction(user entity.Transaction) err
 	err := usecase.TransactionRepo.CreateTransaction(user)
 	return err
 }
-
+func (usecase TransactionUsecase) CreateEnrolment(enrollment entity.CourseEnrollment) error {
+	err := usecase.TransactionRepo.CreateEnrolment(enrollment)
+	return err
+}
 func (usecase TransactionUsecase) UpdateTransaction(id int, Transaction entity.Transaction) error {
 	err := usecase.TransactionRepo.UpdateTransaction(id, Transaction)
 	return err
@@ -80,7 +92,7 @@ func (uc *TransactionUsecase) GenerateSnapReq(TransactionID uint, UserID int, To
 	// Create Snap Request object
 	snapReq := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
-			OrderID:  fmt.Sprint(TransactionID),
+			OrderID:  fmt.Sprint(order.InvoiceNumber),
 			GrossAmt: int64(totalPrice),
 		},
 		CreditCard: &snap.CreditCardDetails{

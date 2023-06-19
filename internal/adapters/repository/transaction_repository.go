@@ -51,12 +51,29 @@ func (r *TransactionRepository) GetCourseTransactionsByTransactionID(Transaction
 	}
 	return TrasanctionDetails, nil
 }
+
 func (repo TransactionRepository) CreateTransaction(Transaction entity.Transaction) error {
 	result := repo.DB.Create(&Transaction)
 	return result.Error
 }
 
 func (repo TransactionRepository) UpdateTransaction(id int, Transaction entity.Transaction) error {
-	result := repo.DB.Model(&Transaction).Where("id = ?", id).Updates(&Transaction)
+	result := repo.DB.Model(&Transaction).Where("id = ?", id).UpdateColumns(&Transaction)
+	return result.Error
+}
+func (repo TransactionRepository) GetTransaction(id int) ([]entity.Transaction, error) {
+	var transaction []entity.Transaction
+	result := repo.DB.Where("student_id = ?", id).Preload("TransactionDetails").Preload("TransactionDetails.Course").Find(&transaction)
+	return transaction, result.Error
+
+}
+func (repo TransactionRepository) FindByInvoiceId(invoiceNumber string) (entity.Transaction, error) {
+	var transaction entity.Transaction
+	result := repo.DB.Where("invoice_number = ?", invoiceNumber).Preload("TransactionDetails").First(&transaction)
+	return transaction, result.Error
+}
+
+func (repo TransactionRepository) CreateEnrolment(course entity.CourseEnrollment) error {
+	result := repo.DB.Create(&course)
 	return result.Error
 }
