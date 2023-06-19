@@ -118,7 +118,7 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 func (handler UserHandler) GetUserByRole() echo.HandlerFunc {
 	return func(e echo.Context) error {
 		var user []entity.User
-		role := "mentor"
+		role := "mentors"
 		user, err := handler.UserUsecase.GetUserByRole(role)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{

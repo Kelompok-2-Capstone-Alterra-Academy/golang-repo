@@ -100,7 +100,7 @@ func (handler AttachmentHandler) UpdateAttachment() echo.HandlerFunc {
 			})
 		}
 
-		section, err = handler.AttachmentUsecase.GetAttachment(id)
+		err = handler.AttachmentUsecase.FindAttachment(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -122,6 +122,7 @@ func (handler AttachmentHandler) UpdateAttachment() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
+		section, err = handler.AttachmentUsecase.GetAttachment(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -131,7 +132,7 @@ func (handler AttachmentHandler) UpdateAttachment() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
-			"message":     "success update section",
+			"message":     "success update modules",
 			"data":        section,
 		})
 	}
