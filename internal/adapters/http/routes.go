@@ -301,6 +301,7 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/classes/:id", classHandler.UpdateClass())
 	mentors.POST("/classes", classHandler.CreateClass())
 	mentors.DELETE("/classes/:id", classHandler.DeleteClass())
+	mentors.PUT("/user/profile/:id", userHandler.UpdateUser())
 
 	mentors.POST("/transaction", transactionHandler.MidtransNotification())
 
@@ -385,7 +386,7 @@ func InitRoutes() *echo.Echo {
 	// rate course
 	students.POST("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
-	students.PUT("/user/profile", userHandler.UpdateUser())
+	students.PUT("/user/profile/:id", userHandler.UpdateUser())
 	// transaction
 	students.POST("/transaction", transactionHandler.CheckoutTransaction())
 	students.GET("/transaction/history", transactionHandler.GetMyTransaction())
