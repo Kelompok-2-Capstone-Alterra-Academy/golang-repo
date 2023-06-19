@@ -45,12 +45,13 @@ func (handler SectionHandler) GetCourseSection() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		sections, err = handler.SectionUsecase.GetAllSectionsByCourse(id)		if err != nil {
+		sections, err = handler.SectionUsecase.GetAllSectionsByCourse(id)
+		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     err.Error(),
 			})
-		} 
+		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
