@@ -24,7 +24,7 @@ func (usecase ModuleUseCase) CreateModule(module *entity.Module) error {
 	return err
 }
 
-func (usecase ModuleUseCase) UpdateModule(id int, module *entity.Module) error {
+func (usecase ModuleUseCase) UpdateModule(id int, module entity.Module) error {
 	err := usecase.Repo.UpdateModule(id, module)
 	return err
 }

@@ -37,9 +37,9 @@ func (repo ModuleRepository) CreateModule(module *entity.Module) error {
 	return result.Error
 }
 
-func (repo ModuleRepository) UpdateModule(id int, module *entity.Module) error {
+func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
 
-	result := repo.DB.Model(&module).Where("id = ?", id).Updates(&module)
+	result := repo.DB.Model(&module).Where("id = ?", id).UpdateColumns(module)
 	return result.Error
 }
 
