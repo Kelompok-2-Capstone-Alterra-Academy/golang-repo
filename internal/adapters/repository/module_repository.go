@@ -12,7 +12,12 @@ type ModuleRepository struct {
 
 func (repo ModuleRepository) GetAllModules() ([]entity.Module, error) {
 	var modules []entity.Module
-	result := repo.DB.Find(&modules)
+	result := repo.DB.Preload("Section").
+		Preload("Tasks").
+		Preload("Attachment").
+		Preload("Submission").
+		Preload("Submission.User").
+		Find(&modules)
 	return modules, result.Error
 }
 

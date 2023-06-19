@@ -29,7 +29,7 @@ func (usecase AttachmentUseCase) CreateAttachment(Attachment *entity.Attachment)
 	return err
 }
 
-func (usecase AttachmentUseCase) UpdateAttachment(id int, Attachment *entity.Attachment) error {
+func (usecase AttachmentUseCase) UpdateAttachment(id int, Attachment entity.Attachment) error {
 	err := usecase.Repo.UpdateAttachment(id, Attachment)
 	return err
 }
