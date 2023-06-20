@@ -31,3 +31,9 @@ type CourseWithSectionCount struct {
 	Course
 	SectionCount int `json:"section_count"`
 }
+
+type CourseWithSectionAndStudentCount struct {
+	Course
+	SectionCount int `json:"total_sections"`
+	StudentCount int `json:"total_students"`
+}

@@ -426,3 +426,28 @@ func (handler CourseHandler) GetStudentsByCourseID(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response)
 }
+
+func (handler CourseHandler) GetAllCoursesWithSectionAndStudentCount() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		mentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		courses, err := handler.CourseUsecase.GetAllCoursesWithSectionAndStudentCount(mentorId)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by mentor id",
+			"data":        courses,
+		})
+	}
+}

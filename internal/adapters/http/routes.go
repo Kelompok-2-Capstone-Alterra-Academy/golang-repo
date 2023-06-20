@@ -273,6 +273,8 @@ func InitRoutes() *echo.Echo {
 	mentors.POST("/majors", majorHandler.CreateMajor())
 	mentors.DELETE("/majors/:id", majorHandler.DeleteMajor())
 
+	mentors.GET("/mydashboard/mycourses", courseHandler.GetAllCoursesWithSectionAndStudentCount())
+
 	mentors.GET("/courses", courseHandler.GetAllCourses())
 	mentors.GET("/courses/:id", courseHandler.GetCourse())
 	mentors.PUT("/courses/:id", courseHandler.UpdateCourse())
