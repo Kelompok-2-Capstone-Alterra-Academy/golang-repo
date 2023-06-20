@@ -55,6 +55,7 @@ func (handler SectionHandler) GetCourseSection() echo.HandlerFunc {
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
+			"message":     "success get all section",
 			"data":        sections,
 		})
 	}

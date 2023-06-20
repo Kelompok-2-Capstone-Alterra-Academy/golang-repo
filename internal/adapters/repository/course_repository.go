@@ -186,3 +186,21 @@ func (repo CourseRepository) GetStudentsByCourseID(courseID int) ([]entity.User,
 		Find(&users)
 	return users, result.Error
 }
+
+func (repo CourseRepository) GetAllCoursesWithSectionAndStudentCount() ([]entity.CourseWithSectionAndStudentCount, error) {
+	var courses []entity.CourseWithSectionAndStudentCount
+
+	result := repo.DB.Table("courses").
+		Select("courses.*, COUNT(DISTINCT sections.id) AS section_count, COUNT(DISTINCT CASE WHEN users.role = 'students' THEN users.id END) AS student_count").
+		Joins("LEFT JOIN sections ON courses.id = sections.course_id").
+		Joins("LEFT JOIN course_enrollments ON courses.id = course_enrollments.course_id").
+		Joins("LEFT JOIN users ON course_enrollments.user_id = users.id").
+		Group("courses.id").
+		Scan(&courses)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return courses, nil
+}

@@ -122,3 +122,12 @@ func (usecase CourseUseCase) GetStudentsByCourseID(courseID int) ([]entity.User,
 
 	return users, nil
 }
+
+func (usecase CourseUseCase) GetAllCoursesWithSectionAndStudentCount(mentorId int) ([]entity.CourseWithSectionAndStudentCount, error) {
+	courses, err := usecase.Repo.GetAllCoursesWithSectionAndStudentCount()
+	if err != nil {
+		return nil, err
+	}
+
+	return courses, nil
+}
