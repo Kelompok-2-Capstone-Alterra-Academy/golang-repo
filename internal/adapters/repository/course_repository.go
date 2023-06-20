@@ -12,7 +12,7 @@ type CourseRepository struct {
 
 func (repo CourseRepository) GetAllCourses(mentorId int) ([]entity.Course, error) {
 	var courses []entity.Course
-	result := repo.DB.Where("mentor_id = ?", mentorId).Preload("Category").
+	result := repo.DB.Where("mentor_id = ? AND status = ?", mentorId, "publish").Preload("Category").
 		Preload("Section", func(db *gorm.DB) *gorm.DB {
 			return db.Omit("course") // Menyembunyikan relasi "Course" pada preload "Section"
 		}).
