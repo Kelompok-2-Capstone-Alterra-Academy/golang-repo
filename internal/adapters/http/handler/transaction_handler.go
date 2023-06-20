@@ -96,6 +96,7 @@ func (handler TransactionHandler) MidtransNotification() echo.HandlerFunc {
 				// Transaksi berhasil
 				CourseEnrollment.UserId = Transaction.StudentId
 				CourseEnrollment.CourseId = Transaction.TransactionDetails[0].CourseId
+				CourseEnrollment.Status = "in_progress"
 				err := handler.TransactionUsecase.CreateEnrolment(CourseEnrollment)
 				if err != nil {
 					return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
