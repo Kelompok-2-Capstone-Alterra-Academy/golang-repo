@@ -124,7 +124,6 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 			"status code": http.StatusOK,
 			"message":     "success update module",
 			"data":        module,
-			"module_id":   id,
 		})
 	}
 }
