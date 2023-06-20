@@ -151,10 +151,7 @@ func (handler SectionHandler) UpdateSection() echo.HandlerFunc {
 
 		err = handler.SectionUsecase.UpdateSection(id, &section)
 		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
+			return nil
 		}
 		section.ID = uint(id)
 		return e.JSON(http.StatusOK, map[string]interface{}{
