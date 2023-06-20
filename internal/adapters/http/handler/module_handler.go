@@ -120,9 +120,6 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 			})
 		}
 		module, err = handler.ModuleUseCase.GetModule(id)
-		if err != nil {
-			return nil
-		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
