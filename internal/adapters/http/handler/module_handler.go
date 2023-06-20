@@ -119,11 +119,6 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		module, err = handler.ModuleUseCase.GetModule(id)
-		if err != nil {
-			return nil
-		}
-
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "success update module",
