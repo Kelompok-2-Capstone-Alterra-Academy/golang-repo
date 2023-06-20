@@ -21,7 +21,7 @@ func (repo CourseRepository) GetAllCourses(mentorId int) ([]entity.Course, error
 }
 func (repo CourseRepository) GetAllCourseStudents() ([]entity.Course, error) {
 	var courses []entity.Course
-	result := repo.DB.Preload("Category").
+	result := repo.DB.Where("status = ?", "publish").Preload("Category").
 		Preload("Section", func(db *gorm.DB) *gorm.DB {
 			return db.Omit("course") // Menyembunyikan relasi "Course" pada preload "Section"
 		}).
