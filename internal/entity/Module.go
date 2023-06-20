@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type Module struct {
 	*gorm.Model
-	ID           uint         `json:"ID"`
 	ModuleName   string       `json:"module_name" form:"module_name"`
 	Description  string       `json:"description" form:"description"`
 	SectionId    int          `json:"section_id" form:"section_id"`
