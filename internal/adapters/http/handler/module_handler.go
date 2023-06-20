@@ -71,7 +71,7 @@ func (handler ModuleHandler) CreateModule() echo.HandlerFunc {
 			})
 		}
 
-		err := handler.ModuleUseCase.CreateModule(module)
+		err := handler.ModuleUseCase.CreateModule(&module)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -113,6 +113,13 @@ func (handler ModuleHandler) UpdateModule() echo.HandlerFunc {
 		}
 
 		err = handler.ModuleUseCase.UpdateModule(id, module)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		module, err = handler.ModuleUseCase.GetModule(id)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,

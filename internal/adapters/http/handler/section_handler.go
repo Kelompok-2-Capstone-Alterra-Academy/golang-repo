@@ -107,7 +107,7 @@ func (handler SectionHandler) CreateSection() echo.HandlerFunc {
 			})
 		}
 
-		err := handler.SectionUsecase.CreateSection(section)
+		err := handler.SectionUsecase.CreateSection(&section)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -149,14 +149,14 @@ func (handler SectionHandler) UpdateSection() echo.HandlerFunc {
 			})
 		}
 
-		err = handler.SectionUsecase.UpdateSection(id, section)
+		err = handler.SectionUsecase.UpdateSection(id, &section)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     err.Error(),
 			})
 		}
-
+		section.ID = uint(id)
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "success update section",

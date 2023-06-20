@@ -179,6 +179,7 @@ func InitRoutes() *echo.Echo {
 	e.POST("/registrasi-mentor", AuthHandler.MentorRegister())
 	e.POST("/verify-otp", AuthHandler.VerifyOTP())
 	e.POST("/forgot-password", AuthHandler.ForgotPassword())
+	e.POST("/transaction", transactionHandler.MidtransNotification())
 
 	// montor group
 	mentors := e.Group("/mentors")
@@ -199,10 +200,13 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/folders/:id", folderHandler.GetFolder())
 	mentors.POST("/folders", folderHandler.CreateFolder())
 	mentors.DELETE("/folders/:id", folderHandler.DeleteFolder())
+	mentors.PUT("/user/profile/:id", userHandler.UpdateUser())
 
 	// route attachment
 	mentors.GET("/attachment/:id", attachmentHandler.GetAllAttachments())
+	mentors.GET("/attachment/quiz", attachmentHandler.GetAllQuiz())
 	mentors.GET("/attachment/find/:id", attachmentHandler.GetAttachment())
+	mentors.PUT("/attachment/:id", attachmentHandler.UpdateAttachment())
 	mentors.POST("/attachment", attachmentHandler.CreateAttachment())
 	mentors.DELETE("/attachment/:id", attachmentHandler.DeleteAttachment())
 
@@ -381,7 +385,8 @@ func InitRoutes() *echo.Echo {
 	// rate course
 	students.POST("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
-	students.PUT("/user/profile", userHandler.UpdateUser())
+	students.PUT("/user/profile/:id", userHandler.UpdateUser())
+
 	// transaction
 	students.POST("/transaction", transactionHandler.CheckoutTransaction())
 	students.GET("/transaction/history", transactionHandler.GetMyTransaction())

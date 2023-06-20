@@ -22,12 +22,12 @@ func (repo SectionRepository) GetSection(id int) (entity.Section, error) {
 	return sections, result.Error
 }
 
-func (repo SectionRepository) CreateSection(section entity.Section) error {
+func (repo SectionRepository) CreateSection(section *entity.Section) error {
 	result := repo.DB.Create(&section)
 	return result.Error
 }
 
-func (repo SectionRepository) UpdateSection(id int, section entity.Section) error {
+func (repo SectionRepository) UpdateSection(id int, section *entity.Section) error {
 	result := repo.DB.Model(&section).Where("id = ?", id).Updates(&section)
 	return result.Error
 }
@@ -45,6 +45,7 @@ func (repo SectionRepository) GetAllSectionsByCourse(course_id int) ([]entity.Se
 	var sections []entity.Section
 	result := repo.DB.Preload("Module").
 		Preload("Module.Attachment").
+		Preload("Module.Tasks").
 		Preload("Course").
 		Where("course_id = ?", course_id).
 		Find(&sections)

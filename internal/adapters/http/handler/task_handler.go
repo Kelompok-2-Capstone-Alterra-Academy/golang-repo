@@ -63,33 +63,34 @@ func (handler TaskHandler) GetTask() echo.HandlerFunc {
 
 func (handler TaskHandler) CreateTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
-		var Task entity.Task
-		if err := e.Bind(&Task); err != nil {
+		var task entity.Task
+		if err := e.Bind(&task); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
 
-		err := handler.TaskUseCase.CreateTask(Task)
+		err := handler.TaskUseCase.CreateTask(&task)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message":     "failed to created Task",
+				"message":     "failed to create Task",
 			})
 		}
-		return e.JSON(
-			http.StatusCreated, map[string]interface{}{
-				"status code": http.StatusCreated,
-				"message":     "success create new Task",
-				"data":        Task,
-			})
+
+		return e.JSON(http.StatusCreated, map[string]interface{}{
+			"status code": http.StatusCreated,
+			"message":     "success create new Task",
+			"data":        task,
+		})
 	}
 }
-func (handler TaskHandler) UpdateTask() echo.HandlerFunc {
-	var Task entity.Task
 
+func (handler TaskHandler) UpdateTask() echo.HandlerFunc {
 	return func(e echo.Context) error {
+		var task entity.Task
+
 		id, err := strconv.Atoi(e.Param("id"))
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -106,14 +107,14 @@ func (handler TaskHandler) UpdateTask() echo.HandlerFunc {
 			})
 		}
 
-		if err := e.Bind(&Task); err != nil {
+		if err := e.Bind(&task); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
 				"message":     err.Error(),
 			})
 		}
 
-		err = handler.TaskUseCase.UpdateTask(id, Task)
+		err = handler.TaskUseCase.UpdateTask(id, &task)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
@@ -121,10 +122,12 @@ func (handler TaskHandler) UpdateTask() echo.HandlerFunc {
 			})
 		}
 
+		task.ID = uint(id)
+
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "success update Task",
-			"data":        Task,
+			"data":        task,
 		})
 	}
 }
