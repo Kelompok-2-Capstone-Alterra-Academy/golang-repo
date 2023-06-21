@@ -34,7 +34,7 @@ func (usecase CourseUseCase) GetCourseByMentorId(id int) (entity.Course, error) 
 	return course, err
 }
 
-func (usecase CourseUseCase) CreateCourse(course entity.Course) error {
+func (usecase CourseUseCase) CreateCourse(course *entity.Course) error {
 	err := usecase.Repo.CreateCourse(course)
 	return err
 }
