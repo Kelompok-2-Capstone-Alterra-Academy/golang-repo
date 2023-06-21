@@ -134,7 +134,7 @@ func (handler AuthHandler) MentorRegister() echo.HandlerFunc {
 		user.Password = string(hashedPassword)
 		user.Role = "mentors"
 		user.Profile = "noimage.png"
-
+		user.Status = "active"
 		err = handler.Usecase.CreateUser(user)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to create user"})
