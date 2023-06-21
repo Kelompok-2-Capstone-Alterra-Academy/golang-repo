@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
@@ -143,23 +142,6 @@ func (handler AttachmentHandler) CreateAttachment() echo.HandlerFunc {
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
-		}
-
-		if Attachment.Type == "document" {
-			file, err := e.FormFile("attachment_source")
-			if err != nil {
-				return err
-			}
-			src, err := file.Open()
-			if err != nil {
-				return err
-			}
-			defer src.Close()
-			result, err := service.UploadToS3(e, file.Filename, src)
-			if err != nil {
-				return err
-			}
-			Attachment.AttachmentSource = result
 		}
 
 		err := handler.AttachmentUsecase.CreateAttachment(&Attachment)
