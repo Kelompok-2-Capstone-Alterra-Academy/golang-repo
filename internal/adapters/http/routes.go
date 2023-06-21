@@ -264,6 +264,7 @@ func InitRoutes() *echo.Echo {
 	mentors.PUT("/cateories/:id", categoryHandler.UpdateCategory())
 	mentors.POST("/categories", categoryHandler.CreateCategory())
 	mentors.DELETE("/categories/:id", categoryHandler.DeleteCategory())
+	mentors.DELETE("/my-course/delete/:id/course/:course_id", courseEnrollmentHandler.DeleteCourseEnrollment())
 
 	mentors.GET("/majors", majorHandler.GetAllMajors())
 	mentors.GET("/majors/:id", majorHandler.CreateMajor())
