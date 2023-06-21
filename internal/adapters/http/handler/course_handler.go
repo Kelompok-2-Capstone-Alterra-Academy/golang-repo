@@ -146,7 +146,7 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		if err := handler.CourseUsecase.CreateCourse(course); err != nil {
+		if err := handler.CourseUsecase.CreateCourse(&course); err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     "failed to created course",

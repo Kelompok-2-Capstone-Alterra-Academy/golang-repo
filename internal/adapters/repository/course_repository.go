@@ -45,7 +45,7 @@ func (repo CourseRepository) GetCourseByMentorId(id int) (entity.Course, error) 
 	return courses, result.Error
 }
 
-func (repo CourseRepository) CreateCourse(course entity.Course) error {
+func (repo CourseRepository) CreateCourse(course *entity.Course) error {
 	result := repo.DB.Preload("Category").Preload("Class").Preload("Major").Create(&course)
 	return result.Error
 }
