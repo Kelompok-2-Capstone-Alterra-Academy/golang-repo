@@ -38,7 +38,23 @@ func (repo ModuleRepository) CreateModule(module *entity.Module) error {
 }
 
 func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
-	result := repo.DB.Model(&entity.Module{}).Where("id = ?", id).Updates(module)
+	updates := make(map[string]interface{})
+	// Add the desired columns and their values to the updates map
+	if module.ModuleName != "" {
+		updates["module_name"] = module.ModuleName
+	}
+	if module.Description != "" {
+		updates["description"] = module.Description
+	}
+	if module.SectionId != 0 {
+		updates["section_id"] = module.SectionId
+	}
+	if module.AttachmentId != nil && *module.AttachmentId != "" {
+		updates["attachment_id"] = module.AttachmentId
+	}
+
+	// Add more columns if needed
+	result := repo.DB.Model(&entity.Module{}).Where("id = ?", id).Updates(updates)
 	return result.Error
 }
 
