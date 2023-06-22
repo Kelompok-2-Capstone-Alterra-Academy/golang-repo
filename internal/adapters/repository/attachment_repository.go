@@ -39,7 +39,30 @@ func (repo AttachmentRepository) CreateAttachment(Attachment *entity.Attachment)
 }
 
 func (repo AttachmentRepository) UpdateAttachment(id int, attachment entity.Attachment) error {
-	result := repo.DB.Model(&attachment).Where("id = ?", id).UpdateColumns(attachment)
+	updates := make(map[string]interface{})
+	// Add the desired columns and their values to the updates map
+	if attachment.Status != "" {
+		updates["status"] = attachment.Status
+	}
+	if attachment.Type != "" {
+		updates["type"] = attachment.Type
+	}
+	if attachment.AttachmentName != "" {
+		updates["attachment_names"] = attachment.AttachmentName
+	}
+	if attachment.Description != "" {
+		updates["description"] = attachment.Description
+	}
+
+	if attachment.AttachmentSource != "" {
+		updates["attachment_source"] = attachment.AttachmentSource
+	}
+
+	if attachment.FolderId != nil && *attachment.FolderId != "" {
+		updates["folder_id"] = attachment.FolderId
+	}
+
+	result := repo.DB.Model(&attachment).Where("id = ?", id).UpdateColumns(updates)
 	return result.Error
 }
 

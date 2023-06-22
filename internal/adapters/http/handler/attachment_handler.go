@@ -118,13 +118,6 @@ func (handler AttachmentHandler) UpdateAttachment() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		section, err = handler.AttachmentUsecase.GetAttachment(id)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     err.Error(),
-			})
-		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
