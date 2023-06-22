@@ -17,4 +17,6 @@ type User struct {
 	Class       string `json:"class" form:"class"`
 	Gender      string `json:"gender" form:"gender"`
 	Profile     string `json:"profile" form:"profile"`
+	HomeTown    string `json:"hometown" form:"hometown"`
+	Major       string `json:"major" form:"major"`
 }
