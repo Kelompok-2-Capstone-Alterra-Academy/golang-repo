@@ -62,9 +62,9 @@ func (handler TransactionHandler) CheckoutTransaction() echo.HandlerFunc {
 		// Create request body for Midtrans Snap API
 		snapReq, err := handler.TransactionUsecase.GenerateSnapReq(orderID, UserID, order.TotalPayment)
 		if err != nil {
-			return e.JSON(500, echo.Map{
-				"error": err.Error(),
-			})
+				return e.JSON(500, echo.Map{
+						"error": err.Error(),
+				})
 		}
 
 		fmt.Println("================ Request with global config ================")
