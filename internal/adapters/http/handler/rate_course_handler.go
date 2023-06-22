@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
@@ -27,13 +28,22 @@ func (handler RateCourseHandler) CreateRateCourse() echo.HandlerFunc {
 		}
 		rateCourse.UserId = userID
 
+		courseID := e.Param("course_id")
+		courseIDInt, err := strconv.Atoi(courseID)
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     "invalid course ID",
+			})
+		}
+		rateCourse.CourseId = courseIDInt
+
 		if err := e.Bind(&rateCourse); err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
 				"message":     err.Error(),
 			})
 		}
-
 		// Validasi input menggunakan package validator
 		validate := validator.New()
 		if err := validate.Struct(rateCourse); err != nil {
