@@ -46,9 +46,6 @@ func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
 	if module.Description != "" {
 		updates["description"] = module.Description
 	}
-	if module.SectionId != 0 {
-		updates["section_id"] = module.SectionId
-	}
 	if module.AttachmentId != nil && *module.AttachmentId != "" {
 		updates["attachment_id"] = module.AttachmentId
 	}
