@@ -199,6 +199,8 @@ func InitRoutes() *echo.Echo {
 	mentors.GET("/folders", folderHandler.GetAllFolders())
 	mentors.GET("/folders/:id", folderHandler.GetFolder())
 	mentors.POST("/folders", folderHandler.CreateFolder())
+	mentors.PUT("/folders/:id", folderHandler.UpdateFolder())
+
 	mentors.DELETE("/folders/:id", folderHandler.DeleteFolder())
 	mentors.PUT("/user/profile/:id", userHandler.UpdateUser())
 
