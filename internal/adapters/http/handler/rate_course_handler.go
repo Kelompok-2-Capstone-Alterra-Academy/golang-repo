@@ -15,12 +15,6 @@ type RateCourseHandler struct {
 	RateCourseUsecase usecase.RateCourseUseCase
 }
 
-func NewRateCourseHandler(rateCourseUsecase usecase.RateCourseUseCase) RateCourseHandler {
-	return RateCourseHandler{
-		RateCourseUsecase: rateCourseUsecase,
-	}
-}
-
 func (handler RateCourseHandler) CreateRateCourse(c echo.Context) error {
 	var rateCourse entity.RateCourse
 	userID, err := service.GetUserIDFromToken(c)
