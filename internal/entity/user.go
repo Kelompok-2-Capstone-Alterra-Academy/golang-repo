@@ -19,4 +19,5 @@ type User struct {
 	Profile     string `json:"profile" form:"profile"`
 	HomeTown    string `json:"hometown" form:"hometown"`
 	Major       string `json:"major" form:"major"`
+	DateOfBirth string `json:"date_of_birth" form:"date_of_birth"`
 }

@@ -9,6 +9,7 @@ type Submission struct {
 	ModuleId         string  `json:"module_id" form:"module_id"`
 	Type             string  `json:"type" form:"type"`
 	Notes            string  `json:"notes" form:"notes"`
+	Score            string  `json:"score" form:"score"`
 	Module           *Module `json:"module,omitempty" gorm:"foreignKey:ModuleId"`
 	StudentId        int     `json:"student_id" form:"student_id"`
 	User             *User   `json:"student,omitempty" gorm:"foreignKey:StudentId"`

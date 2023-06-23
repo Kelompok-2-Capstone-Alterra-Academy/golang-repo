@@ -48,7 +48,7 @@ func (repo AttachmentRepository) UpdateAttachment(id int, attachment entity.Atta
 		updates["type"] = attachment.Type
 	}
 	if attachment.AttachmentName != "" {
-		updates["attachment_names"] = attachment.AttachmentName
+		updates["attachment_name"] = attachment.AttachmentName
 	}
 	if attachment.Description != "" {
 		updates["description"] = attachment.Description

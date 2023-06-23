@@ -121,6 +121,8 @@ func (repo CourseRepository) CoursesInProgress(userID int) ([]entity.Course, err
 		Joins("JOIN courses ON course_enrollments.course_id = courses.ID").
 		Where("course_enrollments.user_id = ?", userID).
 		Where("course_enrollments.status = ?", "in_progress").
+		Preload("Class").
+		Preload("Major").
 		Find(&courses)
 	return courses, result.Error
 }
@@ -131,6 +133,8 @@ func (repo CourseRepository) CoursesDone(userID int) ([]entity.Course, error) {
 		Select("courses.*").
 		Joins("JOIN courses ON course_enrollments.course_id = courses.ID").
 		Where("course_enrollments.user_id = ?", userID).
+		Preload("Class").
+		Preload("Major").
 		Where("course_enrollments.status = ?", "selesai").
 		Find(&courses)
 	return courses, result.Error
