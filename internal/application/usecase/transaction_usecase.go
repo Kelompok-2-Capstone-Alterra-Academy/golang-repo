@@ -77,17 +77,27 @@ func (uc *TransactionUsecase) GenerateSnapReq(TransactionID uint, UserID int, To
 	}
 
 	// Create ItemDetails array for Snap Request
+	// var itemDetails []midtrans.ItemDetails
+	// var totalPrice int64 = 0
+	// for _, bo := range courseOrders {
+	// 	itemDetails = append(itemDetails, midtrans.ItemDetails{
+	// 		ID:    bo.CourseId,
+	// 		Price: int64(bo.Price),
+	// 		Qty:   int32(1),
+	// 		Name:  bo.Course.CourseName,
+	// 	})
+	// 	totalPrice += int64(bo.Price) * int64(1)
+	// }
 	var itemDetails []midtrans.ItemDetails
-	var totalPrice int64 = 0
-	for _, bo := range courseOrders {
-		itemDetails = append(itemDetails, midtrans.ItemDetails{
-			ID:    bo.CourseId,
-			Price: int64(bo.Price),
-			Qty:   int32(1),
-			Name:  bo.Course.CourseName,
-		})
-		totalPrice += int64(bo.Price) * int64(1)
-	}
+    var totalPrice int64 = int64(TotalPrice) // Menggunakan TotalPrice sebagai harga transaksi
+    for _, bo := range courseOrders {
+        itemDetails = append(itemDetails, midtrans.ItemDetails{
+            ID:    bo.CourseId,
+            Price: int64(bo.Price),
+            Qty:   int32(1),
+            Name:  bo.Course.CourseName,
+        })
+    }
 
 	// Create Snap Request object
 	snapReq := &snap.Request{
