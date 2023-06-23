@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
@@ -16,55 +15,58 @@ type RateCourseHandler struct {
 	RateCourseUsecase usecase.RateCourseUseCase
 }
 
-func (handler RateCourseHandler) CreateRateCourse() echo.HandlerFunc {
-	return func(e echo.Context) error {
-		var rateCourse entity.RateCourse
-		userID, err := service.GetUserIDFromToken(e)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     "failed to get user ID",
-			})
-		}
-		rateCourse.UserId = userID
+func NewRateCourseHandler(rateCourseUsecase usecase.RateCourseUseCase) RateCourseHandler {
+	return RateCourseHandler{
+		RateCourseUsecase: rateCourseUsecase,
+	}
+}
 
-		courseID := e.Param("course_id")
-		courseIDInt, err := strconv.Atoi(courseID)
-		if err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     "invalid course ID",
-			})
-		}
-		rateCourse.CourseId = courseIDInt
-
-		if err := e.Bind(&rateCourse); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
-			})
-		}
-		// Validasi input menggunakan package validator
-		validate := validator.New()
-		if err := validate.Struct(rateCourse); err != nil {
-			return e.JSON(http.StatusBadRequest, map[string]interface{}{
-				"status code": http.StatusBadRequest,
-				"message":     err.Error(),
-			})
-		}
-
-		err = handler.RateCourseUsecase.CreateRateCourse(rateCourse)
-		if err != nil {
-			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"status code": http.StatusInternalServerError,
-				"message":     "failed to create rateCourse",
-			})
-		}
-
-		return e.JSON(http.StatusCreated, map[string]interface{}{
-			"status code": http.StatusCreated,
-			"message":     "success create new rateCourse",
-			"data":        rateCourse,
+func (handler RateCourseHandler) CreateRateCourse(c echo.Context) error {
+	var rateCourse entity.RateCourse
+	userID, err := service.GetUserIDFromToken(c)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     "failed to get user ID",
 		})
 	}
+	rateCourse.UserId = userID
+
+	if err := c.Bind(&rateCourse); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"status code": http.StatusBadRequest,
+			"message":     err.Error(),
+		})
+	}
+
+	// Validasi input menggunakan package validator
+	validate := validator.New()
+	if err := validate.Struct(rateCourse); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"status code": http.StatusBadRequest,
+			"message":     err.Error(),
+		})
+	}
+
+	err = handler.RateCourseUsecase.CreateRateCourse(rateCourse)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     "failed to create rateCourse",
+		})
+	}
+
+	err = handler.RateCourseUsecase.UpdateStatusCourseEnrollment(rateCourse.CourseId, rateCourse.UserId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     "failed to update course enrollment status",
+		})
+	}
+
+	return c.JSON(http.StatusCreated, map[string]interface{}{
+		"status code": http.StatusCreated,
+		"message":     "success create new rateCourse",
+		"data":        rateCourse,
+	})
 }
