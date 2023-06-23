@@ -391,6 +391,7 @@ func InitRoutes() *echo.Echo {
 	students.POST("/rate-course", rateCourseHandler.CreateRateCourse())
 	students.GET("/courses/sort", courseHandler.GetAllCoursesSortedByField())
 	students.PUT("/user/profile/:id", userHandler.UpdateUser())
+	students.POST("/courses/submission", submissionHandler.CreateSubmission())
 
 	// transaction
 	students.POST("/transaction", transactionHandler.CheckoutTransaction())
