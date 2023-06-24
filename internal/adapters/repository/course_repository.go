@@ -187,7 +187,7 @@ func (repo CourseRepository) GetStudentsByCourseID(courseID int) ([]entity.User,
 		Select("users.*").
 		Joins("JOIN users ON course_enrollments.user_id = users.ID").
 		Where("course_enrollments.course_id = ?", courseID).
-		Where("users.status <> ?", "deactive").
+		Where("course_enrollments.status <> ?", "deactive").
 		Find(&users)
 	return users, result.Error
 }
