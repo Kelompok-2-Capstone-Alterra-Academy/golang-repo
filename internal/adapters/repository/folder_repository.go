@@ -22,7 +22,7 @@ func (repo FolderRepository) GetFolder(id int) (entity.Folder, error) {
 	return Folders, result.Error
 }
 
-func (repo FolderRepository) CreateFolder(Folder entity.Folder) error {
+func (repo FolderRepository) CreateFolder(Folder *entity.Folder) error {
 	result := repo.DB.Create(&Folder)
 	return result.Error
 }

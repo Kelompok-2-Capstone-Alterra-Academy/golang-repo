@@ -90,7 +90,7 @@ func (handler FolderHandler) CreateFolder() echo.HandlerFunc {
 		}
 
 		folder.MentorId = MentorId
-		err = handler.FolderUsecase.CreateFolder(folder)
+		err = handler.FolderUsecase.CreateFolder(&folder)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,

@@ -19,7 +19,7 @@ func (usecase FolderUseCase) GetFolder(id int) (entity.Folder, error) {
 	return Folder, err
 }
 
-func (usecase FolderUseCase) CreateFolder(Folder entity.Folder) error {
+func (usecase FolderUseCase) CreateFolder(Folder *entity.Folder) error {
 	err := usecase.Repo.CreateFolder(Folder)
 	return err
 }
