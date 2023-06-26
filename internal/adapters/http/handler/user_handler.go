@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"capston-lms/internal/application/service"
 	"capston-lms/internal/application/usecase"
 	"capston-lms/internal/entity"
 
@@ -98,8 +99,6 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 			})
 		}
 		user.Password = string(hashedPassword)
-		// Set Role default cutomer
-		user.Role = "customer"
 
 		err = handler.UserUsecase.CreateUser(user)
 		if err != nil {
@@ -116,8 +115,25 @@ func (handler UserHandler) CreateUser() echo.HandlerFunc {
 		})
 	}
 }
+func (handler UserHandler) GetUserByRole() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var user []entity.User
+		role := "mentors"
+		user, err := handler.UserUsecase.GetUserByRole(role)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
 
-
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get user by role",
+			"data":        user,
+		})
+	}
+}
 
 func (handler UserHandler) DeleteUser() echo.HandlerFunc {
 	return func(e echo.Context) error {
@@ -152,22 +168,41 @@ func (handler UserHandler) UpdateUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusBadRequest, map[string]interface{}{
 				"status code": http.StatusBadRequest,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
-	err = handler.UserUsecase.UpdateUser(id, user)
+		// Check if profile image is uploaded
+		profileFile, err := e.FormFile("profile")
+		if err == nil {
+			// If uploaded, process the file
+			src, err := profileFile.Open()
+			if err != nil {
+				return err
+			}
+			defer src.Close()
+
+			// Upload the file to S3 or any other storage service
+			uploadResult, err := service.UploadToS3(e, profileFile.Filename, src)
+			if err != nil {
+				return err
+			}
+
+			// Update the user's profile image
+			user.Profile = uploadResult
+		}
+		err = handler.UserUsecase.UpdateUser(id, user)
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
 		if err := e.Bind(&user); err != nil {
 			return e.JSON(http.StatusNotFound, map[string]interface{}{
 				"status code": http.StatusNotFound,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
@@ -175,15 +210,14 @@ func (handler UserHandler) UpdateUser() echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
-				"message": err.Error(),
+				"message":     err.Error(),
 			})
 		}
 
 		return e.JSON(http.StatusOK, map[string]interface{}{
-				"status code": http.StatusOK,
-				"message": "success update user data",
-				"data":user,
-
-			})
+			"status code": http.StatusOK,
+			"message":     "success update user data",
+			"data":        user,
+		})
 	}
 }

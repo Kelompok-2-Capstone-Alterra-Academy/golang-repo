@@ -25,12 +25,16 @@ func (usecase CourseUseCase) GetCourse(id int) (entity.Course, error) {
 	return course, err
 }
 
+func (usecase CourseUseCase) GetCourseSection(id int) (entity.Course, error) {
+	course, err := usecase.Repo.GetCourseSection(id)
+	return course, err
+}
 func (usecase CourseUseCase) GetCourseByMentorId(id int) (entity.Course, error) {
 	course, err := usecase.Repo.GetCourseByMentorId(id)
 	return course, err
 }
 
-func (usecase CourseUseCase) CreateCourse(course entity.Course) error {
+func (usecase CourseUseCase) CreateCourse(course *entity.Course) error {
 	err := usecase.Repo.CreateCourse(course)
 	return err
 }
@@ -108,4 +112,22 @@ func (usecase CourseUseCase) GetModule(id int) (entity.Module, error) {
 func (usecase CourseUseCase) GetAllCoursesWithSectionCount(courseId int) ([]entity.CourseWithSectionCount, error) {
 	totalCourse, err := usecase.Repo.GetAllCoursesWithSectionCount(courseId)
 	return totalCourse, err
+}
+
+func (usecase CourseUseCase) GetStudentsByCourseID(courseID int) ([]entity.User, error) {
+	users, err := usecase.Repo.GetStudentsByCourseID(courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (usecase CourseUseCase) GetAllCoursesWithSectionAndStudentCount(mentorId int) ([]entity.CourseWithSectionAndStudentCount, error) {
+	courses, err := usecase.Repo.GetAllCoursesWithSectionAndStudentCount()
+	if err != nil {
+		return nil, err
+	}
+
+	return courses, nil
 }

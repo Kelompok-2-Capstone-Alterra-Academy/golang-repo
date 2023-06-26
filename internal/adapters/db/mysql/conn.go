@@ -47,6 +47,7 @@ func InitDB() {
 func AutoMigrate() {
 	err := DbMysql.AutoMigrate(
 		&entity.User{},
+		&entity.EducationNews{},
 		&entity.Class{},
 		&entity.Category{},
 		&entity.Major{},

@@ -19,7 +19,7 @@ func (usecase ModuleUseCase) GetModule(id int) (entity.Module, error) {
 	return module, err
 }
 
-func (usecase ModuleUseCase) CreateModule(module entity.Module) error {
+func (usecase ModuleUseCase) CreateModule(module *entity.Module) error {
 	err := usecase.Repo.CreateModule(module)
 	return err
 }

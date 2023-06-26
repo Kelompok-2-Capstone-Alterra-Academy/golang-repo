@@ -16,4 +16,8 @@ type User struct {
 	SchoolName  string `json:"school_name" form:"school_name"`
 	Class       string `json:"class" form:"class"`
 	Gender      string `json:"gender" form:"gender"`
+	Profile     string `json:"profile" form:"profile"`
+	HomeTown    string `json:"hometown" form:"hometown"`
+	Major       string `json:"major" form:"major"`
+	DateOfBirth string `json:"date_of_birth" form:"date_of_birth"`
 }

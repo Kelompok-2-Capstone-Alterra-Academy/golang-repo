@@ -13,3 +13,8 @@ func (usecase RateCourseUseCase) CreateRateCourse(rateCourse entity.RateCourse) 
 	err := usecase.Repo.CreateRateCourse(rateCourse)
 	return err
 }
+
+func (usecase RateCourseUseCase) UpdateStatusCourseEnrollment(courseID, userID int) error {
+	err := usecase.Repo.UpdateStatusCourseEnrollment(courseID, userID)
+	return err
+}

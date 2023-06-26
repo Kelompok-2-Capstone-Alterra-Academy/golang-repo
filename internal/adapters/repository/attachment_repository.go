@@ -18,20 +18,51 @@ func (repo AttachmentRepository) GetAllAttachments(folder int) ([]entity.Attachm
 	}
 	return Attachments, nil
 }
-
+func (repo AttachmentRepository) GetQuiz() ([]entity.Attachment, error) {
+	var Attachments []entity.Attachment
+	var quiz = "quiz"
+	result := repo.DB.Where("type = ?", quiz).Find(&Attachments)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return Attachments, nil
+}
 func (repo AttachmentRepository) GetAttachment(id int) (entity.Attachment, error) {
 	var Attachments entity.Attachment
 	result := repo.DB.First(&Attachments, id)
 	return Attachments, result.Error
 }
 
-func (repo AttachmentRepository) CreateAttachment(Attachment entity.Attachment) error {
+func (repo AttachmentRepository) CreateAttachment(Attachment *entity.Attachment) error {
 	result := repo.DB.Create(&Attachment)
 	return result.Error
 }
 
-func (repo AttachmentRepository) UpdateAttachment(id int, Attachment entity.Attachment) error {
-	result := repo.DB.Model(&Attachment).Where("id = ?", id).Updates(&Attachment)
+func (repo AttachmentRepository) UpdateAttachment(id int, attachment entity.Attachment) error {
+	updates := make(map[string]interface{})
+	// Add the desired columns and their values to the updates map
+	if attachment.Status != "" {
+		updates["status"] = attachment.Status
+	}
+	if attachment.Type != "" {
+		updates["type"] = attachment.Type
+	}
+	if attachment.AttachmentName != "" {
+		updates["attachment_name"] = attachment.AttachmentName
+	}
+	if attachment.Description != "" {
+		updates["description"] = attachment.Description
+	}
+
+	if attachment.AttachmentSource != "" {
+		updates["attachment_source"] = attachment.AttachmentSource
+	}
+
+	if attachment.FolderId != nil && *attachment.FolderId != "" {
+		updates["folder_id"] = attachment.FolderId
+	}
+
+	result := repo.DB.Model(&attachment).Where("id = ?", id).UpdateColumns(updates)
 	return result.Error
 }
 
@@ -43,6 +74,24 @@ func (repo AttachmentRepository) DeleteAttachment(id int) error {
 func (repo AttachmentRepository) FindAttachment(id int) error {
 	result := repo.DB.First(&entity.Attachment{}, id)
 	return result.Error
+}
+
+func (repo AttachmentRepository) GetVideoAttachments() ([]entity.Attachment, error) {
+	var attachments []entity.Attachment
+
+	// Query the attachments with type "video"
+	if err := repo.DB.Where("type = ?", "video").Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+
+	// Return the attachments
+	return attachments, nil
+}
+
+func (repo AttachmentRepository) GetVideoAttachmentByID(id int) (entity.Attachment, error) {
+	var attachment entity.Attachment
+	result := repo.DB.First(&attachment, id)
+	return attachment, result.Error
 }
 
 func (repo AttachmentRepository) GetQuizAttachments() ([]entity.Attachment, error) {

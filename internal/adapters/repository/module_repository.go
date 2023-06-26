@@ -12,7 +12,12 @@ type ModuleRepository struct {
 
 func (repo ModuleRepository) GetAllModules() ([]entity.Module, error) {
 	var modules []entity.Module
-	result := repo.DB.Find(&modules)
+	result := repo.DB.Preload("Section").
+		Preload("Tasks").
+		Preload("Attachment").
+		Preload("Submission").
+		Preload("Submission.User").
+		Find(&modules)
 	return modules, result.Error
 }
 
@@ -27,14 +32,26 @@ func (repo ModuleRepository) GetModule(id int) (entity.Module, error) {
 	return module, result.Error
 }
 
-func (repo ModuleRepository) CreateModule(module entity.Module) error {
+func (repo ModuleRepository) CreateModule(module *entity.Module) error {
 	result := repo.DB.Create(&module)
 	return result.Error
 }
 
 func (repo ModuleRepository) UpdateModule(id int, module entity.Module) error {
+	updates := make(map[string]interface{})
+	// Add the desired columns and their values to the updates map
+	if module.ModuleName != "" {
+		updates["module_name"] = module.ModuleName
+	}
+	if module.Description != "" {
+		updates["description"] = module.Description
+	}
+	if module.AttachmentId != nil && *module.AttachmentId != "" {
+		updates["attachment_id"] = module.AttachmentId
+	}
 
-	result := repo.DB.Model(&module).Where("id = ?", id).Updates(&module)
+	// Add more columns if needed
+	result := repo.DB.Model(&entity.Module{}).Where("id = ?", id).Updates(updates)
 	return result.Error
 }
 

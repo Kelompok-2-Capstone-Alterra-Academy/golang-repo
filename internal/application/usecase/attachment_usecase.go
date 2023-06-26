@@ -14,12 +14,17 @@ func (usecase AttachmentUseCase) GetAllAttachments(folderId int) ([]entity.Attac
 	return Attachmentes, err
 }
 
-func (usecase AttachmentUseCase) GetAttachment(id int) (entity.Attachment, error) {
-	Attachment, err := usecase.Repo.GetAttachment(id)
-	return Attachment, err
+func (usecase AttachmentUseCase) GetAllQuiz() ([]entity.Attachment, error) {
+	Attachmentes, err := usecase.Repo.GetQuiz()
+	return Attachmentes, err
 }
 
-func (usecase AttachmentUseCase) CreateAttachment(Attachment entity.Attachment) error {
+func (usecase AttachmentUseCase) GetAttachment(id int) (entity.Attachment, error) {
+	attachment, err := usecase.Repo.GetAttachment(id)
+	return attachment, err
+}
+
+func (usecase AttachmentUseCase) CreateAttachment(Attachment *entity.Attachment) error {
 	err := usecase.Repo.CreateAttachment(Attachment)
 	return err
 }
@@ -36,6 +41,18 @@ func (usecase AttachmentUseCase) DeleteAttachment(id int) error {
 func (usecase AttachmentUseCase) FindAttachment(id int) error {
 	err := usecase.Repo.FindAttachment(id)
 	return err
+}
+
+func (usecase AttachmentUseCase) GetVideoAttachments() ([]entity.Attachment, error) {
+	return usecase.Repo.GetVideoAttachments()
+}
+
+func (usecase AttachmentUseCase) GetVideoAttachmentByID(id int) (entity.Attachment, error) {
+	attachment, err := usecase.Repo.GetVideoAttachmentByID(id)
+	if err != nil {
+		return entity.Attachment{}, err
+	}
+	return attachment, nil
 }
 
 func (usecase AttachmentUseCase) GetQuizAttachments() ([]entity.Attachment, error) {

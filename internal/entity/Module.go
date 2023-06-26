@@ -1,6 +1,8 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Module struct {
 	*gorm.Model
@@ -8,7 +10,7 @@ type Module struct {
 	Description  string       `json:"description" form:"description"`
 	SectionId    int          `json:"section_id" form:"section_id"`
 	Section      Section      `json:"section" gorm:"foreignKey:SectionId"`
-	AttachmentId *int         `json:"attachment_id" form:"attachment_id"`
+	AttachmentId *string      `json:"attachment_id" form:"attachment_id"`
 	Attachment   Attachment   `json:"attachment,omitempty" gorm:"foreignKey:AttachmentId"`
 	Tasks        []Task       `json:"tasks" gorm:"foreignKey:ModuleId"`
 	Submission   []Submission `json:"submission" gorm:"foreignKey:ModuleId"`

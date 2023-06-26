@@ -52,3 +52,7 @@ func (usecase UserUseCase) VerifiedOtpToken(email string, token string) error {
 	err := usecase.Repo.VerifiedOtpToken(email, token)
 	return err
 }
+func (usecase UserUseCase) GetUserByRole(role string) ([]entity.User, error) {
+	users, err := usecase.Repo.GetUserByRole(role)
+	return users, err
+}

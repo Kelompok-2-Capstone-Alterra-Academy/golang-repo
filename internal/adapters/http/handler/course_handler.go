@@ -146,7 +146,7 @@ func (handler CourseHandler) CreateCourse() echo.HandlerFunc {
 				"message":     err.Error(),
 			})
 		}
-		if err := handler.CourseUsecase.CreateCourse(course); err != nil {
+		if err := handler.CourseUsecase.CreateCourse(&course); err != nil {
 			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status code": http.StatusInternalServerError,
 				"message":     "failed to created course",
@@ -366,6 +366,87 @@ func (handler CourseHandler) GetAllCoursesSortedByField() echo.HandlerFunc {
 		return e.JSON(http.StatusOK, map[string]interface{}{
 			"status code": http.StatusOK,
 			"message":     "Success get all courses sorted by field",
+			"data":        courses,
+		})
+	}
+}
+
+func (handler CourseHandler) GetCourseSection() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		var course entity.Course
+
+		id, err := strconv.Atoi(e.Param("id"))
+		if err != nil {
+			return e.JSON(http.StatusBadRequest, map[string]interface{}{
+				"status code": http.StatusBadRequest,
+				"message":     err.Error(),
+			})
+		}
+		course, err = handler.CourseUsecase.GetCourseSection(id)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		data := make(map[string]interface{})
+		data["courses"] = course
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by id",
+			"data":        data,
+		})
+	}
+}
+
+func (handler CourseHandler) GetStudentsByCourseID(c echo.Context) error {
+	courseID, err := strconv.Atoi(c.Param("course_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"status code": http.StatusBadRequest,
+			"message":     "Invalid course ID",
+		})
+	}
+
+	users, err := handler.CourseUsecase.GetStudentsByCourseID(courseID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status code": http.StatusInternalServerError,
+			"message":     err.Error(),
+		})
+	}
+
+	response := map[string]interface{}{
+		"status code": http.StatusOK,
+		"message":     "Success get users by course ID",
+		"data":        users,
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
+func (handler CourseHandler) GetAllCoursesWithSectionAndStudentCount() echo.HandlerFunc {
+	return func(e echo.Context) error {
+		mentorId, err := service.GetUserIDFromToken(e)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+		courses, err := handler.CourseUsecase.GetAllCoursesWithSectionAndStudentCount(mentorId)
+		if err != nil {
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"status code": http.StatusInternalServerError,
+				"message":     err.Error(),
+			})
+		}
+
+		return e.JSON(http.StatusOK, map[string]interface{}{
+			"status code": http.StatusOK,
+			"message":     "success get course by mentor id",
 			"data":        courses,
 		})
 	}

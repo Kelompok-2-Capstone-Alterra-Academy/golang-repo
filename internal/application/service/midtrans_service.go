@@ -14,16 +14,6 @@ var s snap.Client
 func SetupGlobalMidtransConfig() {
 	midtrans.ServerKey = "SB-Mid-server-x5fJwvwyo1cF2z5qGSD74Fsi"
 	midtrans.Environment = midtrans.Sandbox
-
-	// Optional : here is how if you want to set append payment notification globally
-	midtrans.SetPaymentAppendNotification("https://example.com/append")
-	// Optional : here is how if you want to set override payment notification globally
-	midtrans.SetPaymentOverrideNotification("https://example.com/override")
-
-	//// remove the comment bellow, in cases you need to change the default for Log Level
-	// midtrans.DefaultLoggerLevel = &midtrans.LoggerImplementation{
-	//	 LogLevel: midtrans.LogInfo,
-	// }
 }
 
 func InitializeSnapClient() {
@@ -39,12 +29,6 @@ func CreateTransactionWithGlobalConfig() {
 }
 
 func CreateTransaction(snapReq snap.Request) (*snap.Response, error) {
-	// Optional : here is how if you want to set append payment notification for this request
-	s.Options.SetPaymentAppendNotification("https://example.com/append")
-
-	// Optional : here is how if you want to set override payment notification for this request
-	s.Options.SetPaymentOverrideNotification("https://example.com/override")
-	// Send request to Midtrans Snap API
 
 	resp, err := s.CreateTransaction(&snapReq)
 	if err != nil {
